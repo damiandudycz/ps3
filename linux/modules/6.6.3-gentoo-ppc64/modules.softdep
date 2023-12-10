@@ -1,0 +1,3 @@
+# Soft dependencies extracted from modules themselves.
+softdep lrw pre: ecb
+softdep xts pre: ecb

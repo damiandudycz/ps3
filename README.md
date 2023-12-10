@@ -1,13 +1,11 @@
 # PlayStation 3 Gentoo Linux toolset
 
-NOTE: This repository contains only developer tools.
-
-Installer script was moved to https://github.com/damiandudycz/Gentoo-Installer
+### Note: README in progress
 
 If you want to try Gentoo using LiveUSB / LiveDVD, download files from https://www.dropbox.com/scl/fi/qrjzexfm1owd1r1aprkd8/LiveUSB.zip?rlkey=kd3isyeo5tkhqtbb1sy57hbh6&dl=1
 and extract them to USB formatted with MBR / FAT32
 
-# How to use these tools:
+# Kenrel building tools
 
 These tools should be used on a host machine, running `Gentoo`. You can use `Virtual Machine` for that puropse.
 
@@ -28,3 +26,29 @@ At this point kernel is ready, and you can find it in `/var/cache/ps3tools/linux
 If you want you can upload it directly to the `PS3` using `05-kernel-upload-to-ps3.sh`. This required the `root access` for the SSH to be configured for the PS3. If you don't want to use `root`, you can edit `05-kernel-upload-to-ps3.sh` and change root to another user, but it needs the write access to `/boot`. Otherwise you can copy it manually from `/var/cache/ps3tools/linux`. Also make sure `/boot` is mounted on your PS3 before running it.
 
 Currently there is no tool for automatic creation of `kboot/yaboot` files, so if you changed the kernel version, you need to add these entries manually.
+
+# Gentoo-Installer
+
+Automatic installer and configurator of Gentoo linux for various platforms.
+
+To install on the PS3, boot into any recent linux distribution, setup the date and networking and:
+
+To install on the whole drive:
+
+`./gentoo-install.sh --device /dev/ps3dd --config ps3 --verbose`
+
+this will format selected harddrive!
+
+To install into selected directory without formatting the drive:
+
+`./gentoo-install.sh --directory /mnt/gentoo --config ps3 --verbose`
+
+and after installer finished, add fstab configuration and kboot entry.
+
+If you want to customize configuration, you can download file config/ps3, edit it and use as
+
+`./gentoo-install.sh --device /dev/ps3dd --custom-config ps3_file_path --verbose`
+
+To use distcc during installation, use --distcc flag:
+
+`./gentoo-install.sh --device /dev/ps3dd --config ps3 --distcc "192.168.0.50,cpp,lzo"`

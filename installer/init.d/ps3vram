@@ -1,0 +1,13 @@
+#!/sbin/openrc-run
+
+start() {
+    wipefs -a /dev/ps3vram > /dev/null
+    mkswap /dev/ps3vram > /dev/null
+    swapon /dev/ps3vram -p10 > /dev/null
+}
+
+stop() {
+    if swapon -s | grep -q '/dev/ps3vram'; then
+        swapoff /dev/ps3vram > /dev/null
+    fi
+}

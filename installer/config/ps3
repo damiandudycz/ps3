@@ -10,8 +10,8 @@ export hostname='PS3'
 export root_password='' # Empty string removes password.
 export ssh_allow_root=true # Enable root login through SSH.
 export ssh_allow_passwordless=true # Enable logging in without password if user doesn't have one.
-export kernel_version='6.5.7'
-export kernel_headers_version='6.5-r1'
+export kernel_version='6.6.7'
+export kernel_headers_version='6.6'
 export bootloader='petitboot' # [petitboot/grub/grub-efi]
 export use_cpuid2cpuflags=true # Install cpuid2cpuflags and use to fill 00cpu-flags file.
 export sync_portage=true # Run emerge --sync after emerge-webrsync to get the newest tarball.
@@ -24,7 +24,7 @@ export -a network_links=(
 
 ## Partitions -----------------------------------------------------------------------------------
 
-export disk_scheme='dos' # [gpt/dos]. Older petitboot (on FAT) works only with dos. Never version on slim, detects both.
+export disk_scheme='gpt' # [gpt/dos]. Older petitboot (on FAT) works only with dos. Never version on slim, detects both.
 
 export -a disk_partitions=( 
     # index:mount_order:file_system:mount_point:size:options:dump:pass.
@@ -35,11 +35,13 @@ export -a disk_partitions=(
 
 ## Locales --------------------------------------------------------------------------------------
 
-export locale='en_US.utf8' # Default locale. Please include also in locales list.
+export locale='pl_PL.utf8' # Default locale. Please include also in locales list.
 
 export -a locales=(
     'en_US ISO-8859-1'
     'en_US.UTF-8 UTF-8'
+    'pl_PL ISO-8859-2'
+    'pl_PL.UTF-8 UTF-8'
 )
 
 ## Make conf ------------------------------------------------------------------------------------

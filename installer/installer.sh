@@ -184,7 +184,7 @@ run_extra_scripts() {
         return
     fi
     for script in ${extra_scripts[$post_function_name]}; do
-        local url_script="$url_repo/scripts/$script.sh"
+        local url_script="$url_installer/scripts/$script.sh"
         local path_script="$path_tmp/scripts/$script.sh"
         try wget "$url_script" -O "$path_script" --no-cache --no-cookies $quiet_flag
         try source "$path_script"
@@ -295,7 +295,8 @@ read_variables() {
         esac
         shift
     done
-    url_repo="https://raw.githubusercontent.com/damiandudycz/ps3/$branch/installer"
+    url_repo="https://raw.githubusercontent.com/damiandudycz/ps3/$branch"
+    url_installer="$url_repo/installer"
     run_extra_scripts ${FUNCNAME[0]}
 }
 
@@ -384,7 +385,7 @@ get_config() {
     # Get config from the repository or local file.
     local path_config="$path_tmp/config"
     if [ -z "$custom_config" ]; then
-        local url_config="$url_repo/config/$config"
+        local url_config="$url_installer/config/$config"
         try wget "$url_config" -O "$path_config" --no-http-keep-alive --no-cache --no-cookies $quiet_flag
     else
         try cp "$custom_config" "$path_config"
@@ -548,8 +549,8 @@ gentoo_download() {
 }
 
 gentoo_extract() {
-    local path_stage3="$path_chroot/gentoo.tar.xz"
-    try tar -xvpf "$path_stage3" --xattrs-include="*/*" --numeric-owner -C "$path_chroot/"
+    local path_stage3or4="$path_chroot/gentoo.tar.xz"
+    try tar -xvpf "$path_stage3or4" --xattrs-include="*/*" --numeric-owner -C "$path_chroot/"
     run_extra_scripts ${FUNCNAME[0]}
 }
 

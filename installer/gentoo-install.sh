@@ -4,11 +4,11 @@
 
 dir="$(pwd)" # Current directory where script was called from.
 branch="main"
-path_tmp="$dir/_gentoo_tmp_files" # Temporary files storage directory.
-path_chroot="$dir/_gentoo_chroot" # Gentoo chroot environment directory.
-quiet_flag='--quiet'              # Quiet flag used to silence the output.
-quiet_flag_short='-q'             # Quiet flag used to silence the output.
-ssh_distcc_host_user='root'       # Username for SSH when updating distcc host configuration. Can change with --distcc-user flag.
+path_tmp="$dir/installation/tmp"       # Temporary files storage directory.
+path_chroot="$dir/installation/chroot" # Gentoo chroot environment directory.
+quiet_flag='--quiet'                   # Quiet flag used to silence the output.
+quiet_flag_short='-q'                  # Quiet flag used to silence the output.
+ssh_distcc_host_user='root'            # Username for SSH when updating distcc host configuration. Can change with --distcc-user flag.
 fast=false
 
 # MAIN PROGRAM ==================================================================================
@@ -528,7 +528,7 @@ disk_mount_partitions() {
 
 gentoo_download() {
     local url_gentoo_tarball
-    local path_download="$path_tmp/gentoo.tar.xz"
+    local path_download="$path_chroot/gentoo.tar.xz"
     if [ $fast = true ]; then
         url_gentoo_tarball="$url_repo/stage4/$config.tar.xz"
     else
@@ -547,7 +547,7 @@ gentoo_download() {
 }
 
 gentoo_extract() {
-    local path_stage3="$path_tmp/gentoo.tar.xz"
+    local path_stage3="$path_chroot/gentoo.tar.xz"
     try tar -xvpf "$path_stage3" --xattrs-include="*/*" --numeric-owner -C "$path_chroot/"
     run_extra_scripts ${FUNCNAME[0]}
 }
@@ -849,6 +849,7 @@ cleanup() {
     chroot_call "eclean --deep $quiet_flag distfiles"
     chroot_call "eclean --deep $quiet_flag packages"
     try rm -rf "$path_chroot/var/cache/distfiles"/*
+    try rm "$path_chroot/gentoo.tar.xz"
     run_extra_scripts ${FUNCNAME[0]}
 }
 

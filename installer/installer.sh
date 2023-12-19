@@ -876,10 +876,6 @@ unprepare_chroot() {
 
 disk_unmount_partitions() {
     if [ "$installation_type" != 'disk' ]; then
-
-        try umount -l $path_chroot/dev{/shm,/pts,}
-        try umount $path_chroot/{sys,proc}
-
         run_extra_scripts ${FUNCNAME[0]}
         return
     fi

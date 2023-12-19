@@ -57,12 +57,12 @@ export -A make_conf=(
 ## Packages and tools ---------------------------------------------------------------------------
 
 export -A package_use=(
-    [qemu1]="app-emulation/qemu static-user QEMU_SOFTMMU_TARGETS: ppc64"
-    [qemu2]="app-emulation/qemu QEMU_USER_TARGETS: ppc64"
-    [qemu3]="dev-libs/glib static-libs"
-    [qemu4]="sys-libs/zlib static-libs"
-    [qemu5]="sys-apps/attr static-libs"
-    [qemu6]="dev-libs/libpcre2 static-libs"
+    [qemu_1]="app-emulation/qemu static-user QEMU_SOFTMMU_TARGETS: ppc64"
+    [qemu_2]="app-emulation/qemu QEMU_USER_TARGETS: ppc64"
+    [qemu_3]="dev-libs/glib static-libs"
+    [qemu_4]="sys-libs/zlib static-libs"
+    [qemu_5]="sys-apps/attr static-libs"
+    [qemu_6]="dev-libs/libpcre2 static-libs"
 )
 
 export -A package_accept_keywords=(

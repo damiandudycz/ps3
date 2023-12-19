@@ -4,11 +4,12 @@
 
 dir="$(pwd)" # Current directory where script was called from.
 branch="main"
-path_tmp="$dir/installation/tmp"       # Temporary files storage directory.
-path_chroot="$dir/installation/chroot" # Gentoo chroot environment directory.
-quiet_flag='--quiet'                   # Quiet flag used to silence the output.
-quiet_flag_short='-q'                  # Quiet flag used to silence the output.
-ssh_distcc_host_user='root'            # Username for SSH when updating distcc host configuration. Can change with --distcc-user flag.
+path_installation="$dir/installation"   # Location of files stored during installation process.
+path_tmp="$path_installation/tmp"       # Temporary files storage directory.
+path_chroot="$path_installation/chroot" # Gentoo chroot environment directory.
+quiet_flag='--quiet'                    # Quiet flag used to silence the output.
+quiet_flag_short='-q'                   # Quiet flag used to silence the output.
+ssh_distcc_host_user='root'             # Username for SSH when updating distcc host configuration. Can change with --distcc-user flag.
 fast=false
 
 # MAIN PROGRAM ==================================================================================

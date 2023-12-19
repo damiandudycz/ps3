@@ -294,7 +294,7 @@ read_variables() {
         esac
         shift
     done
-    url_repo="https://raw.githubusercontent.com/damiandudycz/Gentoo-Installer/$branch"
+    url_repo="https://raw.githubusercontent.com/damiandudycz/ps3/$branch/installer"
     run_extra_scripts ${FUNCNAME[0]}
 }
 

@@ -4,7 +4,7 @@
 export arch='amd64'
 export init_system='openrc' # [openrc/systemd]. Currently works only with openrc.
 export profile="default/linux/$arch/17.1" # Customize is you want the GUI.
-export base_url_autobuilds='https://distfiles.gentoo.org/releases/arm64/autobuilds'
+export base_url_autobuilds='https://distfiles.gentoo.org/releases/amd64/autobuilds'
 export disk_scheme='gpt' # [gpt/dos]. Suggest using gpt.
 
 export hostname='MacBook-2015'

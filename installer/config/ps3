@@ -53,7 +53,7 @@ export -A make_conf=(
     [USE]='ps3 zeroconf mdnsresponder-compat'
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
-    [FEATURES]='parallel-fetch parallel-install getbinpkg -news'
+    [FEATURES]='parallel-fetch parallel-install -news'
 )
 
 ## Packages and tools ---------------------------------------------------------------------------

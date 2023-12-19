@@ -78,6 +78,7 @@ export -a guest_base_tools=(
 
 # Rest of the tools, that can be installed at later stage.
 export -a guest_tools=(
+    sys-devel/distcc
     app-portage/genlop
     app-admin/sysklogd
     app-portage/gentoolkit
@@ -88,7 +89,6 @@ export -a guest_tools=(
     app-misc/neofetch
     sys-fs/dosfstools
     sys-fs/btrfs-progs
-    sys-devel/distcc
 )
 
 export -A guest_rc_startup=(

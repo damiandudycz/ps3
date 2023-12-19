@@ -80,7 +80,7 @@ export -a guest_tools=(
     app-admin/sysklogd
     app-portage/gentoolkit
     app-portage/genlop
-    app-eselect/eselect-repositor
+    app-eselect/eselect-repository
     net-dns/avahi
     sys-devel/distcc
     sys-devel/crossdev

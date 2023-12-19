@@ -591,7 +591,8 @@ setup_packages_config() {
     # USE
     local path_package_use="$path_chroot/etc/portage/package.use"
     for key in "${!package_use[@]}"; do
-        echo "${package_use[$key]}" | try tee "$path_package_use/$key" >/dev/null
+        local key_short=$(echo $key | cut -d'_' -f1)
+        echo "${package_use[$key]}" | try tee "$path_package_use/$key_short" >/dev/null
     done
     # Accept keywords
     local path_package_accept_keywords="$path_chroot/etc/portage/package.accept_keywords"

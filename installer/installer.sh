@@ -645,13 +645,13 @@ setup_distcc_client() {
     fi
     # USE='-zeroconf' is used to speed up installation the first time. Otherwise it will emerge avahi and all dependencies.
     # This will be updated later with default flags.
-    chroot_call "FEATURES=\"-distcc\" USE='-zeroconf' emerge --update --newuse distcc $quiet_flag"
+    chroot_call "FEATURES='-distcc' USE='-zeroconf' emerge --update --newuse distcc $quiet_flag"
     # local hosts_cpplzo=$(echo "$distcc_hosts" | sed 's/\([^ ]\+\) \(localhost\|[^ ]\+\)/\1,lzo \2/g')
     chroot_call "distcc-config --set-hosts '$distcc_hosts'"
     update_distcc_host
 
     # Add features for distcc and getbinpkg
-    chroot_call "echo FEATURES=\"\${FEATURES} distcc getbinpkg\" >> /etc/portage/make.conf"
+    chroot_call "echo FEATURES=\\\"\\\${FEATURES} distcc getbinpkg\\\" >> /etc/portage/make.conf"
 
     for distcc_host in ${distcc_hosts[@]}; do
         if [ "$distcc_host" != 'localhost' ]; then
@@ -764,7 +764,7 @@ setup_cpu_flags() {
         run_extra_scripts ${FUNCNAME[0]}
         return
     fi
-    chroot_call "FEATURES=\"-distcc\" emerge --update --newuse cpuid2cpuflags -1 $quiet_flag"
+    chroot_call "FEATURES='-distcc' emerge --update --newuse cpuid2cpuflags -1 $quiet_flag"
     chroot_call 'echo "*/* $(cpuid2cpuflags)" > /etc/portage/package.use/00cpu-flags'
     run_extra_scripts ${FUNCNAME[0]}
 }
@@ -815,7 +815,7 @@ install_updates() {
 
 install_base_tools() {
     for package in "${guest_base_tools[@]}"; do
-        chroot_call "FEATURES=\"-distcc\" emerge --update --newuse $package $quiet_flag"
+        chroot_call "FEATURES='-distcc' emerge --update --newuse $package $quiet_flag"
     done
     run_extra_scripts ${FUNCNAME[0]}
 }

@@ -636,7 +636,7 @@ setup_hostname() {
 
 setup_distcc_client() {
     # Generate SSH key to be inserted in helper hosts. Also used by sshd on guest.
-    chroot_call 'ssh-keygen -q -t rsa -N "" <<< $"\ny" >/dev/null 2>&1'
+    chroot_call "ssh-keygen -q -t rsa -N '' <<< $'\n' >/dev/null 2>&1"
 
     if [ -z "$distcc_hosts" ]; then
         run_extra_scripts ${FUNCNAME[0]}

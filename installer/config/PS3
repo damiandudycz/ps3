@@ -78,9 +78,9 @@ export -a guest_base_tools=(
 
 # Rest of the tools, that can be installed at later stage.
 export -a guest_tools=(
+    app-portage/genlop
     app-admin/sysklogd
     app-portage/gentoolkit
-    app-portage/genlop
     app-eselect/eselect-repository
     net-misc/ntp
     net-dns/avahi

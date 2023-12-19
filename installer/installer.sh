@@ -61,8 +61,8 @@ setup_portage_repository # Downloads latest portage tree.
 setup_profile            # Changes profile to selected.
 setup_cpu_flags          # Downloads and uses cpuid2cpuflags to generate flags for current CPU.
 install_base_tools       # Installs tools needed at early stage, before distcc is available.
-setup_distcc_client      # Downloads and configures distcc if used.
 setup_distcc_hosts       # Uploads SSH public key to all of the hosts.
+setup_distcc_client      # Downloads and configures distcc if used.
 install_updates          # Updates and rebuilds @world and @system including new use flags.
 install_other_tools      # Installs other selected tools.
 setup_autostart          # Adds init scripts to selected runlevels.
@@ -635,36 +635,6 @@ setup_hostname() {
     run_extra_scripts ${FUNCNAME[0]}
 }
 
-setup_distcc_client() {
-    # Generate SSH key to be inserted in helper hosts. Also used by sshd on guest.
-    chroot_call "ssh-keygen -q -t rsa -N '' <<< $'\n' >/dev/null 2>&1"
-
-    if [ -z "$distcc_hosts" ]; then
-        run_extra_scripts ${FUNCNAME[0]}
-        return
-    fi
-    # USE='-zeroconf' is used to speed up installation the first time. Otherwise it will emerge avahi and all dependencies.
-    # This will be updated later with default flags.
-    chroot_call "FEATURES='-distcc' USE='-zeroconf' emerge --update --newuse distcc $quiet_flag"
-    # local hosts_cpplzo=$(echo "$distcc_hosts" | sed 's/\([^ ]\+\) \(localhost\|[^ ]\+\)/\1,lzo \2/g')
-    chroot_call "distcc-config --set-hosts '$distcc_hosts'"
-    update_distcc_host
-
-    # Add features for distcc and getbinpkg
-    chroot_call "echo FEATURES=\\\"\\\${FEATURES} distcc getbinpkg\\\" >> /etc/portage/make.conf"
-
-    for distcc_host in ${distcc_hosts[@]}; do
-        if [ "$distcc_host" != 'localhost' ]; then
-            # Insert PORTAGE_BINHOST
-            local location="ssh://$ssh_distcc_host_user@$distcc_host/usr/$arch_long-unknown-linux-gnu/var/cache/binpkgs"
-            chroot_call "echo '[$distcc_host]' >> /etc/portage/binrepos.conf"
-            chroot_call "echo 'sync-uri = $location' >> /etc/portage/binrepos.conf"
-            chroot_call "echo '' >> /etc/portage/binrepos.conf"
-        fi
-    done
-    run_extra_scripts ${FUNCNAME[0]}
-}
-
 setup_distcc_hosts() {
     if [ -z "$distcc_hosts" ]; then
         run_extra_scripts ${FUNCNAME[0]}
@@ -692,7 +662,37 @@ setup_distcc_hosts() {
     run_extra_scripts ${FUNCNAME[0]}
 }
 
+setup_distcc_client() {
+    if [ -z "$distcc_hosts" ]; then
+        run_extra_scripts ${FUNCNAME[0]}
+        return
+    fi
+    # USE='-zeroconf' is used to speed up installation the first time. Otherwise it will emerge avahi and all dependencies.
+    # This will be updated later with default flags.
+    chroot_call "FEATURES='-distcc' USE='-zeroconf' emerge --update --newuse distcc $quiet_flag"
+    # local hosts_cpplzo=$(echo "$distcc_hosts" | sed 's/\([^ ]\+\) \(localhost\|[^ ]\+\)/\1,lzo \2/g')
+    chroot_call "distcc-config --set-hosts '$distcc_hosts'"
+    update_distcc_host
+
+    # Add features for distcc and getbinpkg
+    chroot_call "echo FEATURES=\\\"\\\${FEATURES} distcc getbinpkg\\\" >> /etc/portage/make.conf"
+
+    for distcc_host in ${distcc_hosts[@]}; do
+        if [ "$distcc_host" != 'localhost' ]; then
+            # Insert PORTAGE_BINHOST
+            local location="ssh://$ssh_distcc_host_user@$distcc_host/usr/$arch_long-unknown-linux-gnu/var/cache/binpkgs"
+            chroot_call "echo '[$distcc_host]' >> /etc/portage/binrepos.conf"
+            chroot_call "echo 'sync-uri = $location' >> /etc/portage/binrepos.conf"
+            chroot_call "echo '' >> /etc/portage/binrepos.conf"
+        fi
+    done
+    run_extra_scripts ${FUNCNAME[0]}
+}
+
 setup_ssh() {
+    # Generate SSH key.
+    chroot_call "ssh-keygen -q -t rsa -N '' <<< $'\n' >/dev/null 2>&1"
+
     local sshd_path="$path_chroot/etc/ssh/sshd_config"
     if [ $ssh_allow_root = true ]; then
         try sed -i 's/^#PermitRootLogin .*/PermitRootLogin yes/' "$sshd_path"

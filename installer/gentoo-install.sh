@@ -650,7 +650,7 @@ setup_distcc_client() {
     update_distcc_host
 
     # Add features for distcc and getbinpkg
-    chroot_call 'echo FEATURES="${FEATURES} distcc getbinpkg" >> /etc/portage/make.conf'
+    chroot_call "echo FEATURES=\"${FEATURES} distcc getbinpkg\" >> /etc/portage/make.conf"
 
     for distcc_host in ${distcc_hosts[@]}; do
         if [ "$distcc_host" != 'localhost' ]; then

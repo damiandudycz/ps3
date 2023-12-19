@@ -154,8 +154,8 @@ print_usage() {
     echo "  --password <password>             Set root user password."
     echo "  --hostname <hostname>             Set hostname."
     echo ""
-    echo "  --fast [NOT IMPLEMENTED]          Performs faster method of installation, using stage4 tarball. Some options are not available in this mode."
-    echo ""
+    #echo "  --fast [NOT IMPLEMENTED]          Performs faster method of installation, using stage4 tarball. Some options are not available in this mode."
+    #echo ""
     echo "  --verbose                         Enable verbose output."
     echo ""
     echo "  --sync-portage true/false         Should perform emerge-sync during installation. If empty, uses value from config."
@@ -166,8 +166,8 @@ print_usage() {
     echo "  --distcc <host>                   Specify a distcc host."
     echo "  --distcc-user <host_username>     Specify the username for distcc host."
     echo "  --distcc-password <host_password> Specify the password for distcc host."
-    echo ""
-    echo "  --branch <branch_name>            Specify branch of install script, from which to get files. Default: main."
+    #echo ""
+    #echo "  --branch <branch_name>            Specify branch of install script, from which to get files. Default: main."
     exit 1
 }
 

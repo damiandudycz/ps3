@@ -72,7 +72,6 @@ export -A package_accept_keywords=(
 
 # Tools neded as fast as possible, before updating system etc.
 export -a guest_base_tools=(
-    app-portage/genlop
     sys-kernel/linux-headers
     net-misc/sshpass
 )
@@ -81,6 +80,7 @@ export -a guest_base_tools=(
 export -a guest_tools=(
     app-admin/sysklogd
     app-portage/gentoolkit
+    app-portage/genlop
     app-eselect/eselect-repository
     net-misc/ntp
     net-dns/avahi

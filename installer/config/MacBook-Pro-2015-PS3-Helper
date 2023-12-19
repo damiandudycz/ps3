@@ -105,6 +105,7 @@ export -a guest_tools=(
     app-containers/docker-cli
     media-tv/plex-media-server
     net-misc/networkmanager
+    net-wireless/bluez
 #    net-misc/tigervnc
     net-p2p/transmission
     sys-apps/usbutils

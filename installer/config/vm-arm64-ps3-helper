@@ -71,6 +71,7 @@ export -A package_accept_keywords=(
 
 # Tools neded as fast as possible, before updating system etc.
 export -a guest_base_tools=(
+    app-portage/genlop
     sys-kernel/gentoo-kernel-bin
     sys-boot/grub
 )
@@ -79,6 +80,7 @@ export -a guest_base_tools=(
 export -a guest_tools=(
     app-admin/sysklogd
     app-portage/gentoolkit
+    app-eselect/eselect-repositor
     net-dns/avahi
     sys-devel/distcc
     sys-devel/crossdev

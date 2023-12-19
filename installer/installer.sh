@@ -815,16 +815,22 @@ install_updates() {
 }
 
 install_base_tools() {
-    for package in "${guest_base_tools[@]}"; do
-        chroot_call "FEATURES='-distcc' emerge --update --newuse $package $quiet_flag"
-    done
+    if [ ${#guest_base_tools[@]} -eq 0 ]; then
+        run_extra_scripts ${FUNCNAME[0]}
+        return
+    fi
+    package_list=$(IFS=" "; echo "${guest_base_tools[*]}")
+    chroot_call "FEATURES='-distcc' emerge --update --newuse --keep-going $package_list $quiet_flag"
     run_extra_scripts ${FUNCNAME[0]}
 }
 
 install_other_tools() {
-    for package in "${guest_tools[@]}"; do
-        chroot_call "emerge --update --newuse $package $quiet_flag"
-    done
+    if [ ${#guest_tools[@]} -eq 0 ]; then
+        run_extra_scripts ${FUNCNAME[0]}
+        return
+    fi
+    package_list=$(IFS=" "; echo "${guest_tools[*]}")
+    chroot_call "emerge --update --newuse --keep-going $package_list $quiet_flag"
     run_extra_scripts ${FUNCNAME[0]}
 }
 

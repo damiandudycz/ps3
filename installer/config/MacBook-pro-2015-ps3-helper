@@ -1,16 +1,16 @@
+# Configuration for Apple MacBook Pro 13" 2015.
+# Contains helper tools for the PS3 and other tools.
 
 export arch='amd64'
 export init_system='openrc' # [openrc/systemd]. Currently works only with openrc.
 export profile="default/linux/$arch/17.1" # Customize is you want the GUI.
 export base_url_autobuilds='https://distfiles.gentoo.org/releases/arm64/autobuilds'
-
 export disk_scheme='gpt' # [gpt/dos]. Suggest using gpt.
 
-export hostname='MacBook-Gentoo'
+export hostname='MacBook-2015'
 export root_password='' # Empty string means remove password.
-export locale='en_US.utf8' # Default locale. Please include also in locales.
 
-export -a network_links=(
+export -a network_links=( # Networking is handled by NetworkManager
 )
 
 export ssh_allow_root=true # Enable root login through SSH.
@@ -20,11 +20,14 @@ export kernel_version='' # Empty value will skip prebuilt kernel installation
 
 export use_cpuid2cpuflags=true # If flags are known, can be directly inserted using package_use.
 
+## System
+
+export sync_portage=true # Run emerge --sync after emerge-webrsync to get the newest tarball.
+export update_system=true # Run emerge --update --newuse --deep @world during installation.
+
 ## Bootloaders ----------------------------------------------------------------------------------
 
 export bootloader='grub-efi' # [petitboot/grub/grub-efi]
-export sync_portage=true # Run emerge --sync after emerge-webrsync to get the newest tarball.
-export update_system=true # Run emerge --update --newuse --deep @world during installation.
 
 ## Partitions -----------------------------------------------------------------------------------
 
@@ -36,9 +39,13 @@ export -a disk_partitions=( # index:mount_order:file_system:mount_point:size:opt
 
 ## Locales --------------------------------------------------------------------------------------
 
+export locale='pl_PL.utf8' # Default locale. Please include also in locales list.
+
 export -a locales=(
     'en_US ISO-8859-1'
     'en_US.UTF-8 UTF-8'
+    'pl_PL ISO-8859-2'
+    'pl_PL.UTF-8 UTF-8'
 )
 
 ## Make conf ------------------------------------------------------------------------------------
@@ -46,39 +53,66 @@ export -a locales=(
 export -A make_conf=(
     [COMMON_FLAGS]='-O2 -pipe -march=native -mtune=native'
     [USE]='zeroconf'
-    [MAKEOPTS]='-j5'
+    [MAKEOPTS]='-j5 -l2'
     [ACCEPT_LICENSE]='*' # Automatically accept all licenses.
     [GRUB_PLATFORMS]='efi-64'
+    [FEATURES]='-news'
 )
 
 ## Packages and tools ---------------------------------------------------------------------------
 
+# TODO: Adjust flags for USE, ACCEPT, ETC
 export -A package_use=(
 #    [00cpu-flags]="*/* CPU_FLAGS_X86: aes avx avx2 f16c fma3 mmx mmxext pclmul popcnt sse sse2 sse3 sse4_1 sse4_2 ssse3"
+#    [avahi]="net-dns/avahi -gtk"
+#    [distcc]="sys-devel/distcc -gtk"
+    [networkmanager]="net-misc/networkmanager dhcpcd"
 )
 
 export -A package_accept_keywords=(
+#    [gnome-extra-gnome-boxes]='net-dns/dnsmasq ~amd64'
 )
 
 # Tools neded as fast as possible, before updating system etc.
 export -a guest_base_tools=(
-    app-portage/genlop
     sys-kernel/gentoo-kernel-bin
     sys-boot/grub
+    net-misc/sshpass
 )
 
 # Rest of the tools, that can be installed at later stage.
 export -a guest_tools=(
     app-admin/sysklogd
     app-portage/gentoolkit
+    app-portage/genlop
     app-eselect/eselect-repository
     net-dns/avahi
     sys-devel/distcc
+    sys-devel/crossdev
     sys-kernel/linux-firmware
+    dev-vcs/git
+    dev-vcs/subversion
+    sys-kernel/genkernel
+    app-misc/neofetch
+    # app-emulation/qemu
+
+    sys-fs/btrfs-progs
+    sys-fs/dosfstools
+
+    net-fs/netatalk
+    app-containers/docker
+    app-containers/docker-cli
+    media-tv/plex-media-server
+    net-misc/networkmanager
+#    net-misc/tigervnc
+    net-p2p/transmission
+    sys-apps/usbutils
+    sys-power/acpid
+#    app-editors/vscode
 )
 
 export -A guest_rc_startup=(
-  [default]='sysklogd sshd avahi-daemon distccd'
+  [default]='NetworkManager sysklogd sshd avahi-daemon distccd bluetooth docker netatalk plex-media-server transmission-daemon'
 )
 
 export -a distccd_host_allow=(

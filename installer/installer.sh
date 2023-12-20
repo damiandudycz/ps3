@@ -592,12 +592,12 @@ setup_packages_config() {
     local path_package_use="$path_chroot/etc/portage/package.use"
     for key in $(echo "${!package_use[@]}" | tr ' ' '\n' | sort); do
         local key_short=$(echo $key | cut -d'_' -f1)
-        echo "${package_use[$key]}" | try tee "$path_package_use/$key_short" >/dev/null
+        echo "${package_use[$key]}" | try tee -a "$path_package_use/$key_short" >/dev/null
     done
     # Accept keywords
     local path_package_accept_keywords="$path_chroot/etc/portage/package.accept_keywords"
     for key in $(echo "${!package_accept_keywords[@]}" | tr ' ' '\n' | sort); do
-        echo "${package_accept_keywords[$key]}" | try tee "$path_package_accept_keywords/$key" >/dev/null
+        echo "${package_accept_keywords[$key]}" | try tee -a "$path_package_accept_keywords/$key" >/dev/null
     done
     run_extra_scripts ${FUNCNAME[0]}
 }

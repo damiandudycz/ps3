@@ -2,6 +2,7 @@
 # Helper tools for the PS3.
 
 export arch='arm64'
+export arch_long='arm64'
 export init_system='openrc' # [openrc/systemd]. Currently works only with openrc.
 export profile="default/linux/$arch/17.0" # Customize is you want the GUI.
 export base_url_autobuilds='https://distfiles.gentoo.org/releases/arm64/autobuilds'

@@ -2,7 +2,7 @@
 # Configuration for the PlayStation 3.
 
 export arch='ppc64'
-export arch_long="powerpc64"
+export arch_long='powerpc64'
 export init_system='openrc'
 export profile="default/linux/$arch/17.0"
 export abi='altivec'

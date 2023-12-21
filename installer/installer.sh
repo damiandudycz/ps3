@@ -2,83 +2,83 @@
 
 # HELPER VARIABLES ==============================================================================
 
+url_repo_root="https://raw.githubusercontent.com/damiandudycz/ps3"
 dir="$(pwd)" # Current directory where script was called from.
 branch="main"
-path_installation="$dir/installation"   # Location of files stored during installation process.
-path_tmp="$path_installation/tmp"       # Temporary files storage directory.
-path_chroot="$path_installation/chroot" # Gentoo chroot environment directory.
-quiet_flag='--quiet'                    # Quiet flag used to silence the output.
-quiet_flag_short='-q'                   # Quiet flag used to silence the output.
-ssh_distcc_host_user='root'             # Username for SSH when updating distcc host configuration. Can change with --distcc-user flag.
-fast=false
+path_tmp="/tmp/gentoo-setup"     # Temporary files storage directory.
+path_chroot="/mnt/gentoo-setup"  # Gentoo chroot environment directory.
+quiet_flag='--quiet'             # Quiet flag used to silence the output.
+quiet_flag_short='-q'            # Quiet flag used to silence the output.
+ssh_distcc_host_user='root'      # Username for SSH when updating distcc host configuration. Can change with --distcc-user flag.
+#fast=false
 
 # MAIN PROGRAM ==================================================================================
 
 ## Prepare --------------------------------------------------------------------------------------
 source <(sed '1,/^# FUNCTIONS #.*$/d' "$0") # Load functions at the bottom of the script.
 
-read_variables "$@"    # Read user input variables - device, configuration, verbose.
-validate_input_data    # Validate if input data is correct.
-warn_about_disk_wiping # Asks user to confirm disk formatting is applying.
+read_variables "$@"             # Read user input variables - device, configuration, verbose.
+validate_input_data             # Validate if input data is correct.
+warn_about_disk_wiping          # Asks user to confirm disk formatting.
 
-prepare_directories            # Create path_tmp and path_chroot.
-get_config                     # Download configuration or load local configuration file.
-override_config                # Override default values from config, using flags.
-validate_config                # Checks if all settings in configuration are set correctly.
-sort_partitions_by_mount_order # Prepare array of devices sorted by mounting order.
+prepare_directories             # Create path_tmp and path_chroot.
+get_config                      # Download configuration or load local configuration file.
+override_config                 # Override default values from config, using flags.
+validate_config                 # Checks if all settings in configuration are set correctly.
+sort_partitions_by_mount_order  # Prepare array of devices sorted by mounting order.
 
 ## Setup disk -----------------------------------------------------------------------------------
-disk_clean_signatures   # Remove existing signatures of partition table, and partitions from the disk.
-disk_create_partitions  # Create new partitions, definied in the configuration.
-disk_create_filesystems # Create filesystems definied in the configuration.
+disk_clean_signatures           # Remove existing signatures of partition table, and partitions from the disk.
+disk_create_partitions          # Create new partitions, definied in the configuration.
+disk_create_filesystems         # Create filesystems definied in the configuration.
 
 ## Mount partitions -----------------------------------------------------------------------------
-disk_mount_partitions # Mount new partitions to temporary locations in chroot.
+disk_mount_partitions           # Mount new partitions to temporary locations in chroot.
 
 ## Download and extract stage3/4 ----------------------------------------------------------------
-gentoo_download # Download newest Stage3 or Stage4 tarball.
-gentoo_extract  # Extract tarball to chroot directory.
+gentoo_download                 # Download newest Stage3 or Stage4 tarball.
+gentoo_extract                  # Extract tarball to chroot directory.
 
 ## Prepare for chroot ---------------------------------------------------------------------------
-prepare_chroot # Mount devices required for chroot to work and copies resolve.conf.
+prepare_chroot                  # Mount devices required for chroot to work and copies resolve.conf.
 
 ## Portage configuration ------------------------------------------------------------------------
-setup_make_conf       # Configure make.conf flags.
-setup_packages_config # Configure package.use, package.accep_keywords.
+setup_make_conf                 # Configure make.conf flags.
+setup_packages_config           # Configure package.use, package.accep_keywords.
 
 ## Various configs ------------------------------------------------------------------------------
-setup_root_password # Sets root password to selected.
-setup_fstab         # Generates fstab file from configuration.
-setup_hostname      # Sets hostname.
-setup_network       # Setup network devices links and configs.
-setup_ssh           # Configure SSH access.
-setup_main_repo     # Creates empty directory, removes warning before syncing portage.
+setup_root_password             # Sets root password to selected.
+setup_fstab                     # Generates fstab file from configuration.
+setup_hostname                  # Sets hostname.
+setup_network                   # Setup network devices links and configs.
+setup_ssh                       # Configure SSH access.
+setup_main_repo                 # Creates empty directory, removes warning before syncing portage.
 
 ## Setup PS3 Gentoo internal chroot environment -------------------------------------------------
-update_environment       # Refreshing env variables.
-setup_locales            # Generate locales and select default one.
-setup_portage_repository # Downloads latest portage tree.
-setup_profile            # Changes profile to selected.
-setup_cpu_flags          # Downloads and uses cpuid2cpuflags to generate flags for current CPU.
-install_base_tools       # Installs tools needed at early stage, before distcc is available.
-setup_distcc_hosts       # Uploads SSH public key to all of the hosts.
-setup_distcc_client      # Downloads and configures distcc if used.
-install_updates          # Updates and rebuilds @world and @system including new use flags.
-install_other_tools      # Installs other selected tools.
-setup_autostart          # Adds init scripts to selected runlevels.
+update_environment              # Refreshing env variables.
+setup_locales                   # Generate locales and select default one.
+setup_portage_repository        # Downloads latest portage tree.
+setup_profile                   # Changes profile to selected.
+setup_cpu_flags                 # Downloads and uses cpuid2cpuflags to generate flags for current CPU.
+install_base_tools              # Installs tools needed at early stage, before distcc is available.
+setup_distcc_hosts              # Uploads SSH public key to all of the hosts.
+setup_distcc_client             # Downloads and configures distcc if used.
+install_updates                 # Updates and rebuilds @world and @system including new use flags.
+install_other_tools             # Installs other selected tools.
+setup_autostart                 # Adds init scripts to selected runlevels.
 
 ## Cleanup and exit -----------------------------------------------------------------------------
-revdep_rebuild          # Fixes broken dependencies.
-cleanup                 # Cleans unneded files.
-unprepare_chroot        # Unmounts devices and removed DNS configuration.
-disk_unmount_partitions # Unmounts partitions.
-cleanup_directories     # Removes temporart installation files.
-summary                 # Show summary information if applicable.
+revdep_rebuild                  # Fixes broken dependencies.
+cleanup                         # Cleans unneded files.
+unprepare_chroot                # Unmounts devices and removed DNS configuration.
+disk_unmount_partitions         # Unmounts partitions.
+cleanup_directories             # Removes temporart installation files.
+summary                         # Show summary information if applicable.
 
 ## Summary --------------------------------------------------------------------------------------
 log green "Installation done"
 
-exit
+exit # The rest of the script is loaded automatically using 'source'.
 
 # FUNCTIONS # ===================================================================================
 
@@ -175,7 +175,7 @@ chroot_call() {
     try chroot "$path_chroot" '/bin/bash' -c "$@"
 }
 
-## Disk preparation -----------------------------------------------------------------------------
+## Main functions -------------------------------------------------------------------------------
 
 run_extra_scripts() {
     # Extra scripts are stored in target configuration, and run after finishing or skipping given functions.
@@ -226,9 +226,9 @@ read_variables() {
             unset quiet_flag_short
             verbose_flag="--verbose"
             ;;
-        --fast)
-            fast=true
-            ;;
+#        --fast)
+#            fast=true
+#            ;;
         --distcc)
             shift
             if [ $# -gt 0 ]; then
@@ -295,7 +295,7 @@ read_variables() {
         esac
         shift
     done
-    url_repo="https://raw.githubusercontent.com/damiandudycz/ps3/$branch"
+    url_repo="$url_repo_root/$branch"
     url_installer="$url_repo/installer"
     run_extra_scripts ${FUNCNAME[0]}
 }
@@ -531,9 +531,9 @@ disk_mount_partitions() {
 gentoo_download() {
     local url_gentoo_tarball
     local path_download="$path_chroot/gentoo.tar.xz"
-    if [ $fast = true ]; then
-        url_gentoo_tarball="$url_repo/stage4/$config.tar.xz"
-    else
+#    if [ $fast = true ]; then
+#        url_gentoo_tarball="$url_repo/stage4/$config.tar.xz"
+#    else
         local stageinfo_url="$base_url_autobuilds/latest-stage3.txt"
         local latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
         local latest_stage3="$(echo "$latest_gentoo_content" | grep "$arch-$init_system" | head -n 1 | cut -d' ' -f1)"
@@ -542,7 +542,7 @@ gentoo_download() {
         else
             error "Failed to download Stage3 URL"
         fi
-    fi
+#    fi
     # Download stage3/4 file
     try wget "$url_gentoo_tarball" -O "$path_download" $quiet_flag
     run_extra_scripts ${FUNCNAME[0]}
@@ -745,9 +745,9 @@ setup_locales() {
 }
 
 setup_portage_repository() {
-    if [ $fast = false ]; then
+#    if [ $fast = false ]; then
         chroot_call "emerge-webrsync $quiet_flag"
-    fi
+#    fi
     if [ $sync_portage = true ]; then
         chroot_call "emerge --sync $quiet_flag"
     fi

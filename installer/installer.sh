@@ -26,14 +26,12 @@ prepare_directories             # Create path_tmp and path_chroot.
 get_config                      # Download configuration or load local configuration file.
 override_config                 # Override default values from config, using flags.
 validate_config                 # Checks if all settings in configuration are set correctly.
-sort_partitions_by_mount_order  # Prepare array of devices sorted by mounting order.
 
 ## Setup disk -----------------------------------------------------------------------------------
+sort_partitions_by_mount_order  # Prepare array of devices sorted by mounting order.
 disk_clean_signatures           # Remove existing signatures of partition table, and partitions from the disk.
 disk_create_partitions          # Create new partitions, definied in the configuration.
 disk_create_filesystems         # Create filesystems definied in the configuration.
-
-## Mount partitions -----------------------------------------------------------------------------
 disk_mount_partitions           # Mount new partitions to temporary locations in chroot.
 
 ## Download and extract stage3/4 ----------------------------------------------------------------
@@ -51,7 +49,7 @@ setup_packages_config           # Configure package.use, package.accep_keywords.
 setup_root_password             # Sets root password to selected.
 setup_fstab                     # Generates fstab file from configuration.
 setup_hostname                  # Sets hostname.
-setup_network                   # Setup network devices links and configs.
+setup_network_link              # Setup network devices links and configs.
 setup_ssh                       # Configure SSH access.
 setup_main_repo                 # Creates empty directory, removes warning before syncing portage.
 
@@ -321,7 +319,6 @@ validate_input_data() {
     if [ ! -z "$config" ] && [ ! -z "$custom_config" ]; then
         print_usage
     fi
-
     # Validate if disk is not being used.
     if [ "$installation_type" = 'device' ] && [ ! -e "$disk_device" ]; then
         error "Device $disk_device does not exists."
@@ -344,10 +341,10 @@ warn_about_disk_wiping() {
             "yes")
                 break
                 ;;
-            "no")
+            *)
+                log red "Exiting."
                 exit 1
                 ;;
-            *) ;;
             esac
         done
     fi
@@ -633,11 +630,11 @@ setup_distcc_hosts() {
                 ssh_quiet="-o LogLevel=quiet"
             fi
             # Add host to known_hosts
-            chroot_call "ssh-keyscan -H $distcc_host >> ~/.ssh/known_hosts"
+            chroot_call "ssh-keyscan -H $distcc_host >> ~/.ssh/known_hosts 2>/dev/null"
             if [ -z "$ssh_distcc_host_password" ]; then
-                chroot_call "ssh-copy-id $ssh_distcc_host_user@$distcc_host"
+                chroot_call "ssh-copy-id $ssh_distcc_host_user@$distcc_host 2>/dev/null"
             else
-                chroot_call "sshpass -p $ssh_distcc_host_password ssh-copy-id $ssh_distcc_host_user@$distcc_host"
+                chroot_call "sshpass -p $ssh_distcc_host_password ssh-copy-id $ssh_distcc_host_user@$distcc_host 2>/dev/null"
             fi
         fi
     done
@@ -675,18 +672,20 @@ setup_distcc_client() {
 setup_ssh() {
     # Generate SSH key.
     chroot_call "ssh-keygen -q -t rsa -N '' <<< $'\n' >/dev/null 2>&1"
-
+    # Configure access permissions.
+    # This is optional.
     local sshd_path="$path_chroot/etc/ssh/sshd_config"
     if [ $ssh_allow_root = true ]; then
         try sed -i 's/^#PermitRootLogin .*/PermitRootLogin yes/' "$sshd_path"
     fi
-    if [ $ssh_allow_passwordless = true ]; then
+    if [ $ssh_allow_passwordless = true ] && [ $froot_password == '' ]; then
         try sed -i 's/^#PermitEmptyPasswords .*/PermitEmptyPasswords yes/' "$sshd_path"
     fi
     run_extra_scripts ${FUNCNAME[0]}
 }
 
-setup_network() {
+# TODO: Add other ways of configuring network, line network manager api.
+setup_network_link() {
     local path_initd="$path_chroot/etc/init.d"
     for link in "${network_links[@]}"; do
         ln -s 'net.lo' "$path_initd/net.$link"

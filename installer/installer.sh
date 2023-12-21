@@ -2,15 +2,16 @@
 
 # HELPER VARIABLES ==============================================================================
 
-url_repo_root="https://raw.githubusercontent.com/damiandudycz/ps3"
 dir="$(pwd)" # Current directory where script was called from.
 branch="main"
+url_repo_root="https://raw.githubusercontent.com/damiandudycz/ps3"
+url_repo="$url_repo_root/$branch"
+url_installer="$url_repo/installer"
 path_tmp="/tmp/gentoo-setup"     # Temporary files storage directory.
 path_chroot="/mnt/gentoo-setup"  # Gentoo chroot environment directory.
 quiet_flag='--quiet'             # Quiet flag used to silence the output.
 quiet_flag_short='-q'            # Quiet flag used to silence the output.
 ssh_distcc_host_user='root'      # Username for SSH when updating distcc host configuration. Can change with --distcc-user flag.
-#fast=false
 
 # MAIN PROGRAM ==================================================================================
 
@@ -154,8 +155,6 @@ print_usage() {
     echo "  --password <password>             Set root user password."
     echo "  --hostname <hostname>             Set hostname."
     echo ""
-    #echo "  --fast [NOT IMPLEMENTED]          Performs faster method of installation, using stage4 tarball. Some options are not available in this mode."
-    #echo ""
     echo "  --verbose                         Enable verbose output."
     echo ""
     echo "  --sync-portage true/false         Should perform emerge-sync during installation. If empty, uses value from config."
@@ -166,8 +165,6 @@ print_usage() {
     echo "  --distcc <host>                   Specify a distcc host."
     echo "  --distcc-user <host_username>     Specify the username for distcc host."
     echo "  --distcc-password <host_password> Specify the password for distcc host."
-    #echo ""
-    #echo "  --branch <branch_name>            Specify branch of install script, from which to get files. Default: main."
     exit 1
 }
 
@@ -226,9 +223,6 @@ read_variables() {
             unset quiet_flag_short
             verbose_flag="--verbose"
             ;;
-#        --fast)
-#            fast=true
-#            ;;
         --distcc)
             shift
             if [ $# -gt 0 ]; then
@@ -245,12 +239,6 @@ read_variables() {
             shift
             if [ $# -gt 0 ]; then
                 ssh_distcc_host_password="$1"
-            fi
-            ;;
-        --branch)
-            shift
-            if [ $# -gt 0 ]; then
-                branch="$1"
             fi
             ;;
         --sync-portage)
@@ -295,8 +283,6 @@ read_variables() {
         esac
         shift
     done
-    url_repo="$url_repo_root/$branch"
-    url_installer="$url_repo/installer"
     run_extra_scripts ${FUNCNAME[0]}
 }
 
@@ -531,18 +517,14 @@ disk_mount_partitions() {
 gentoo_download() {
     local url_gentoo_tarball
     local path_download="$path_chroot/gentoo.tar.xz"
-#    if [ $fast = true ]; then
-#        url_gentoo_tarball="$url_repo/stage4/$config.tar.xz"
-#    else
-        local stageinfo_url="$base_url_autobuilds/latest-stage3.txt"
-        local latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
-        local latest_stage3="$(echo "$latest_gentoo_content" | grep "$arch-$init_system" | head -n 1 | cut -d' ' -f1)"
-        if [ -n "$latest_stage3" ]; then
-            url_gentoo_tarball="$base_url_autobuilds/$latest_stage3"
-        else
-            error "Failed to download Stage3 URL"
-        fi
-#    fi
+    local stageinfo_url="$base_url_autobuilds/latest-stage3.txt"
+    local latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
+    local latest_stage3="$(echo "$latest_gentoo_content" | grep "$arch-$init_system" | head -n 1 | cut -d' ' -f1)"
+    if [ -n "$latest_stage3" ]; then
+        url_gentoo_tarball="$base_url_autobuilds/$latest_stage3"
+    else
+        error "Failed to download Stage3 URL"
+    fi
     # Download stage3/4 file
     try wget "$url_gentoo_tarball" -O "$path_download" $quiet_flag
     run_extra_scripts ${FUNCNAME[0]}
@@ -745,9 +727,7 @@ setup_locales() {
 }
 
 setup_portage_repository() {
-#    if [ $fast = false ]; then
-        chroot_call "emerge-webrsync $quiet_flag"
-#    fi
+    chroot_call "emerge-webrsync $quiet_flag"
     if [ $sync_portage = true ]; then
         chroot_call "emerge --sync $quiet_flag"
     fi

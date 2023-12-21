@@ -30,7 +30,7 @@ do
 done
 
 # Copy defconfig to kernel and make this configuration and apply
-try cp $path_files/ps3_gentoo_defconfig $path_kernel/arch/powerpc/configs/
+try cp ps3_gentoo_defconfig $path_kernel/arch/powerpc/configs/
 ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try quiet make -j6 ps3_gentoo_defconfig
 
 summary

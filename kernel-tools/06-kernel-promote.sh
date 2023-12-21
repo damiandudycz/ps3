@@ -8,9 +8,10 @@ welcome
 # Configuration
 
 # Setup kernel configuration as current defconfig
+dir="$(pwd)" # Current directory where script was called from.
 try cd $path_kernel
 ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try quiet make savedefconfig
-try cp defconfig $path_files/ps3_gentoo_defconfig
+try cp defconfig $dir/ps3_gentoo_defconfig
 try cp defconfig $path_kernel/arch/powerpc/configs/ps3_gentoo_defconfig
 try rm defconfig
 

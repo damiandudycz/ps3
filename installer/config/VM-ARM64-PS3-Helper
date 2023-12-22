@@ -100,3 +100,7 @@ export -A extra_scripts=(
     [setup_autostart]='setup_crossdev_host setup_distccd_host setup_bootloader_config'
     # [setup_cpu_flags]='setup_host_qemu_for_ps3'
 )
+
+export -a distccd_host_allow=(
+	"192.168.0.0/16"
+)

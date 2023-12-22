@@ -817,7 +817,7 @@ install_base_tools() {
 
 install_other_tools() {
     for package in "${guest_tools[@]}"; do
-        chroot_call "FEATURES='-distcc' emerge --update --newuse $package $quiet_flag"
+        chroot_call "emerge --update --newuse $package $quiet_flag"
     done
     run_extra_scripts ${FUNCNAME[0]}
 }

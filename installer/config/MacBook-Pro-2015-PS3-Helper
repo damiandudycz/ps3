@@ -122,3 +122,7 @@ export -A guest_rc_startup=(
 export -A extra_scripts=(
     [setup_autostart]='setup_crossdev_host setup_distccd_host setup_bootloader_config'
 )
+
+export -a distccd_host_allow=(
+	"192.168.0.0/16"
+)

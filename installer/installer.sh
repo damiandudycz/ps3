@@ -186,6 +186,32 @@ run_extra_scripts() {
     done
 }
 
+# Append values for existing settings in make.conf
+append_make_config() {
+    local path_make_conf="$path_chroot/etc/portage/make.conf"
+    local key="$1"
+    local value="$2"
+    if grep -q "$key=" "$path_make_conf"; then
+        try sed -i "/^$key=/ s/\"\(.*\)\"/\"\1 $value\"/" "$path_make_conf"
+    else
+        echo "$key=\"$value\"" | try tee -a "$path_make_conf" >/dev/null
+    fi
+}
+
+# Set new value in make.conf
+insert_make_config() {
+    local path_make_conf="$path_chroot/etc/portage/make.conf"
+    insert_config() {
+        local key="$1"
+        local value="$2"
+        if grep -q "$key=" "$path_make_conf"; then
+            try sed -i "s/^$key=.*/$key=\"$value\"/" "$path_make_conf"
+        else
+            echo "$key=\"$value\"" | try tee -a "$path_make_conf" >/dev/null
+        fi
+    }
+}
+
 read_variables() {
     while [ $# -gt 0 ]; do
         case "$1" in
@@ -550,18 +576,8 @@ prepare_chroot() {
 }
 
 setup_make_conf() {
-    local path_make_conf="$path_chroot/etc/portage/make.conf"
-    insert_config() {
-        local key="$1"
-        local value="$2"
-        if grep -q "$key=" "$path_make_conf"; then
-            try sed -i "s/^$key=.*/$key=\"$value\"/" "$path_make_conf"
-        else
-            echo "$key=\"$value\"" | try tee -a "$path_make_conf" >/dev/null
-        fi
-    }
     for key in "${!make_conf[@]}"; do
-        insert_config "$key" "${make_conf[$key]}"
+        insert_make_config "$key" "${make_conf[$key]}"
     done
     run_extra_scripts ${FUNCNAME[0]}
 }
@@ -653,19 +669,18 @@ setup_distcc_client() {
     # local hosts_cpplzo=$(echo "$distcc_hosts" | sed 's/\([^ ]\+\) \(localhost\|[^ ]\+\)/\1,lzo \2/g')
     chroot_call "distcc-config --set-hosts '$distcc_hosts'"
     update_distcc_host
+    append_make_config "FEATURES" "distcc"
 
-    # Add features for distcc and getbinpkg
-    chroot_call "echo FEATURES=\\\"\\\${FEATURES} distcc getbinpkg\\\" >> /etc/portage/make.conf"
-
-    for distcc_host in ${distcc_hosts[@]}; do
-        if [ "$distcc_host" != 'localhost' ]; then
-            # Insert PORTAGE_BINHOST
-            local location="ssh://$ssh_distcc_host_user@$distcc_host/usr/$arch_long-unknown-linux-gnu/var/cache/binpkgs"
-            chroot_call "echo '[$distcc_host]' >> /etc/portage/binrepos.conf"
-            chroot_call "echo 'sync-uri = $location' >> /etc/portage/binrepos.conf"
-            chroot_call "echo '' >> /etc/portage/binrepos.conf"
-        fi
-    done
+# Uncomment to automatically add distcc destinations as binhosts. This functionality is related, but not exactly the same.
+#    for distcc_host in ${distcc_hosts[@]}; do
+#        if [ "$distcc_host" != 'localhost' ]; then
+#            # Insert PORTAGE_BINHOST
+#            local location="ssh://$ssh_distcc_host_user@$distcc_host/usr/$arch_long-unknown-linux-gnu/var/cache/binpkgs"
+#            chroot_call "echo '[$distcc_host]' >> /etc/portage/binrepos.conf"
+#            chroot_call "echo 'sync-uri = $location' >> /etc/portage/binrepos.conf"
+#            chroot_call "echo '' >> /etc/portage/binrepos.conf"
+#        fi
+#    done
     run_extra_scripts ${FUNCNAME[0]}
 }
 

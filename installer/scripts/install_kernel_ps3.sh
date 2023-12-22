@@ -36,4 +36,7 @@ try cp "$path_kernel_vmlinux" "$path_chroot_boot/vmlinux-$kernel_version"
 try cp "$path_kernel_initramfs" "$path_chroot_boot/initramfs-$kernel_version.img"
 try cp -r "$path_kernel_modules"/* "$path_chroot_modules"
 
+try rm "$path_linux_download"
+try rm -rf "$path_linux_extract"
+
 update_distcc_host

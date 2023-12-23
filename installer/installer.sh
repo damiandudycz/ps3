@@ -842,7 +842,7 @@ update_distcc_host() {
 
 install_updates() {
     if [ $update_system = true ]; then
-        chroot_call "emerge --newuse --deep --update @system @world $quiet_flag"
+        chroot_call "emerge --newuse --deep --update --with-bdeps=y @system @world $quiet_flag"
         update_distcc_host
     fi
     run_extra_scripts ${FUNCNAME[0]}

@@ -16,12 +16,7 @@ export -a network_links=(
     enp0s1
 )
 
-export ssh_allow_root=true # Enable root login through SSH.
-export ssh_allow_passwordless=true # Enable logging in without password if user doesn't have one.
-
 export kernel_version='' # Empty value will skip prebuilt kernel installation
-
-export use_cpuid2cpuflags=true # If flags are known, can be directly inserted using package_use.
 
 ## Bootloaders ----------------------------------------------------------------------------------
 
@@ -58,16 +53,10 @@ export -A make_conf=(
 ## Packages and tools ---------------------------------------------------------------------------
 
 export -A package_use=(
-    [qemu_1]="app-emulation/qemu static-user QEMU_SOFTMMU_TARGETS: ppc64"
-    [qemu_2]="app-emulation/qemu QEMU_USER_TARGETS: ppc64"
-    [qemu_3]="dev-libs/glib static-libs"
-    [qemu_4]="sys-libs/zlib static-libs"
-    [qemu_5]="sys-apps/attr static-libs"
-    [qemu_6]="dev-libs/libpcre2 static-libs"
 )
 
 export -A package_accept_keywords=(
-  [app-admin-sysklogd]='app-admin/sysklogd ~arm64'
+    [app-admin-sysklogd]='app-admin/sysklogd ~arm64'
 )
 
 # Tools neded as fast as possible, before updating system etc.
@@ -88,17 +77,15 @@ export -a guest_tools=(
     dev-vcs/git
     dev-vcs/subversion
     sys-kernel/genkernel
-    # app-emulation/qemu
 )
 
 export -A guest_rc_startup=(
-  [default]='sysklogd sshd avahi-daemon distccd'
+    [default]='sysklogd sshd avahi-daemon distccd'
 )
 
 # Additional platform-specific scripts, incjected after given primary function finishes successfully.
 export -A extra_scripts=(
     [setup_autostart]='setup_crossdev_host setup_distccd_host setup_bootloader_config'
-    # [setup_cpu_flags]='setup_host_qemu_for_ps3'
 )
 
 export -a distccd_host_allow=(

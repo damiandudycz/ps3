@@ -726,7 +726,7 @@ setup_ssh() {
     if [ $ssh_allow_root = true ]; then
         try sed -i 's/^#PermitRootLogin .*/PermitRootLogin yes/' "$sshd_path"
     fi
-    if [ $ssh_allow_passwordless = true ] && [ "$froot_password" = '' ]; then
+    if [ $ssh_allow_passwordless = true ]; then
         try sed -i 's/^#PermitEmptyPasswords .*/PermitEmptyPasswords yes/' "$sshd_path"
     fi
     run_extra_scripts ${FUNCNAME[0]}

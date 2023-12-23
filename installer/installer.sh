@@ -807,18 +807,3 @@ summary() {
     fi
     run_extra_scripts ${FUNCNAME[0]}
 }
-
-# TODO: Wireless networking configuration
-# TODO: Custom repos usage
-# TODO: Users add scripts
-# TODO: GIT repository from binpkg's
-
-# TODO: Automatic configuration of helper tools:
-# distcc initial config
-# copying make conf and other portage details
-# setting the same profile # PORTAGE_CONFIGROOT=/usr/powerpc64-unknown-linux-gnu eselect profile set 1
-# building @system with --keep-going and other flags: https://wiki.gentoo.org/wiki/Cross_build_environment
-# powerpc64-unknown-linux-gnu-emerge -uva --keep-going @system
-# emerge --newuse --update --deep @world
-# Or instead ot last two, use emerge -e @world, but this might not work
-# TODO: Add distcc and getbinpkg on demand depending on configuration.

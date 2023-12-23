@@ -816,10 +816,10 @@ update_distcc_host() {
         return
     fi
     log cyan "Reading distcc system configuration"
-    BINUTILS_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qfile -v $(realpath /usr/bin/ld) | cut -d" " -f1)')
-    GCC_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qfile -v $(realpath /usr/bin/gcc) | cut -d" " -f1)')
-    KERNEL_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qlist -Ive sys-kernel/linux-headers)')
-    LIBC_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qlist -Ive sys-libs/glibc)')
+    BINUTILS_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qfile -v $(realpath /usr/bin/ld) | cut -d" " -f1'))
+    GCC_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qfile -v $(realpath /usr/bin/gcc) | cut -d" " -f1'))
+    KERNEL_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qlist -Ive sys-kernel/linux-headers'))
+    LIBC_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qlist -Ive sys-libs/glibc'))
     if [ ! -z "$abi" ]; then
         distcc_host_setup_command="crossdev --b '~${BINUTILS_VER}' --g '~${GCC_VER}' --k '~${KERNEL_VER}' --l '~${LIBC_VER}' -t $(portageq envvar CHOST) --abis $abi"
     else

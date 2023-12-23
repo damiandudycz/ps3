@@ -56,9 +56,9 @@ setup_main_repo                 # Creates empty directory, removes warning befor
 ## Setup PS3 Gentoo internal chroot environment -------------------------------------------------
 update_environment              # Refreshing env variables.
 setup_locales                   # Generate locales and select default one.
-setup_timezone                  # Selects timezone.
 setup_portage_repository        # Downloads latest portage tree.
 setup_profile                   # Changes profile to selected.
+setup_timezone                  # Selects timezone.
 setup_cpu_flags                 # Downloads and uses cpuid2cpuflags to generate flags for current CPU.
 install_base_tools              # Installs tools needed at early stage, before distcc is available.
 setup_distcc_hosts              # Uploads SSH public key to all of the hosts.

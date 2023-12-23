@@ -36,7 +36,7 @@ export -a disk_partitions=(
 
 ## Locales --------------------------------------------------------------------------------------
 
-export locale='pl_PL.utf8' # Default locale. Please include also in locales list.
+export locale='en_US.utf8' # Default locale. Please include also in locales list.
 
 export -a locales=(
     'en_US ISO-8859-1'

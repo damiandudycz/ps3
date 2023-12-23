@@ -5,7 +5,6 @@ export arch='ppc64'
 export arch_long='powerpc64'
 export init_system='openrc'
 export profile="default/linux/$arch/17.0"
-export abi='altivec'
 export base_url_autobuilds='https://distfiles.gentoo.org/releases/ppc/autobuilds'
 export hostname='PS3'
 export root_password='' # Empty string removes password.

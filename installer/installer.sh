@@ -153,6 +153,7 @@ print_usage() {
     echo ""
     echo "  --password <password>             Set root user password."
     echo "  --hostname <hostname>             Set hostname."
+    echo "  --timezone <TimeZone>             Set timezone."
     echo ""
     echo "  --verbose                         Enable verbose output."
     echo ""
@@ -300,6 +301,12 @@ read_variables() {
                 fhostname=$1
             fi
             ;;
+        --timezone)
+            shift
+            if [ $# -gt 0 ]; then
+                ftimezone=$1
+            fi
+            ;;
         *)
             error "Unknown option: $1"
             ;;
@@ -327,6 +334,9 @@ override_config() {
     fi
     if [ ! -z $fhostname ]; then
         hostname=$fhostname
+    fi
+    if [ ! -z $ftimezone ]; then
+        timezone=$ftimezone
     fi
 }
 

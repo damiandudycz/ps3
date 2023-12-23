@@ -150,6 +150,7 @@ print_usage() {
     echo ""
     echo "  --config <remote_config>          Use a remote configuration."
     echo "  --custom-config <config_file>     Use a custom configuration file."
+    echo "  --add-features <Features>         Add extra features options in make.conf. For example --add-features 'buildpkg'."
     echo ""
     echo "  --password <password>             Set root user password."
     echo "  --hostname <hostname>             Set hostname."
@@ -305,6 +306,12 @@ read_variables() {
             shift
             if [ $# -gt 0 ]; then
                 ftimezone=$1
+            fi
+            ;;
+        --add-features)
+            shift
+            if [ $# -gt 0 ]; then
+                add_features=$1
             fi
             ;;
         *)
@@ -588,6 +595,9 @@ setup_make_conf() {
     for key in "${!make_conf[@]}"; do
         insert_make_config "$key" "${make_conf[$key]}"
     done
+    if [ ! -z "$add_features" ]; then
+        append_make_config "FEATURES" "$add_features"
+    fi
     run_extra_scripts ${FUNCNAME[0]}
 }
 

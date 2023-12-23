@@ -57,6 +57,7 @@ setup_main_repo                 # Creates empty directory, removes warning befor
 update_environment              # Refreshing env variables.
 setup_locales                   # Generate locales and select default one.
 setup_portage_repository        # Downloads latest portage tree.
+setup_binhosts                  # Configure binrepos if added in config.
 setup_profile                   # Changes profile to selected.
 setup_timezone                  # Selects timezone.
 setup_cpu_flags                 # Downloads and uses cpuid2cpuflags to generate flags for current CPU.
@@ -612,6 +613,19 @@ setup_packages_config() {
     local path_package_accept_keywords="$path_chroot/etc/portage/package.accept_keywords"
     for key in $(echo "${!package_accept_keywords[@]}" | tr ' ' '\n' | sort); do
         echo "${package_accept_keywords[$key]}" | try tee -a "$path_package_accept_keywords/$key" >/dev/null
+    done
+    run_extra_scripts ${FUNCNAME[0]}
+}
+
+setup_binhosts() {
+    local path_binrepos="$path_chroot/etc/portage/binrepos.conf"
+    if [ ! -d "$path_binrepos" ]; then
+        try mkdir -p "$path_binrepos"
+    fi    
+    for key in $(echo "${!binhosts[@]}" | tr ' ' '\n' | sort); do
+        local path_binrepo="$path_binrepos/$key.conf"
+        echo "[$key]" | try tee -a "$path_binrepo" >/dev/null
+        echo "sync-uri = ${binhosts[$key]}" | try tee -a "$path_binrepo" >/dev/null
     done
     run_extra_scripts ${FUNCNAME[0]}
 }

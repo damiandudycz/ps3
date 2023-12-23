@@ -67,13 +67,12 @@ export -A package_accept_keywords=(
 
 # Tools neded as fast as possible, before updating system etc.
 export -a guest_base_tools=(
-    sys-kernel/linux-headers
     sys-devel/distcc
 )
 
 # Rest of the tools, that can be installed at later stage.
 export -a guest_tools=(
-    sys-devel/distcc
+    sys-kernel/linux-headers
     app-misc/ps3pf_utils
     app-portage/genlop
     app-portage/gentoolkit

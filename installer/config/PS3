@@ -111,5 +111,9 @@ export -A extra_scripts=(
     [setup_autostart]='setup_bootloader_config'
 )
 
+export -A binhosts=(
+    [PS3_Gentoo]="$url_repo/binhosts/PS3_Gentoo"
+)
+
 # NOTE: Fat limitations, probably due to petitboot version:
 # ext4 doest work. GPT us unsupported. Suggest using dos/ext3.

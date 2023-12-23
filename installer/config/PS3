@@ -80,16 +80,14 @@ export -a guest_base_tools=(
 # Rest of the tools, that can be installed at later stage.
 export -a guest_tools=(
     sys-devel/distcc
+    app-misc/ps3pf_utils
     app-portage/genlop
-    app-admin/sysklogd
     app-portage/gentoolkit
     app-eselect/eselect-repository
+    app-admin/sysklogd
     net-misc/ntp
     net-dns/avahi
-    app-misc/ps3pf_utils
     app-misc/neofetch
-    sys-fs/dosfstools
-    sys-fs/btrfs-progs
 )
 
 export -A guest_rc_startup=(

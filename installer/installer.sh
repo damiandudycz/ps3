@@ -13,6 +13,9 @@ quiet_flag='--quiet'             # Quiet flag used to silence the output.
 quiet_flag_short='-q'            # Quiet flag used to silence the output.
 ssh_distcc_host_user='root'      # Username for SSH when updating distcc host configuration. Can change with --distcc-user flag.
 
+# Installer internal configuration flags:
+update_crossdev_distcc_hosts_versions=true
+
 # MAIN PROGRAM ==================================================================================
 
 ## Prepare --------------------------------------------------------------------------------------
@@ -808,7 +811,7 @@ setup_cpu_flags() {
 # Instead we sould take care to manually keep the crossdev environment in sync with
 # current PS3 versions of utils.
 update_distcc_host() {
-    if [ -z "$distcc_hosts" ]; then
+    if [ -z "$distcc_hosts" ] || [ $update_crossdev_distcc_hosts_versions = false ]; then
         run_extra_scripts ${FUNCNAME[0]}
         return
     fi

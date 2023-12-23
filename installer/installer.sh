@@ -63,9 +63,7 @@ setup_portage_repository        # Downloads latest portage tree.
 setup_binhosts                  # Configure binrepos if added in config.
 setup_profile                   # Changes profile to selected.
 setup_timezone                  # Selects timezone.
-setup_cpu_flags                 # Downloads and uses cpuid2cpuflags to generate flags for current CPU.
 install_base_tools              # Installs tools needed at early stage, before distcc is available.
-setup_distcc_hosts              # Uploads SSH public key to all of the hosts.
 setup_distcc_client             # Downloads and configures distcc if used.
 install_updates                 # Updates and rebuilds @world and @system including new use flags.
 install_other_tools             # Installs other selected tools.
@@ -154,7 +152,6 @@ print_usage() {
     echo ""
     echo "  --config <remote_config>          Use a remote configuration."
     echo "  --custom-config <config_file>     Use a custom configuration file."
-    echo "  --add-features <Features>         Add extra features options in make.conf. For example --add-features 'buildpkg'."
     echo ""
     echo "  --password <password>             Set root user password."
     echo "  --hostname <hostname>             Set hostname."
@@ -164,12 +161,9 @@ print_usage() {
     echo ""
     echo "  --sync-portage true/false         Should perform emerge-sync during installation. If empty, uses value from config."
     echo "  --update-system true/false        Should update @world during installation. If empty, uses value from config."
-    echo "  --use-cpuid2cpuflags true/false   Install and use cpuid2cpuflags to setup /etc/portage/package.use/00cpu-flags. If empty, uses value from config."
     echo "  --use-target-swap true/false      Should installer use target device swap if available. If empty, uses value from config."
     echo ""
     echo "  --distcc <host>                   Specify a distcc host."
-    echo "  --distcc-user <host_username>     Specify the username for distcc host."
-    echo "  --distcc-password <host_password> Specify the password for distcc host."
     exit 1
 }
 
@@ -258,18 +252,6 @@ read_variables() {
                 distcc_hosts="$1"
             fi
             ;;
-        --distcc-user)
-            shift
-            if [ $# -gt 0 ]; then
-                ssh_distcc_host_user="$1"
-            fi
-            ;;
-        --distcc-password)
-            shift
-            if [ $# -gt 0 ]; then
-                ssh_distcc_host_password="$1"
-            fi
-            ;;
         --sync-portage)
             shift
             if [ $# -gt 0 ]; then
@@ -280,12 +262,6 @@ read_variables() {
             shift
             if [ $# -gt 0 ]; then
                 fupdate_system=$1
-            fi
-            ;;
-        --use-cpuid2cpuflags)
-            shift
-            if [ $# -gt 0 ]; then
-                fuse_cpuid2cpuflags=$1
             fi
             ;;
         --use-target-swap)
@@ -312,12 +288,6 @@ read_variables() {
                 ftimezone=$1
             fi
             ;;
-        --add-features)
-            shift
-            if [ $# -gt 0 ]; then
-                add_features=$1
-            fi
-            ;;
         *)
             error "Unknown option: $1"
             ;;
@@ -333,9 +303,6 @@ override_config() {
     fi
     if [ ! -z $fupdate_system ]; then
         update_system=$fupdate_system
-    fi
-    if [ ! -z $fuse_cpuid2cpuflags ]; then
-        use_cpuid2cpuflags=$fuse_cpuid2cpuflags
     fi
     if [ ! -z $fuse_target_swap ]; then
         use_target_swap=$fuse_target_swap
@@ -615,7 +582,8 @@ setup_packages_config() {
     # Accept keywords
     local path_package_accept_keywords="$path_chroot/etc/portage/package.accept_keywords"
     for key in $(echo "${!package_accept_keywords[@]}" | tr ' ' '\n' | sort); do
-        echo "${package_accept_keywords[$key]}" | try tee -a "$path_package_accept_keywords/$key" >/dev/null
+        local key_short=$(echo $key | cut -d'_' -f1)
+        echo "${package_accept_keywords[$key]}" | try tee -a "$path_package_accept_keywords/$key_short" >/dev/null
     done
     run_extra_scripts ${FUNCNAME[0]}
 }
@@ -667,71 +635,13 @@ setup_hostname() {
     run_extra_scripts ${FUNCNAME[0]}
 }
 
-setup_distcc_hosts() {
-    if [ -z "$distcc_hosts" ]; then
-        run_extra_scripts ${FUNCNAME[0]}
-        return
-    fi
-
-    for distcc_host in ${distcc_hosts[@]}; do
-        if [ "$distcc_host" != 'localhost' ]; then
-            # Upload ssh key, for passwordless communication
-            if [ -z "$quiet_flag" ]; then
-                ssh_quiet=''
-            else
-                ssh_quiet="-o LogLevel=quiet"
-            fi
-            # Add host to known_hosts
-            chroot_call "ssh-keyscan -H $distcc_host >> ~/.ssh/known_hosts 2>/dev/null"
-            if [ -z "$ssh_distcc_host_password" ]; then
-                chroot_call "ssh-copy-id $ssh_distcc_host_user@$distcc_host 2>/dev/null"
-            else
-                chroot_call "sshpass -p $ssh_distcc_host_password ssh-copy-id $ssh_distcc_host_user@$distcc_host 2>/dev/null"
-            fi
-        fi
-    done
-
-    run_extra_scripts ${FUNCNAME[0]}
-}
-
 setup_distcc_client() {
     if [ -z "$distcc_hosts" ]; then
         run_extra_scripts ${FUNCNAME[0]}
         return
     fi
-    # USE='-zeroconf' is used to speed up installation the first time. Otherwise it will emerge avahi and all dependencies.
-    # This will be updated later with default flags.
-    chroot_call "FEATURES='-distcc' USE='-zeroconf' emerge --update --newuse distcc $quiet_flag"
-    # local hosts_cpplzo=$(echo "$distcc_hosts" | sed 's/\([^ ]\+\) \(localhost\|[^ ]\+\)/\1,lzo \2/g')
     chroot_call "distcc-config --set-hosts '$distcc_hosts'"
-    update_distcc_host
     append_make_config "FEATURES" "distcc"
-
-# Uncomment to automatically add distcc destinations as binhosts. This functionality is related, but not exactly the same.
-#    for distcc_host in ${distcc_hosts[@]}; do
-#        if [ "$distcc_host" != 'localhost' ]; then
-#            # Insert PORTAGE_BINHOST
-#            local location="ssh://$ssh_distcc_host_user@$distcc_host/usr/$arch_long-unknown-linux-gnu/var/cache/binpkgs"
-#            chroot_call "echo '[$distcc_host]' >> /etc/portage/binrepos.conf"
-#            chroot_call "echo 'sync-uri = $location' >> /etc/portage/binrepos.conf"
-#            chroot_call "echo '' >> /etc/portage/binrepos.conf"
-#        fi
-#    done
-    run_extra_scripts ${FUNCNAME[0]}
-}
-
-setup_ssh() {
-    # Generate SSH key.
-    chroot_call "ssh-keygen -q -t rsa -N '' <<< $'\n' >/dev/null 2>&1"
-    # Configure access permissions.
-    # This is optional.
-    local sshd_path="$path_chroot/etc/ssh/sshd_config"
-    if [ $ssh_allow_root = true ]; then
-        try sed -i 's/^#PermitRootLogin .*/PermitRootLogin yes/' "$sshd_path"
-    fi
-    if [ $ssh_allow_passwordless = true ]; then
-        try sed -i 's/^#PermitEmptyPasswords .*/PermitEmptyPasswords yes/' "$sshd_path"
-    fi
     run_extra_scripts ${FUNCNAME[0]}
 }
 
@@ -797,59 +707,9 @@ setup_profile() {
     run_extra_scripts ${FUNCNAME[0]}
 }
 
-setup_cpu_flags() {
-    if [ $use_cpuid2cpuflags = false ]; then
-        run_extra_scripts ${FUNCNAME[0]}
-        return
-    fi
-    chroot_call "FEATURES='-distcc' emerge --update --newuse cpuid2cpuflags -1 $quiet_flag"
-    chroot_call 'echo "*/* $(cpuid2cpuflags)" > /etc/portage/package.use/00cpu-flags'
-    run_extra_scripts ${FUNCNAME[0]}
-}
-
-# TODO: This function should not be the part of installation.
-# Instead we sould take care to manually keep the crossdev environment in sync with
-# current PS3 versions of utils.
-update_distcc_host() {
-    if [ -z "$distcc_hosts" ] || [ $update_crossdev_distcc_hosts_versions = false ]; then
-        run_extra_scripts ${FUNCNAME[0]}
-        return
-    fi
-    log cyan "Reading distcc system configuration"
-    BINUTILS_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qfile -v $(realpath /usr/bin/ld) | cut -d" " -f1'))
-    GCC_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qfile -v $(realpath /usr/bin/gcc) | cut -d" " -f1'))
-    KERNEL_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qlist -Ive sys-kernel/linux-headers'))
-    LIBC_VER=$(qatom -F '%{PV}' $(chroot "$path_chroot" '/bin/bash' -c 'qlist -Ive sys-libs/glibc'))
-    if [ ! -z "$abi" ]; then
-        distcc_host_setup_command="crossdev --b '~${BINUTILS_VER}' --g '~${GCC_VER}' --k '~${KERNEL_VER}' --l '~${LIBC_VER}' -t $(portageq envvar CHOST) --abis $abi"
-    else
-        distcc_host_setup_command="crossdev --b '~${BINUTILS_VER}' --g '~${GCC_VER}' --k '~${KERNEL_VER}' --l '~${LIBC_VER}' -t $(portageq envvar CHOST)"
-    fi
-    # If configuration didn't change, we can skip this.
-    if [ ! -z "$distcc_host_setup_command_stored" ] && [ "$distcc_host_setup_command_stored" = "$distcc_host_setup_command" ]; then
-        run_extra_scripts ${FUNCNAME[0]}
-        return
-    fi
-    distcc_host_setup_command_stored="$distcc_host_setup_command"
-    if [ -z "$quiet_flag" ]; then
-        ssh_quiet=''
-    else
-        ssh_quiet="-o LogLevel=quiet"
-    fi
-    for distcc_host in ${distcc_hosts[@]}; do
-        if [ "$distcc_host" != 'localhost' ]; then
-            chroot_call "ssh $ssh_quiet $ssh_distcc_host_user@$distcc_host $distcc_host_setup_command"
-            # TODO: Set /usr/<crossdev>/ profile to the same as of this machine
-            # TODO: Insert /usr/<crossdev>/etc/portage/ files and config
-        fi
-    done
-    run_extra_scripts ${FUNCNAME[0]}
-}
-
 install_updates() {
     if [ $update_system = true ]; then
         chroot_call "emerge --newuse --deep --update --with-bdeps=y @system @world $quiet_flag"
-        update_distcc_host
     fi
     run_extra_scripts ${FUNCNAME[0]}
 }

@@ -52,14 +52,12 @@ export -A make_conf=(
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
     [FEATURES]='parallel-fetch parallel-install getbinpkg distcc -news'
-#    [PKGDIR_OPTS]='--max-versions=1' # Prawdopodobnie to nie ma związku z przechowywanymi pakietami binpkg
 )
 
 ## Packages and tools ---------------------------------------------------------------------------
 
 export -A package_use=(
     [00cpu-flags]='*/* CPU_FLAGS_PPC: altivec'
-    # [99sys-kernel_linux-headers]="sys-kernel/linux-headers headers-only"
 )
 
 export -A package_accept_keywords=(
@@ -85,9 +83,6 @@ export -a guest_tools=(
     net-misc/ntp
     net-dns/avahi
     app-misc/neofetch
-# Only for LiveCD:
-#    sys-fs/dosfstools
-#    sys-fs/btrfs-progs
 )
 
 export -A guest_rc_startup=(

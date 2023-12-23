@@ -75,7 +75,7 @@ export -A package_accept_keywords=(
 # Tools neded as fast as possible, before updating system etc.
 export -a guest_base_tools=(
     sys-kernel/linux-headers
-    net-misc/sshpass
+    sys-devel/distcc
 )
 
 # Rest of the tools, that can be installed at later stage.

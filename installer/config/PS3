@@ -54,7 +54,7 @@ export -A make_conf=(
     [USE]='ps3 zeroconf mdnsresponder-compat'
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
-    [FEATURES]='parallel-fetch parallel-install getbinpkg -news'
+    [FEATURES]='parallel-fetch parallel-install getbinpkg distcc -news'
 #    [PKGDIR_OPTS]='--max-versions=1' # Prawdopodobnie to nie ma związku z przechowywanymi pakietami binpkg
 )
 

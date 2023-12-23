@@ -55,7 +55,7 @@ export -A make_conf=(
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
     [FEATURES]='parallel-fetch parallel-install getbinpkg -news'
-    [PKGDIR_OPTS]='--max-versions=1'
+#    [PKGDIR_OPTS]='--max-versions=1' # Prawdopodobnie to nie ma związku z przechowywanymi pakietami binpkg
 )
 
 ## Packages and tools ---------------------------------------------------------------------------

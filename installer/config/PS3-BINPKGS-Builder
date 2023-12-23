@@ -10,12 +10,9 @@ export abi='altivec'
 export base_url_autobuilds='https://distfiles.gentoo.org/releases/ppc/autobuilds'
 export hostname='PS3'
 export root_password='' # Empty string removes password.
-export ssh_allow_root=true # Enable root login through SSH.
-export ssh_allow_passwordless=true # Enable logging in without password if user doesn't have one.
 export kernel_version='6.6.3'
 export kernel_headers_version='6.6'
 export bootloader='petitboot' # [petitboot/grub/grub-efi]
-export use_cpuid2cpuflags=true # Install cpuid2cpuflags and use to fill 00cpu-flags file.
 export sync_portage=true # Run emerge --sync after emerge-webrsync to get the newest tarball.
 export update_system=true # Run emerge --update --newuse --deep @world during installation.
 export use_target_swap=true # Should the installer script use swap space on the target drive.
@@ -54,27 +51,24 @@ export -A make_conf=(
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
     [FEATURES]='parallel-fetch parallel-install buildpkg -news'
-#    [PKGDIR_OPTS]='--max-versions=1' # Prawdopodobnie to nie ma związku z przechowywanymi pakietami binpkg
 )
 
 ## Packages and tools ---------------------------------------------------------------------------
 
 export -A package_use=(
     [00cpu-flags]='*/* CPU_FLAGS_PPC: altivec'
-    # [99sys-kernel_linux-headers]="sys-kernel/linux-headers headers-only"
 )
 
 export -A package_accept_keywords=(
     [app-misc_ps3pf_utils]='app-misc/ps3pf_utils ~ppc64'
     [app-misc_neofetch]='app-misc/neofetch ~ppc64'
     [sys-kernel_linux-headers]="=sys-kernel/linux-headers-$kernel_headers_version ~ppc64"
-    [net-misc_sshpass]='net-misc/sshpass ~ppc64'
 )
 
 # Tools neded as fast as possible, before updating system etc.
 export -a guest_base_tools=(
     sys-kernel/linux-headers
-    net-misc/sshpass
+    sys-devel/distcc
 )
 
 # Rest of the tools, that can be installed at later stage.
@@ -105,7 +99,7 @@ export -a guest_init_scripts=(
 
 # Additional platform-specific scripts, incjected after given primary function finishes successfully.
 export -A extra_scripts=(
-    [setup_distcc_client]='install_kernel_ps3'
+    [install_base_tools]='install_kernel_ps3'
     [install_other_tools]='install_custom_init_scripts'
     [setup_autostart]='setup_bootloader_config'
 )

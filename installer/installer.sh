@@ -804,6 +804,9 @@ setup_cpu_flags() {
     run_extra_scripts ${FUNCNAME[0]}
 }
 
+# TODO: This function should not be the part of installation.
+# Instead we sould take care to manually keep the crossdev environment in sync with
+# current PS3 versions of utils.
 update_distcc_host() {
     if [ -z "$distcc_hosts" ]; then
         run_extra_scripts ${FUNCNAME[0]}

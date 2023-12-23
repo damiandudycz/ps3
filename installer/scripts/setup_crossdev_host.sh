@@ -18,7 +18,7 @@ echo 'auto-sync = no' >> "$path_chroot/etc/portage/repos.conf/crossdev.conf"
 # TODO: Get values from script arguments
 
 # Default configuration for the PS3 - Should be added to config of target and not stored directly here.
-chroot_call 'crossdev --b '~2.40' --g '~13.2.1_p20230826' --k '~6.5' --l '~2.37' -t powerpc64-unknown-linux-gnu --abis altivec'
+chroot_call 'crossdev --b '~2.40' --g '~13.2.1_p20230826' --k '~6.6' --l '~2.37' -t powerpc64-unknown-linux-gnu --abis altivec'
 
 # TODO: Get value of profile somehow and powerpc64-unknown-linux-gnu.
 chroot_call 'PORTAGE_CONFIGROOT=/usr/powerpc64-unknown-linux-gnu eselect profile set 1'

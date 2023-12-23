@@ -56,6 +56,7 @@ setup_main_repo                 # Creates empty directory, removes warning befor
 ## Setup PS3 Gentoo internal chroot environment -------------------------------------------------
 update_environment              # Refreshing env variables.
 setup_locales                   # Generate locales and select default one.
+setup_timezone                  # Selects timezone.
 setup_portage_repository        # Downloads latest portage tree.
 setup_profile                   # Changes profile to selected.
 setup_cpu_flags                 # Downloads and uses cpuid2cpuflags to generate flags for current CPU.
@@ -201,15 +202,13 @@ append_make_config() {
 # Set new value in make.conf
 insert_make_config() {
     local path_make_conf="$path_chroot/etc/portage/make.conf"
-    insert_config() {
-        local key="$1"
-        local value="$2"
-        if grep -q "$key=" "$path_make_conf"; then
-            try sed -i "s/^$key=.*/$key=\"$value\"/" "$path_make_conf"
-        else
-            echo "$key=\"$value\"" | try tee -a "$path_make_conf" >/dev/null
-        fi
-    }
+    local key="$1"
+    local value="$2"
+    if grep -q "$key=" "$path_make_conf"; then
+        try sed -i "s/^$key=.*/$key=\"$value\"/" "$path_make_conf"
+    else
+        echo "$key=\"$value\"" | try tee -a "$path_make_conf" >/dev/null
+    fi
 }
 
 read_variables() {
@@ -738,6 +737,13 @@ setup_locales() {
     chroot_call "eselect locale set $locale"
     chroot_call 'env-update && source /etc/profile'
     run_extra_scripts ${FUNCNAME[0]}
+}
+
+setup_timezone() {
+    if [ ! -z "$timezone" ]; then
+        chroot_call "echo '$timezone' >> /etc/timezone"
+        chroot_call "emerge --config sys-libs/timezone-data"
+    fi
 }
 
 setup_portage_repository() {

@@ -53,6 +53,7 @@ export -A make_conf=(
 ## Packages and tools ---------------------------------------------------------------------------
 
 export -A package_use=(
+    [00cpu-flags]='*/* CPU_FLAGS_ARM: edsp neon thumb vfp vfpv3 vfpv4 vfp-d32 aes sha1 sha2 crc32 v4 v5 v6 v7 v8 thumb2'
 )
 
 export -A package_accept_keywords=(
@@ -89,5 +90,5 @@ export -A extra_scripts=(
 )
 
 export -a distccd_host_allow=(
-	"192.168.0.0/16"
+    "192.168.0.0/16"
 )

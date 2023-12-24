@@ -43,7 +43,7 @@ export -a locales=(
 
 export -A make_conf=(
     [COMMON_FLAGS]='-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple'
-    [MAKEOPTS]='-j6 -l2'
+    [MAKEOPTS]='-j5 -l2'
     [ACCEPT_LICENSE]='*'
     [USE]='ps3 zeroconf bluetooth mdnsresponder-compat'
     [VIDEO_CARDS]='fbdev'

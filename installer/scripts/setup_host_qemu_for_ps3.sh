@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Currently not used. Restore when adding crossdev direct compilation
+
 chroot_call 'emerge --newuse --update app-emulation/qemu'
 chroot_call '[ -d /proc/sys/fs/binfmt_misc ] || modprobe binfmt_misc'
 chroot_call '[ -f /proc/sys/fs/binfmt_misc/register ] || mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc'

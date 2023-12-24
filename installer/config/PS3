@@ -9,7 +9,6 @@ export base_url_autobuilds='https://distfiles.gentoo.org/releases/ppc/autobuilds
 export hostname='PS3'
 export root_password='' # Empty string removes password.
 export kernel_version='6.6.3'
-export kernel_headers_version='6.6'
 export bootloader='petitboot' # [petitboot/grub/grub-efi]
 export sync_portage=true # Run emerge --sync after emerge-webrsync to get the newest tarball.
 export update_system=true # Run emerge --update --newuse --deep @world during installation.

@@ -1,6 +1,9 @@
 # PlayStation 3 Gentoo Linux toolset
 
-### Note: README in progress
+### Note: Work in prorgess
+
+Im constantly working on making this project more reliable and eaisy to use. Recently I added a binhost repository which is automatically added to Gentoo during installation, to make the process faster. Currently testing it. 
+Please feel free to report any issues you have or some suggestions/questions using Issues tab in GitHub.
 
 If you want to try Gentoo using LiveUSB / LiveDVD, download files from https://www.dropbox.com/scl/fi/qrjzexfm1owd1r1aprkd8/LiveUSB.zip?rlkey=kd3isyeo5tkhqtbb1sy57hbh6&dl=1
 and extract them to USB formatted with MBR / FAT32

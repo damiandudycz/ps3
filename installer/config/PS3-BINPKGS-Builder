@@ -79,9 +79,11 @@ export -a guest_tools=(
     net-misc/ntp
     net-dns/avahi
     app-misc/neofetch
-# Only for LiveCD:
-#    sys-fs/dosfstools
-#    sys-fs/btrfs-progs
+# Additional tools for builder and LiveDVD:
+    sys-fs/dosfstools
+    sys-fs/btrfs-progs
+    sys-fs/squashfs-tools
+    dev-vcs/git
 )
 
 export -A guest_rc_startup=(

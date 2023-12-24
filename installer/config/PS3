@@ -9,6 +9,7 @@ export base_url_autobuilds='https://distfiles.gentoo.org/releases/ppc/autobuilds
 export hostname='PS3'
 export root_password='' # Empty string removes password.
 export kernel_version='6.6.3'
+export kernel_headers_version='6.6'
 export bootloader='petitboot' # [petitboot/grub/grub-efi]
 export sync_portage=true # Run emerge --sync after emerge-webrsync to get the newest tarball.
 export update_system=true # Run emerge --update --newuse --deep @world during installation.
@@ -36,8 +37,6 @@ export locale='en_US.utf8' # Default locale. Please include also in locales list
 export -a locales=(
     'en_US ISO-8859-1'
     'en_US.UTF-8 UTF-8'
-    'pl_PL ISO-8859-2'
-    'pl_PL.UTF-8 UTF-8'
 )
 
 ## Make conf ------------------------------------------------------------------------------------
@@ -46,7 +45,7 @@ export -A make_conf=(
     [COMMON_FLAGS]='-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple'
     [MAKEOPTS]='-j6 -l2'
     [ACCEPT_LICENSE]='*'
-    [USE]='ps3 zeroconf mdnsresponder-compat'
+    [USE]='ps3 zeroconf bluetooth mdnsresponder-compat'
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
     [FEATURES]='parallel-fetch parallel-install getbinpkg distcc -news'

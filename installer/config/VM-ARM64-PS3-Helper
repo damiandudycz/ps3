@@ -80,6 +80,14 @@ export -a guest_tools=(
     sys-kernel/genkernel
 )
 
+export -A crossdev_config=(
+    [a]='altivec'
+    [b]='2.40'
+    [g]='13.2.1_p20230826'
+    [k]='6.6'
+    [l]=[2.37]
+)
+
 export -A guest_rc_startup=(
     [default]='sysklogd sshd avahi-daemon distccd'
 )

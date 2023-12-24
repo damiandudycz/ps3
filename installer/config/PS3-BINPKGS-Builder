@@ -101,6 +101,7 @@ export -A extra_scripts=(
     [install_base_tools]='install_kernel_ps3'
     [install_other_tools]='install_custom_init_scripts'
     [setup_autostart]='setup_bootloader_config rebuild_whole_system'
+#    [unprepare_chroot]='create_livedvd'
 )
 
 export -A binhosts=(

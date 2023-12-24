@@ -105,7 +105,7 @@ export -A extra_scripts=(
 )
 
 export -A binhosts=(
-    [PS3_Gentoo]="$url_repo/binhosts/PS3_Gentoo"
+    [PS3_Gentoo]="$url_repo/binhosts/PS3_OpenRC_Base"
 )
 
 # NOTE: Fat limitations, probably due to petitboot version:

@@ -1,6 +1,5 @@
 # WARNING: Don't use this config for normal installation, use PS3 instead.
 # Configuration for the PlayStation 3 used to build BINPKG packages.
-# Does not use repositories with binrepos during installation.
 
 export arch='ppc64'
 export arch_long='powerpc64'

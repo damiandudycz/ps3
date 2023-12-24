@@ -38,5 +38,3 @@ try cp -r "$path_kernel_modules"/* "$path_chroot_modules"
 
 try rm "$path_linux_download"
 try rm -rf "$path_linux_extract"
-
-update_distcc_host

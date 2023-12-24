@@ -48,7 +48,7 @@ export -A make_conf=(
     [USE]='ps3 zeroconf mdnsresponder-compat'
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
-    [FEATURES]='parallel-fetch parallel-install buildpkg -news'
+    [FEATURES]='parallel-fetch parallel-install getbinpkg buildpkg -news'
 )
 
 ## Packages and tools ---------------------------------------------------------------------------
@@ -102,8 +102,7 @@ export -A extra_scripts=(
 )
 
 export -A binhosts=(
-# Blocked for builder install
-#    [PS3_Gentoo]="$url_repo/binhosts/PS3_Gentoo"
+    [PS3_Gentoo]="$url_repo/binhosts/PS3_Gentoo"
 )
 
 # NOTE: Fat limitations, probably due to petitboot version:

@@ -49,7 +49,6 @@ setup_root_password             # Sets root password to selected.
 setup_fstab                     # Generates fstab file from configuration.
 setup_hostname                  # Sets hostname.
 setup_network_link              # Setup network devices links and configs.
-setup_ssh                       # Configure SSH access.
 setup_main_repo                 # Creates empty directory, removes warning before syncing portage.
 
 ## Setup PS3 Gentoo internal chroot environment -------------------------------------------------

@@ -48,7 +48,7 @@ export -A make_conf=(
     [USE]='ps3 zeroconf bluetooth mdnsresponder-compat'
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
-    [FEATURES]='parallel-fetch parallel-install getbinpkg distcc -news'
+    [FEATURES]='-news parallel-fetch parallel-install getbinpkg'
 )
 
 ## Packages and tools ---------------------------------------------------------------------------

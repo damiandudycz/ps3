@@ -97,7 +97,7 @@ export -a guest_init_scripts=(
 export -A extra_scripts=(
     [install_base_tools]='install_kernel_ps3'
     [install_other_tools]='install_custom_init_scripts'
-    [setup_autostart]='setup_bootloader_config clean_binhost rebuild_whole_system'
+    [setup_autostart]='setup_bootloader_config'
 # TODO: Add script that builds LiveDVD
 #    [unprepare_chroot]='create_livedvd'
 )

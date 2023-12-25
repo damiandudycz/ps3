@@ -538,6 +538,7 @@ gentoo_download() {
 gentoo_extract() {
     local path_stage3or4="$path_chroot/gentoo.tar.xz"
     try tar -xvpf "$path_stage3or4" --xattrs-include="*/*" --numeric-owner -C "$path_chroot/"
+    try rm "$path_stage3or4"
     run_extra_scripts ${FUNCNAME[0]}
 }
 
@@ -747,7 +748,7 @@ cleanup() {
     chroot_call "eclean --deep $quiet_flag distfiles"
     chroot_call "eclean --deep $quiet_flag packages"
     try rm -rf "$path_chroot/var/cache/distfiles"/*
-    try rm "$path_chroot/gentoo.tar.xz"
+    try rm -rf "$path_chroot/var/cache/binpkgs"/*
     run_extra_scripts ${FUNCNAME[0]}
 }
 

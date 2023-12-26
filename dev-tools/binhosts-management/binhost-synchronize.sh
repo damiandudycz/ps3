@@ -26,7 +26,7 @@ unprepare_chroot() {
 
 # Sync and build all packages.
 prepare_chroot
-mount -o bind "$path/var/cache/binpkgs" "$path_repo"
+mount -o bind "$path_repo" "$path/var/cache/binpkgs"
 
 chroot "$path" /bin/bash -c "emerge --sync"
 chroot "$path" /bin/bash -c "FEATURES=\"buildpkg distcc\" emerge --update --newuse --deep --quiet @world @system"
@@ -37,5 +37,5 @@ if [[ -n $(git status --porcelain -- "$path_repo") ]]; then
 	# TODO: Git push?
 fi
 
-umount "$path_repo"
+umount "$path/var/cache/binpkgs"
 unprepare_chroot

@@ -147,6 +147,7 @@ print_usage() {
     echo ""
     echo "  --config <remote_config>          Use a remote configuration."
     echo "  --custom-config <config_file>     Use a custom configuration file."
+    echo "  --edit-config                     Modify configuration file before."
     echo ""
     echo "  --password <password>             Set root user password."
     echo "  --hostname <hostname>             Set hostname."
@@ -235,6 +236,9 @@ read_variables() {
             if [ $# -gt 0 ]; then
                 custom_config="$1"
             fi
+            ;;
+	--edit-config)
+            edit_config=true
             ;;
         --verbose)
             unset quiet_flag
@@ -380,6 +384,9 @@ get_config() {
         try wget "$url_config" -O "$path_config" --no-http-keep-alive --no-cache --no-cookies $quiet_flag
     else
         try cp "$custom_config" "$path_config"
+    fi
+    if [ $edit_config = true ]; then
+        nano "$path_config"
     fi
     try source "$path_config"
     run_extra_scripts ${FUNCNAME[0]}

@@ -8,7 +8,7 @@ if [ ! -n "$kernel_version" ]; then
     return
 fi
 linux_filename="linux-$kernel_version.tar.xz"
-url_linux_download="https://github.com/damiandudycz/ps3/raw/main/kernel/$linux_filename"
+url_linux_download="https://github.com/damiandudycz/ps3/raw/$branch/kernel/$linux_filename"
 path_linux_download="$path_tmp/$linux_filename"
 path_linux_extract="$path_tmp/linux-$kernel_version"
 

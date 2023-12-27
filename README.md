@@ -1,6 +1,30 @@
-# PlayStation 3 Gentoo Linux toolset
+# PlayStation 3 Gentoo Linux Toolset
 
-### Note: Work in prorgess
+Welcome to the PlayStation 3 Gentoo Linux Toolset repository—a comprehensive collection of files and tools designed for seamless installation and maintenance of Gentoo Linux on the PlayStation 3. Here's an overview of the current features:
+
+- Automatic Installer: Facilitates the effortless installation and configuration of Gentoo Linux on the PS3 or companion machines.
+- Prebuilt Kernel: Compatible with both OtherOS and OtherOS++, this kernel is equipped with various patches specifically tailored for the PS3.
+- Binhost Repository: Streamlines the installation process by enabling quicker access to diverse packages without the need for direct compilation.
+- Developer Tools: Essential for building new kernel versions and managing different aspects of the repository.
+- LiveDVD/LiveUSB Image: An immersive option allowing you to run Gentoo directly from a USB device.
+
+The repository undergoes constant updates, incorporating new features and addressing any issues. Future plans include:
+
+- Overlay Repository: Introducing an overlay repository featuring additional tools specifically crafted for the PS3.
+- Customized Petitboot: Developing an enhanced and up-to-date version of Petitboot for an optimized user experience.
+- Installer Integration with Petitboot: Making adjustments to the installer to seamlessly integrate with Petitboot for user-friendly functionality.
+- Enhanced Prebuilt Kernel: Continuously improving the prebuilt kernel to ensure optimal performance.
+- Automatic Binrepo Update Tool: Implementing an automatic tool to keep the binhost repository up-to-date effortlessly.
+
+I value your feedback and encourage you to share your comments or suggestions using the "Issues" tab or via email at damiandudycz@yahoo.com. Your input is invaluable, and all comments are greatly appreciated! :)
+
+# Installer
+
+Installer is located in insteller/installer.sh. You can use it from another linux to install Gentoo on the PS3 hard drive or in selected directory.
+You can use it with default configuration or you can adjust the settings to match your needs.
+TODO: Add more information about the installer.
+
+### OLD description
 
 Im constantly working on making this project more reliable and eaisy to use. Recently I added a binhost repository which is automatically added to Gentoo during installation, to make the process faster. Currently testing it. 
 Please feel free to report any issues you have or some suggestions/questions using Issues tab in GitHub.

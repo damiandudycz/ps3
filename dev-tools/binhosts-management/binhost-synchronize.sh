@@ -34,7 +34,7 @@ chroot "$path" /bin/bash -c "FEATURES=\"buildpkg distcc -getbinpkg\" emerge --up
 if [[ -n $(git status --porcelain -- "$path_repo") ]]; then
 	git add "$path_repo"/*
 	git commit --path="$path_repo" -m "PS3 Binhost packages update"
-	# TODO: Git push?
+ 	git push
 fi
 
 umount "$path/var/cache/binpkgs"

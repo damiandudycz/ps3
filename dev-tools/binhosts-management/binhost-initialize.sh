@@ -8,11 +8,12 @@
 # TODO: Get user input values for things like distcc host, cofiguration, etc
 
 config="PS3"
-distcc_host="192.168.86.67"
+#distcc_host="192.168.86.67"
 path="../../local/binhost-maintainers/$config"
 path_repo = "../../binhosts/$config"
 
-../../installer/installer.sh --directory "$path" --config $config --distcc "$distcc_host"
+../../installer/installer.sh --directory "$path" --config $config
+# --distcc "$distcc_host"
 
 prepare_chroot() {
 	mount --type proc /proc "$path/proc"

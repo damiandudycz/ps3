@@ -37,6 +37,6 @@ unprepare_chroot() {
 # Rebuild all packages and create binpkgs. Add distcc config before that.
 prepare_chroot
 mount -o bind "$path_repo" "$path/var/cache/binpkgs"
-chroot "$path" /bin/bash -c "FEATURES=\"buildpkg distcc\" emerge @system @world --deep --emptytree --with-bdeps=y --quiet"
+chroot "$path" /bin/bash -c "FEATURES=\"buildpkg distcc -getbinpkg\" emerge @system @world --deep --emptytree --with-bdeps=y --quiet"
 umount "$path/var/cache/binpkgs"
 unprepare_chroot

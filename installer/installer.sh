@@ -11,6 +11,7 @@ path_tmp="/tmp/gentoo-setup"     # Temporary files storage directory.
 path_chroot="/mnt/gentoo-setup"  # Gentoo chroot environment directory.
 quiet_flag='--quiet'             # Quiet flag used to silence the output.
 quiet_flag_short='-q'            # Quiet flag used to silence the output.
+edit_config=false
 
 # MAIN PROGRAM ==================================================================================
 

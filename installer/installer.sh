@@ -23,7 +23,6 @@ warn_about_disk_wiping          # Asks user to confirm disk formatting.
 
 prepare_directories             # Create path_tmp and path_chroot.
 get_config                      # Download configuration or load local configuration file.
-override_config                 # Override default values from config, using flags.
 validate_config                 # Checks if all settings in configuration are set correctly.
 
 ## Setup disk -----------------------------------------------------------------------------------
@@ -147,17 +146,9 @@ print_usage() {
     echo ""
     echo "  --config <remote_config>          Use a remote configuration."
     echo "  --custom-config <config_file>     Use a custom configuration file."
-    echo "  --edit-config                     Modify configuration file before."
-    echo ""
-    echo "  --password <password>             Set root user password."
-    echo "  --hostname <hostname>             Set hostname."
-    echo "  --timezone <TimeZone>             Set timezone."
+    echo "  --edit-config                     Modify configuration file before installation."
     echo ""
     echo "  --verbose                         Enable verbose output."
-    echo ""
-    echo "  --sync-portage true/false         Should perform emerge-sync during installation. If empty, uses value from config."
-    echo "  --update-system true/false        Should update @world during installation. If empty, uses value from config."
-    echo "  --use-target-swap true/false      Should installer use target device swap if available. If empty, uses value from config."
     echo ""
     echo "  --distcc <host>                   Specify a distcc host."
     exit 1
@@ -251,42 +242,6 @@ read_variables() {
                 distcc_hosts="$1"
             fi
             ;;
-        --sync-portage)
-            shift
-            if [ $# -gt 0 ]; then
-                fsync_portage=$1
-            fi
-            ;;
-        --update-system)
-            shift
-            if [ $# -gt 0 ]; then
-                fupdate_system=$1
-            fi
-            ;;
-        --use-target-swap)
-            shift
-            if [ $# -gt 0 ]; then
-                fuse_target_swap=$1
-            fi
-            ;;
-        --password)
-            shift
-            if [ $# -gt 0 ]; then
-                froot_password=$1
-            fi
-            ;;
-        --hostname)
-            shift
-            if [ $# -gt 0 ]; then
-                fhostname=$1
-            fi
-            ;;
-        --timezone)
-            shift
-            if [ $# -gt 0 ]; then
-                ftimezone=$1
-            fi
-            ;;
         *)
             error "Unknown option: $1"
             ;;
@@ -294,27 +249,6 @@ read_variables() {
         shift
     done
     run_extra_scripts ${FUNCNAME[0]}
-}
-
-override_config() {
-    if [ ! -z $fsync_portage ]; then
-        sync_portage=$fsync_portage
-    fi
-    if [ ! -z $fupdate_system ]; then
-        update_system=$fupdate_system
-    fi
-    if [ ! -z $fuse_target_swap ]; then
-        use_target_swap=$fuse_target_swap
-    fi
-    if [ ! -z $froot_password ]; then
-        root_password=$froot_password
-    fi
-    if [ ! -z $fhostname ]; then
-        hostname=$fhostname
-    fi
-    if [ ! -z $ftimezone ]; then
-        timezone=$ftimezone
-    fi
 }
 
 validate_input_data() {

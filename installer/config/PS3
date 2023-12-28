@@ -48,6 +48,7 @@ export -A make_conf=(
     [USE]='ps3 lto pdo'
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
+    [BINPKG_FORMAT]='gpkg'
 )
 
 # Overriding env variables for custom packages.

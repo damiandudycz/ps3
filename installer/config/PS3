@@ -1,10 +1,9 @@
 
 # Configuration for the PlayStation 3.
 
-export arch='ppc64'
-export arch_long='powerpc64'
+export arch='ppc64/powerpc64'
 export init_system='openrc'
-export profile="default/linux/$arch/17.0"
+export profile="default/linux/$(echo $arch | cut -d'/' -f1)/17.0"
 export base_url_autobuilds='https://distfiles.gentoo.org/releases/ppc/autobuilds'
 export hostname='PS3'
 export root_password='' # Empty string removes password.

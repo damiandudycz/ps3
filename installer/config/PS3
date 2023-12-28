@@ -11,8 +11,8 @@ export root_password='' # Empty string removes password.
 export kernel_version='6.6.3'
 export kernel_headers_version='6.6'
 export bootloader='petitboot' # [petitboot/grub/grub-efi]
-export sync_portage=true # Run emerge --sync after emerge-webrsync to get the newest tarball.
-export update_system=false # Run emerge --update --newuse --deep @world during installation.
+export sync_portage=false # Run emerge --sync after emerge-webrsync to get the newest tarball.
+export update_system=true # Run emerge --update --newuse --deep @world during installation.
 export use_target_swap=true # Should the installer script use swap space on the target drive.
 
 export -a network_links=(

@@ -10,7 +10,7 @@
 config="PS3"
 #distcc_host="192.168.86.67"
 path="../../local/binhost-maintainers/$config"
-path_repo = "../../binhosts/$config"
+path_repo="../../binhosts/$config"
 
 ../../installer/installer.sh --directory "$path" --config $config --verbose
 # --distcc "$distcc_host"

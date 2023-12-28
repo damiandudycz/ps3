@@ -4,7 +4,7 @@
 export arch='arm64/arm64/arm64'
 export init_system='openrc' # [openrc/systemd]. Currently works only with openrc.
 export profile="default/linux/$(echo $arch | cut -d'/' -f2)/17.0"
-export base_url_autobuilds='https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds'
+export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds"
 export disk_scheme='gpt' # [gpt/dos]. Suggest using gpt.
 
 export hostname='VM-PS3-Helper'

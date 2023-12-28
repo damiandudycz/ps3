@@ -1,9 +1,9 @@
 # Configuration for virtual machine on Apple Silicone / M1.
 # Helper tools for the PS3.
 
-export arch='arm64/arm64'
+export arch='arm64/arm64/arm64'
 export init_system='openrc' # [openrc/systemd]. Currently works only with openrc.
-export profile="default/linux/$(echo $arch | cut -d'/' -f1)/17.0" # Customize is you want the GUI.
+export profile="default/linux/$(echo $arch | cut -d'/' -f2)/17.0"
 export base_url_autobuilds='https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds'
 export disk_scheme='gpt' # [gpt/dos]. Suggest using gpt.
 

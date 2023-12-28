@@ -39,6 +39,6 @@ unprepare_chroot() {
 prepare_chroot
 mount -o bind "$path_repo" "$path/var/cache/binpkgs"
 rm -rf "$path/var/cache/binpkgs"/* # Delete previous database of binpkgs to get a fresh start
-chroot "$path" /bin/bash -c "FEATURES=\"buildpkg distcc -getbinpkg\" emerge @system @world --deep --emptytree --with-bdeps=y --quiet"
+chroot "$path" /bin/bash -c "FEATURES=\"buildpkg distcc -getbinpkg\" emerge @system @world --deep --emptytree --with-bdeps=y"
 umount "$path/var/cache/binpkgs"
 unprepare_chroot

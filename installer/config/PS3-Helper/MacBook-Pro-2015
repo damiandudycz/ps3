@@ -106,12 +106,13 @@ export -A guest_rc_startup=(
     [default]='NetworkManager sysklogd sshd avahi-daemon distccd bluetooth docker netatalk plex-media-server transmission-daemon'
 )
 
+# TODO: Update these automatically
 export -A crossdev_config=(
     [a]='altivec'
-    [b]='2.40'
+    [b]='2.41-r2'
     [g]='13.2.1_p20230826'
     [k]='6.6'
-    [l]=[2.37]
+    [l]=[2.37-r7]
 )
 
 # Additional platform-specific scripts, incjected after given primary function finishes successfully.

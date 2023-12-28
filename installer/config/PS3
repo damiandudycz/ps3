@@ -49,7 +49,6 @@ export -A make_conf=(
     [USE]='ps3'
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
-    [CCACHE_DIR]='/var/cache/ccache'
 )
 
 ## Packages and tools ---------------------------------------------------------------------------

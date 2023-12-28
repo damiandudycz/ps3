@@ -326,8 +326,9 @@ get_config() {
     fi
     try source "$path_config"
     # prepare additional fields
-    arch_short=$(echo $arch | cut -d'/' -f1)
-    arch_long=$(echo $arch | cut -d'/' -f2)
+    arch_family=$(echo $arch | cut -d'/' -f1)
+    arch_short=$(echo $arch | cut -d'/' -f2)
+    arch_long=$(echo $arch | cut -d'/' -f3)
     run_extra_scripts ${FUNCNAME[0]}
 }
 

@@ -39,3 +39,5 @@ fi
 
 umount "$path/var/cache/binpkgs"
 unprepare_chroot
+
+# TODO: Add a check if there is no other binhost-synchronize.sh running already

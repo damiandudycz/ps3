@@ -42,7 +42,7 @@ export -a locales=(
 ## Make conf ------------------------------------------------------------------------------------
 
 export -A make_conf=(
-    [COMMON_FLAGS]='-O3 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple -flto'
+    [COMMON_FLAGS]='-Ofast -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple -flto'
     [MAKEOPTS]='-j5 -l2'
     [ACCEPT_LICENSE]='*'
     [FEATURES]='-news parallel-fetch parallel-install getbinpkg'

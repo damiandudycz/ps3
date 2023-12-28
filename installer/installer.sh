@@ -325,6 +325,9 @@ get_config() {
         nano "$path_config"
     fi
     try source "$path_config"
+    # prepare additional fields
+    arch_short=$(echo $arch | cut -d' ' -f1)
+    arch_long=$(echo $arch | cut -d' ' -f2)
     run_extra_scripts ${FUNCNAME[0]}
 }
 
@@ -467,7 +470,7 @@ gentoo_download() {
     local path_download="$path_chroot/gentoo.tar.xz"
     local stageinfo_url="$base_url_autobuilds/latest-stage3.txt"
     local latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
-    local latest_stage3="$(echo "$latest_gentoo_content" | grep "$arch-$init_system" | head -n 1 | cut -d' ' -f1)"
+    local latest_stage3="$(echo "$latest_gentoo_content" | grep "$arch_short-$init_system" | head -n 1 | cut -d' ' -f1)"
     if [ -n "$latest_stage3" ]; then
         url_gentoo_tarball="$base_url_autobuilds/$latest_stage3"
     else

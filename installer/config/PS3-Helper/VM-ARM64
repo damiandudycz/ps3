@@ -80,12 +80,13 @@ export -a guest_tools=(
     sys-kernel/genkernel
 )
 
+# TODO: Update these automatically
 export -A crossdev_config=(
     [a]='altivec'
-    [b]='2.40'
+    [b]='2.41-r2'
     [g]='13.2.1_p20230826'
     [k]='6.6'
-    [l]=[2.37]
+    [l]=[2.37-r7]
 )
 
 export -A guest_rc_startup=(

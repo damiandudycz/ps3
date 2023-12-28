@@ -12,7 +12,7 @@ config="PS3"
 path="../../local/binhost-maintainers/$config"
 path_repo = "../../binhosts/$config"
 
-../../installer/installer.sh --directory "$path" --config $config
+../../installer/installer.sh --directory "$path" --config $config --verbose
 # --distcc "$distcc_host"
 
 prepare_chroot() {

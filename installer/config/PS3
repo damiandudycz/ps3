@@ -42,13 +42,21 @@ export -a locales=(
 ## Make conf ------------------------------------------------------------------------------------
 
 export -A make_conf=(
-    [COMMON_FLAGS]='-O3 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple -flto'
+    [COMMON_FLAGS]='-O3 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -flto'
     [MAKEOPTS]='-j5 -l2'
     [ACCEPT_LICENSE]='*'
     [FEATURES]='-news parallel-fetch parallel-install getbinpkg'
     [USE]='ps3 lto pdo'
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
+)
+
+# Overriding env variables for custom packages.
+# Format: [category/package_entryIndex]='OVERRIDE_LINE'
+# Eq.: [sys-devel/distcc_1]='COMMON_FLAGS="${COMMON_CFLAGS/ -flto/}"' # will override COMMON_CFLAGS for distcc, removing -flto flag
+# To add multiple lines, use increasing indexes: _1, _2, _3, etc.
+export -A env_overrides=(
+    [sys-devel/distcc_1]='COMMON_FLAGS="${COMMON_CFLAGS/ -flto/}"'
 )
 
 ## Packages and tools ---------------------------------------------------------------------------

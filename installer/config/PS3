@@ -56,7 +56,7 @@ export -A make_conf=(
 # Eq.: [sys-devel/distcc_1]='COMMON_FLAGS="${COMMON_CFLAGS/ -flto/}"' # will override COMMON_CFLAGS for distcc, removing -flto flag
 # To add multiple lines, use increasing indexes: _1, _2, _3, etc.
 export -A env_overrides=(
-    [sys-devel/distcc_1]='COMMON_FLAGS="${COMMON_CFLAGS/ -flto/}"'
+    [sys-devel/distcc_1]='COMMON_CFLAGS="${COMMON_CFLAGS/ -flto/}"'
 )
 
 ## Packages and tools ---------------------------------------------------------------------------

@@ -42,6 +42,7 @@ prepare_chroot                  # Mount devices required for chroot to work and 
 
 ## Portage configuration ------------------------------------------------------------------------
 setup_make_conf                 # Configure make.conf flags.
+setup_env			# Writes env overrides for selected packages.
 setup_packages_config           # Configure package.use, package.accep_keywords.
 
 ## Various configs ------------------------------------------------------------------------------
@@ -507,6 +508,18 @@ setup_make_conf() {
     if [ ! -z "$add_features" ]; then
         append_make_config "FEATURES" "$add_features"
     fi
+    run_extra_scripts ${FUNCNAME[0]}
+}
+
+setup_env() {
+    for key in $(echo "${!env_overrides[@]}" | tr ' ' '\n' | sort); do
+        local key_short=$(echo $key | cut -d'_' -f1)
+	local category=$(echo "$key_short" | cut -d'/' -f1)
+	local package=$(echo "$key_short" | cut -d'/' -f2)
+ 	local category_path="$path_chroot/etc/portage/env/$category"
+  	try mkdir -p "$category_path"
+   	echo "${env_overrides[$key]}" | try tee -a "$category_path/$package" >/dev/null
+    done
     run_extra_scripts ${FUNCNAME[0]}
 }
 

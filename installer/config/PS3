@@ -4,7 +4,7 @@
 export arch='ppc/ppc64/powerpc64'
 export init_system='openrc'
 export profile="default/linux/$(echo $arch | cut -d'/' -f2)/17.0"
-export base_url_autobuilds='https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds'
+export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds"
 export hostname='PS3'
 export root_password='' # Empty string removes password.
 export kernel_version='6.6.3'

@@ -55,6 +55,9 @@ export -A make_conf=(
     [FEATURES]='-news'
 )
 
+export -A env_overrides=(
+)
+
 ## Packages and tools ---------------------------------------------------------------------------
 
 # TODO: Adjust flags for USE, ACCEPT, ETC

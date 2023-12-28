@@ -16,4 +16,4 @@ echo 'masters = gentoo' >> "$path_chroot/etc/portage/repos.conf/crossdev.conf"
 echo 'auto-sync = no' >> "$path_chroot/etc/portage/repos.conf/crossdev.conf"
 
 # Default configuration for the PS3 helper.
-chroot_call "crossdev --b '~${crossdev_config['b']}' --g '~${crossdev_config['g']}' --k '~${crossdev_config['k']}' --l '~${crossdev_config['l']}' -t powerpc64-unknown-linux-gnu --abis ${crossdev_config['a']}"
+chroot_call "crossdev --b '${crossdev_config['b']}' --g '${crossdev_config['g']}' --k '${crossdev_config['k']}' --l '${crossdev_config['l']}' -t powerpc64-unknown-linux-gnu --abis ${crossdev_config['a']}"

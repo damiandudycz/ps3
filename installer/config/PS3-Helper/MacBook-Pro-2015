@@ -1,11 +1,10 @@
 # Configuration for Apple MacBook Pro 13" 2015.
 # Contains helper tools for the PS3 and other tools.
 
-export arch='amd64'
-export arch_long='amd64'
+export arch='amd64/amd64/amd64'
 export init_system='openrc' # [openrc/systemd]. Currently works only with openrc.
-export profile="default/linux/$arch/17.1" # Customize is you want the GUI.
-export base_url_autobuilds='https://distfiles.gentoo.org/releases/amd64/autobuilds'
+export profile="default/linux/$(echo $arch | cut -d'/' -f2)/17.0"
+export base_url_autobuilds='https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds'
 export disk_scheme='gpt' # [gpt/dos]. Suggest using gpt.
 
 export hostname='MacBook-2015'

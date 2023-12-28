@@ -51,6 +51,14 @@ export -A make_conf=(
     [INPUT_DEVICES]='evdev'
 )
 
+# Overriding env variables for custom packages.
+# Format: [category/package_entryIndex]='OVERRIDE_LINE'
+# Eq.: [sys-devel/distcc_1]='COMMON_FLAGS="${COMMON_CFLAGS/ -flto/}"' # will override COMMON_CFLAGS for distcc, removing -flto flag
+# To add multiple lines, use increasing indexes: _1, _2, _3, etc.
+export -A env_overrides=(
+    [sys-devel/distcc_1]='COMMON_FLAGS="${COMMON_CFLAGS/ -flto/}"'
+)
+
 ## Packages and tools ---------------------------------------------------------------------------
 
 export -A package_use=(

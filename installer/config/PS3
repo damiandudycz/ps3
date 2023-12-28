@@ -80,12 +80,13 @@ export -a guest_tools=(
     app-eselect/eselect-repository
 # System tools
     app-admin/sysklogd
+    virtual/cron
     net-misc/ntp
 )
 
 export -A guest_rc_startup=(
     [boot]='ps3vram net.eth0'
-    [default]='sysklogd sshd ntpd ntp-client'
+    [default]='sysklogd sshd ntpd ntp-client cronie'
 )
 
 # values coresponds to files in repository /init.d directory on GitHub.

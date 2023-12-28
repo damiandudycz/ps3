@@ -512,7 +512,7 @@ setup_make_conf() {
 }
 
 setup_env() {
-    for key in $(echo "${!env_overrides[@]}" | tr ' ' '\n' | sort); do
+    for key in "${!env_overrides[@]}"; do
         local key_short=$(echo $key | cut -d'_' -f1)
 	local category=$(echo "$key_short" | cut -d'/' -f1)
 	local package=$(echo "$key_short" | cut -d'/' -f2)

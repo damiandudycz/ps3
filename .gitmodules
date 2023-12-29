@@ -1,0 +1,3 @@
+[submodule "binhosts/ps3-gentoo-binhosts"]
+	path = binhosts/ps3-gentoo-binhosts
+	url = https://github.com/damiandudycz/ps3-gentoo-binhosts

@@ -42,6 +42,8 @@ export -a locales=(
 
 export -A make_conf=(
     [COMMON_FLAGS]='-O3 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -flto'
+#    [KBUILD_CFLAGS]='${COMMON_FLAGS}' # Experimental kernel Optimization flags
+#    [KBUILD_CPPFLAGS]='${COMMON_FLAGS}' # Experimental kernel Optimization flags
     [MAKEOPTS]='-j5 -l2'
     [ACCEPT_LICENSE]='*'
     [FEATURES]='-news parallel-fetch parallel-install getbinpkg'

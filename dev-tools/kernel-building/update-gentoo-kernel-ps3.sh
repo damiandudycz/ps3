@@ -213,7 +213,7 @@ setup_sources() {
 	    # TODO: Setup configuration - default ps3_defconfig + customizations
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make ps3_defconfig
             try cp .config "$ps3_defconfig_generated_path"
-            ${dir}/apply-diffconfig.rb "${dir}/ps3_defconfig_diffs" "$ps3_defconfig_generated_path" | tee .config
+            ${dir}/apply-diffconfig.rb "${dir}/ps3_defconfig_diffs" "$ps3_defconfig_generated_path" > tee .config
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make oldconfig
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make savedefconfig
             # Copy generated .config from raw ps3_defconfig

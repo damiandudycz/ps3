@@ -17,25 +17,24 @@ source <(sed '1,/^# FUNCTIONS #.*$/d' "$0") # Load functions at the bottom of th
 read_variables "$@"                 # Read user input variables.
 validate_input_data                 # Validate if input data is correct.
 
-prepare_directories                 # Create path_tmp and path_chroot.
 get_config                          # Download configuration or load local configuration file.
 override_kernel_version_with_newest # Override kernel version in config with latest available.
 validate_config                     # Checks if all settings in configuration are set correctly.
 
 ## Setup sources and ebuild ---------------------------------------------------------------------
-download_patches
 # MAKE FUNCTION FROM THIS
-local sources_selected_root_path=$(realpath "${dir}/../../local/gentoo-sources/${kernel_version}")
+#local sources_selected_root_path=$(realpath -m "${dir}/../../local/gentoo-sources/${kernel_version}")
 if [ $clear = true ] && [ -d "${sources_selected_root_path}" ]; then
     try rm -rf "${sources_selected_root_path}"
 fi
 if [ ! -d "${sources_selected_root_path}" ]; then
     try mkdir -p "${sources_selected_root_path}" # Create sources directory
     # Download and configure gentoo sources in temp
-    ACCEPT_KEYWORDS="~*" emerge --root="${sources_selected_root_path}" --oneshot =sys-kernel/gentoo-sources-${kernel_version} $quiet_flag
+    ACCEPT_KEYWORDS="~*" try emerge --nodeps --root="${sources_selected_root_path}" --oneshot =sys-kernel/gentoo-sources-${kernel_version} $quiet_flag
+    download_patches
     # Apply patches
-    try cd "${sources_selected_root_path}" # TODO: Add rest of patch to linux sources, probably /usr/src/linux-VERSION
-    for patch in "$path_tmp/kernel_patches"/*; do
+    try cd "${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo" # TODO: Add rest of patch to linux sources, probably /usr/src/linux-VERSION
+    for patch in "${sources_selected_root_path}/kernel_patches"/*; do
 	    try quiet patch -p1 < $patch
     done
     cd "${dir}"
@@ -53,7 +52,6 @@ upload_dev_patches_and_config
 
 ## Cleanup and exit -----------------------------------------------------------------------------
 cleanup                         # Cleans unneded files.
-cleanup_directories             # Removes temporart installation files.
 summary                         # Show summary information if applicable.
 
 ## Summary --------------------------------------------------------------------------------------
@@ -163,15 +161,6 @@ validate_input_data() {
 return;
 }
 
-prepare_directories() {
-    if [ ! -d "$path_tmp" ]; then
-        try mkdir -p "$path_tmp"
-    fi
-    if [ ! -d "$path_tmp/kernel_patches" ]; then
-        try mkdir -p "$path_tmp/kernel_patches"
-    fi
-}
-
 get_config() {
     # Get config from the repository or local file.
     local path_config=$(realpath "${dir}/../../installer/config/${config}")
@@ -188,8 +177,10 @@ return;
 }
 
 download_patches() {
-    cd "$path_tmp/kernel_patches"
-    try rm -rf "$path_tmp/kernel_patches"/*
+    if [ ! -d "${sources_selected_root_path}/kernel_patches" ]; then
+        try mkdir -p "${sources_selected_root_path}/kernel_patches"
+    fi
+    cd "${sources_selected_root_path}/kernel_patches"
     for patch_url in ${kernel_patches[@]}; do
         try wget "$patch_url" $quiet_flag
     done
@@ -201,22 +192,19 @@ override_kernel_version_with_newest() {
     local newest_headers=$(equery m sys-kernel/linux-headers | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+(-r[0-9]+)?' | tail -n 1)
     export kernel_version="$newest_kernel"
     export kernel_headers_version="$newest_headers"
+    sources_selected_root_path=$(realpath -m "${dir}/../../local/gentoo-sources/${config}/${kernel_version}")
 }
 
 upload_dev_patches_and_config() {
     # Compress patches
-    local patches_path="$path_tmp/patches-ps3-${kernel_version}.tar.xz"
-    try tar -caf "$patches_path" -C "$path_tmp/kernel_patches" .
+    local patches_path="${sources_selected_root_path}/patches-ps3-${kernel_version}.tar.xz"
+    try tar -caf "$patches_path" -C "${sources_selected_root_path}/kernel_patches" .
 }
 
 # Cleaning ======================================================================================
 
 cleanup() {
 return;
-}
-
-cleanup_directories() {
-    try rm -rf "$path_tmp"
 }
 
 summary() {

@@ -23,8 +23,14 @@ validate_config                     # Checks if all settings in configuration ar
 
 ## Setup sources and ebuild ---------------------------------------------------------------------
 download_patches
-# MAKE FUNCTION FROM THOS
-ACCEPT_KEYWORDS="~*" emerge --newuse --update --deep =sys-kernel/gentoo-kernel-${kernel_version} $quiet_flag
+# MAKE FUNCTION FROM THIS
+local sources_path="${dir}/../../local/gentoo-sources/${kernel_version}"
+if [ ! -d "${sources_path}" ]; then
+    # Download and configure gentoo sources in temp
+    ACCEPT_KEYWORDS="~*" emerge --newuse --update --deep --root="${sources_path}" --oneshot =sys-kernel/gentoo-kernel-${kernel_version} $quiet_flag
+    # Apply patches
+fi
+# Cleanup configuration and apply previous config
 ############
 # Modify kernel configuration for dev ebuild kernel, upload it to dev
 upload_dev_patches_and_config

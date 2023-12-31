@@ -14,31 +14,22 @@ clear=false                            # Clear sources and emerge them again.
 ## Prepare --------------------------------------------------------------------------------------
 source <(sed '1,/^# FUNCTIONS #.*$/d' "$0") # Load functions at the bottom of the script.
 
-read_variables "$@"                 # Read user input variables.
-validate_input_data                 # Validate if input data is correct.
-
-get_config                          # Download configuration or load local configuration file.
-override_kernel_version_with_newest # Override kernel version in config with latest available.
-validate_config                     # Checks if all settings in configuration are set correctly.
+read_variables "$@"       # Read user input variables.
+validate_input_data       # Validate if input data is correct.
+get_config                # Download configuration or load local configuration file.
+get_newest_kernel_version # Read newest kernel available in portage.
+validate_config           # Checks if all settings in configuration are set correctly.
+setup_sources             # Downloads kernel sources, Applies patches and current stored configuration.
 
 ## Setup sources and ebuild ---------------------------------------------------------------------
 # MAKE FUNCTION FROM THIS
 #local sources_selected_root_path=$(realpath -m "${dir}/../../local/gentoo-sources/${kernel_version}")
-if [ $clear = true ] && [ -d "${sources_selected_root_path}" ]; then
-    try rm -rf "${sources_selected_root_path}"
-fi
-if [ ! -d "${sources_selected_root_path}" ]; then
-    try mkdir -p "${sources_selected_root_path}" # Create sources directory
-    # Download and configure gentoo sources in temp
-    ACCEPT_KEYWORDS="~*" try emerge --nodeps --root="${sources_selected_root_path}" --oneshot =sys-kernel/gentoo-sources-${kernel_version} $quiet_flag
-    download_patches
-    # Apply patches
-    try cd "${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo" # TODO: Add rest of patch to linux sources, probably /usr/src/linux-VERSION
-    for patch in "${sources_selected_root_path}/kernel_patches"/*; do
-	    try quiet patch -p1 < $patch
-    done
-    cd "${dir}"
-fi
+
+# Modifu configs if requested
+# Check if compiles correctly
+# Store new changes in default configuration
+# Create ebuild for gentoo-kernel with new config and patches
+
 # Cleanup configuration and apply previous config
 ############
 # Modify kernel configuration for dev ebuild kernel, upload it to dev
@@ -187,11 +178,11 @@ download_patches() {
     cd "${dir}"
 }
 
-override_kernel_version_with_newest() {
+get_newest_kernel_version() {
     local newest_kernel=$(equery m sys-kernel/gentoo-kernel | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | tail -n 1)
     local newest_headers=$(equery m sys-kernel/linux-headers | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+(-r[0-9]+)?' | tail -n 1)
-    export kernel_version="$newest_kernel"
-    export kernel_headers_version="$newest_headers"
+    kernel_version="$newest_kernel"
+    kernel_headers_version="$newest_headers"
     sources_selected_root_path=$(realpath -m "${dir}/../../local/gentoo-sources/${config}/${kernel_version}")
 }
 
@@ -199,6 +190,37 @@ upload_dev_patches_and_config() {
     # Compress patches
     local patches_path="${sources_selected_root_path}/patches-ps3-${kernel_version}.tar.xz"
     try tar -caf "$patches_path" -C "${sources_selected_root_path}/kernel_patches" .
+}
+
+setup_sources() {
+	if [ $clear = true ] && [ -d "${sources_selected_root_path}" ]; then
+	    try rm -rf "${sources_selected_root_path}"
+	fi
+	if [ ! -d "${sources_selected_root_path}" ]; then
+            local ps3_defconfig_generated_path="${sources_selected_root_path}/ps3config_default"
+            local ps3_defconfig_modifications_path="${sources_selected_root_path}/ps3config.patch"
+
+	    try mkdir -p "${sources_selected_root_path}" # Create sources directory
+	    # Download and configure gentoo sources in temp
+	    ACCEPT_KEYWORDS="~*" try emerge --nodeps --root="${sources_selected_root_path}" --oneshot =sys-kernel/gentoo-sources-${kernel_version} $quiet_flag
+	    download_patches
+	    # Apply patches
+	    try cd "${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo" # TODO: Add rest of patch to linux sources, probably /usr/src/linux-VERSION
+	    for patch in "${sources_selected_root_path}/kernel_patches"/*; do
+		    try patch -p1 -i "$patch"
+	    done
+
+	    # TODO: Setup configuration - default ps3_defconfig + customizations
+            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make ps3_defconfig
+            try cp .config "$ps3_defconfig_generated_path"
+            ${dir}/apply-diffconfig.rb "../../../../../../../kernel/ps3_defconfig_diffs" "$ps3_defconfig_generated_path" | tee .config
+            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make oldconfig
+            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make savedefconfig
+            # Copy generated .config from raw ps3_defconfig
+            # Apply modifications
+
+	    try cd "${dir}"
+	fi
 }
 
 # Cleaning ======================================================================================

@@ -202,8 +202,8 @@ setup_sources() {
 	    try rm -rf "${sources_selected_root_path}"
 	fi
 	if [ ! -d "${sources_selected_root_path}" ]; then
-            local ps3_defconfig_generated_path="${sources_selected_root_path}/ps3config_default"
-            local ps3_defconfig_modifications_path="${sources_selected_root_path}/ps3config.patch"
+            local ps3_defconfig_generated_path="${sources_selected_root_path}/ps3_defconfig_raw"
+            local ps3_defconfig_modifications_path="${dir}/ps3_defconfig_diffs"
 
 	    try mkdir -p "${sources_selected_root_path}" # Create sources directory
 	    # Download and configure gentoo sources in temp
@@ -217,14 +217,14 @@ setup_sources() {
             # Generate kernel configuration - ps3_defconfig + (current)ps3_defconfig_diffs
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make ps3_defconfig
             try cp .config "$ps3_defconfig_generated_path"
-            ${dir}/apply-diffconfig.rb "${dir}/ps3_defconfig_diffs" "$ps3_defconfig_generated_path" > tee .config
+            ${dir}/apply-diffconfig.rb "${ps3_defconfig_modifications_path}" "$ps3_defconfig_generated_path" > tee .config
 
 	    try cd "${dir}"
 	fi
 }
 
 prepare_new_kernel_configs() {
-	    try cd "${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo" # TODO: Add rest of patch to linux sources, probably /usr/src/linux-VERSION
+	    try cd "${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo"
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make oldconfig
      	    if [ $menuconfig = true ]; then
                 ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make menuconfig

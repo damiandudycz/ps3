@@ -217,7 +217,7 @@ setup_sources() {
             # Generate kernel configuration - ps3_defconfig + (current)ps3_defconfig_diffs
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make ${defconfig_name}
             try cp .config "$ps3_defconfig_generated_path"
-            ${dir}/apply-diffconfig.rb "${ps3_defconfig_modifications_path}" "$ps3_defconfig_generated_path" > tee .config
+            ${dir}/apply-diffconfig.rb "${ps3_defconfig_modifications_path}" "$ps3_defconfig_generated_path" > .config
 
 	    try cd "${dir}"
 	fi

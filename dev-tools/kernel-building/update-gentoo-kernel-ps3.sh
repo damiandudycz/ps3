@@ -8,18 +8,20 @@ quiet_flag='--quiet'                   # Quiet flag used to silence the output.
 quiet_flag_short='-q'                  # Quiet flag used to silence the output.
 defconfig_name='ps3_defconfig'         # Name of base kernel configuration.
 clear=false                            # Clear sources and emerge them again.
+menuconfig=false                       # Run make menuconfig to adjust kernel configuration.
 
 # MAIN PROGRAM ==================================================================================
 
 ## Prepare --------------------------------------------------------------------------------------
 source <(sed '1,/^# FUNCTIONS #.*$/d' "$0") # Load functions at the bottom of the script.
 
-read_variables "$@"       # Read user input variables.
-validate_input_data       # Validate if input data is correct.
-get_config                # Download configuration or load local configuration file.
-get_newest_kernel_version # Read newest kernel available in portage.
-validate_config           # Checks if all settings in configuration are set correctly.
-setup_sources             # Downloads kernel sources, Applies patches and current stored configuration.
+read_variables "$@"        # Read user input variables.
+validate_input_data        # Validate if input data is correct.
+get_config                 # Download configuration or load local configuration file.
+get_newest_kernel_version  # Read newest kernel available in portage.
+validate_config            # Checks if all settings in configuration are set correctly.
+setup_sources              # Downloads kernel sources, Applies patches and current stored configuration.
+prepare_new_kernel_configs # Sets up new ps3_defconfig_diffs and ps3_gentoo_defconfig
 
 ## Setup sources and ebuild ---------------------------------------------------------------------
 # MAKE FUNCTION FROM THIS
@@ -139,6 +141,9 @@ read_variables() {
         --clear)
             clear=true
             ;;
+        --menuconfig)
+            menuconfig=true
+            ;;
         *)
             error "Unknown option: $1"
             ;;
@@ -203,24 +208,30 @@ setup_sources() {
 	    try mkdir -p "${sources_selected_root_path}" # Create sources directory
 	    # Download and configure gentoo sources in temp
 	    ACCEPT_KEYWORDS="~*" try emerge --nodeps --root="${sources_selected_root_path}" --oneshot =sys-kernel/gentoo-sources-${kernel_version} $quiet_flag
-	    download_patches
 	    # Apply patches
-	    try cd "${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo" # TODO: Add rest of patch to linux sources, probably /usr/src/linux-VERSION
+	    download_patches
+	    try cd "${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo"
 	    for patch in "${sources_selected_root_path}/kernel_patches"/*; do
-		    try patch -p1 -i "$patch"
+		try patch -p1 -i "$patch"
 	    done
-
-	    # TODO: Setup configuration - default ps3_defconfig + customizations
+            # Generate kernel configuration - ps3_defconfig + (current)ps3_defconfig_diffs
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make ps3_defconfig
             try cp .config "$ps3_defconfig_generated_path"
             ${dir}/apply-diffconfig.rb "${dir}/ps3_defconfig_diffs" "$ps3_defconfig_generated_path" > tee .config
-            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make oldconfig
-            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make savedefconfig
-            # Copy generated .config from raw ps3_defconfig
-            # Apply modifications
 
 	    try cd "${dir}"
 	fi
+}
+
+prepare_new_kernel_configs() {
+	    try cd "${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo" # TODO: Add rest of patch to linux sources, probably /usr/src/linux-VERSION
+            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make oldconfig
+     	    if [ $menuconfig = true ]; then
+                ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make menuconfig
+            fi
+	    # TODO: Generate new ps3_defconfig_diffs
+            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make savedefconfig
+	    try cd "${dir}"
 }
 
 # Cleaning ======================================================================================

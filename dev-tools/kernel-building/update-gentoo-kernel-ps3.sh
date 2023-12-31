@@ -202,8 +202,8 @@ setup_sources() {
 	    try rm -rf "${sources_selected_root_path}"
 	fi
 	if [ ! -d "${sources_selected_root_path}" ]; then
-            local ps3_defconfig_generated_path="${sources_selected_root_path}/ps3_defconfig_raw"
-            local ps3_defconfig_modifications_path="${dir}/ps3_defconfig_diffs"
+            local ps3_defconfig_generated_path="${sources_selected_root_path}/${defconfig_name}_raw"
+            local ps3_defconfig_modifications_path="${dir}/${defconfig_name}_diffs"
 
 	    try mkdir -p "${sources_selected_root_path}" # Create sources directory
 	    # Download and configure gentoo sources in temp
@@ -215,7 +215,7 @@ setup_sources() {
 		try patch -p1 -i "$patch"
 	    done
             # Generate kernel configuration - ps3_defconfig + (current)ps3_defconfig_diffs
-            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make ps3_defconfig
+            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make ${defconfig_name}
             try cp .config "$ps3_defconfig_generated_path"
             ${dir}/apply-diffconfig.rb "${ps3_defconfig_modifications_path}" "$ps3_defconfig_generated_path" > tee .config
 

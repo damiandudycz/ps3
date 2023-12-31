@@ -25,13 +25,14 @@ validate_config                     # Checks if all settings in configuration ar
 ## Setup sources and ebuild ---------------------------------------------------------------------
 download_patches
 # MAKE FUNCTION FROM THIS
-local sources_root_path=$(realpath "${dir}/../../local/gentoo-sources/${kernel_version}")
-if [ $clear = true ] && [ -d "${sources_path}" ]; then
-    try rm -rf "${sources_root_path}"
+local sources_selected_root_path=$(realpath "${dir}/../../local/gentoo-sources/${kernel_version}")
+if [ $clear = true ] && [ -d "${sources_selected_root_path}" ]; then
+    try rm -rf "${sources_selected_root_path}"
 fi
-if [ ! -d "${sources_path}" ]; then
+if [ ! -d "${sources_selected_root_path}" ]; then
+    try mkdir -p "${sources_selected_root_path}" # Create sources directory
     # Download and configure gentoo sources in temp
-    ACCEPT_KEYWORDS="~*" emerge --root="${sources_root_path}" --oneshot =sys-kernel/gentoo-kernel-${kernel_version} $quiet_flag
+    ACCEPT_KEYWORDS="~*" emerge --root="${sources_selected_root_path}" --oneshot =sys-kernel/gentoo-kernel-${kernel_version} $quiet_flag
     # Apply patches
 fi
 # Cleanup configuration and apply previous config

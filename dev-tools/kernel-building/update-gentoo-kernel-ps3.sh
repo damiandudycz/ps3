@@ -32,8 +32,12 @@ fi
 if [ ! -d "${sources_selected_root_path}" ]; then
     try mkdir -p "${sources_selected_root_path}" # Create sources directory
     # Download and configure gentoo sources in temp
-    ACCEPT_KEYWORDS="~*" emerge --root="${sources_selected_root_path}" --oneshot =sys-kernel/gentoo-kernel-${kernel_version} $quiet_flag
+    ACCEPT_KEYWORDS="~*" emerge --root="${sources_selected_root_path}" --oneshot =sys-kernel/gentoo-sources-${kernel_version} $quiet_flag
     # Apply patches
+    try cd "${sources_selected_root_path}" # TODO: Add rest of patch to linux sources, probably /usr/src/linux-VERSION
+    for patch in "$path_tmp/kernel_patches"/*; do
+	    try quiet patch -p1 < $patch
+    done
 fi
 # Cleanup configuration and apply previous config
 ############

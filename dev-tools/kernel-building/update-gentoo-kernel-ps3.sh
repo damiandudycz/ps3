@@ -24,10 +24,10 @@ validate_config                     # Checks if all settings in configuration ar
 ## Setup sources and ebuild ---------------------------------------------------------------------
 download_patches
 # MAKE FUNCTION FROM THIS
-local sources_path="${dir}/../../local/gentoo-sources/${kernel_version}"
+local sources_root_path=$(realpath "${dir}/../../local/gentoo-sources/${kernel_version}")
 if [ ! -d "${sources_path}" ]; then
     # Download and configure gentoo sources in temp
-    ACCEPT_KEYWORDS="~*" emerge --newuse --update --deep --root="${sources_path}" --oneshot =sys-kernel/gentoo-kernel-${kernel_version} $quiet_flag
+    ACCEPT_KEYWORDS="~*" emerge --newuse --update --deep --root="${sources_root_path}" --oneshot =sys-kernel/gentoo-kernel-${kernel_version} $quiet_flag
     # Apply patches
 fi
 # Cleanup configuration and apply previous config
@@ -161,7 +161,7 @@ prepare_directories() {
 
 get_config() {
     # Get config from the repository or local file.
-    local path_config="../../installer/config/${config}"
+    local path_config=$(realpath "${dir}/../../installer/config/${config}")
     try source "$path_config"
     # prepare additional fields
     arch_family=$(echo $arch | cut -d'/' -f1)

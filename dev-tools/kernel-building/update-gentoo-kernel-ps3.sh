@@ -38,6 +38,7 @@ if [ ! -d "${sources_selected_root_path}" ]; then
     for patch in "$path_tmp/kernel_patches"/*; do
 	    try quiet patch -p1 < $patch
     done
+    cd "${dir}"
 fi
 # Cleanup configuration and apply previous config
 ############

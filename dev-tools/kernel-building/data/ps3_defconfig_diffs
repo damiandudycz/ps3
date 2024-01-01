@@ -1,5 +1,1 @@
--SYSVIPC y
--TMPFS y
--UNIX y
-+BTRFS_FS m
-+EXT3_FS m
+

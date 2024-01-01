@@ -181,7 +181,7 @@ setup_default_repo() {
 }
 
 setup_local_overlay() {
-	if [ ! -d "$overlay_path" ]; then
+	if [ ! -f "$overlay_path/profiles/repo_name" ]; then
             try eselect repository create "${overlay_name}" "${overlay_path}"
 	fi
 }
@@ -257,7 +257,7 @@ save() {
         local ps3_defconfig_modifications_path="${dir}/data/${defconfig_name}_diffs"
         local ps3_defconfig_modifications_new_path="${files_path}/${defconfig_name}_diffs"
 	local overlay_remote_path=$(realpath -m "${dir}/../../overlays/${overlay_name}.files/sys-kernel/gentoo-kernel-ps3")
-        local files_compressed_path="${files_path}/files-${kernel_version}.tar.xz"
+        local files_compressed_path="${files_path}/gentoo-kernel-ps3-files-${kernel_version}.tar.xz"
         local files_to_compress=(
             ps3_defconfig_diffs
             ps3_gentoo_defconfig
@@ -268,11 +268,11 @@ save() {
 	if [ ! -d "${overlay_remote_path}" ]; then
 		try mkdir -p "${overlay_remote_path}"
 	fi
-	try cp "${files_compressed_path}" "${overlay_remote_path}/files-${kernel_version}.tar.xz"
-#	local upload_file_path=$(realpath -m "../../overlays/${overlay_name}.files/sys-kernel/gentoo-kernel-ps3/files-${kernel_version}.tar.xz")
+	try cp "${files_compressed_path}" "${overlay_remote_path}/gentoo-kernel-ps3-files-${kernel_version}.tar.xz"
+#	local upload_file_path=$(realpath -m "../../overlays/${overlay_name}.files/sys-kernel/gentoo-kernel-ps3/gentoo-kernel-ps3-files-${kernel_version}.tar.xz")
         # Upload patches file to overlay repository
 #	try git add "${upload_file_path}"
-#	try git commit -m "Uploading kernel files: files-${kernel_version}.tar.xz"
+#	try git commit -m "Uploading kernel files: gentoo-kernel-ps3-files-${kernel_version}.tar.xz"
 #	try git push
 # Its not needed to upload at this point yet! Just copy files to distfiles directory
 	try cp "${files_compressed_path}" "/var/cache/distfiles/"

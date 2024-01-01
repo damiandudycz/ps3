@@ -1,6 +1,0 @@
-[submodule "binhosts/ps3-gentoo-binhosts"]
-	path = binhosts/ps3-gentoo-binhosts
-	url = https://github.com/damiandudycz/ps3-gentoo-binhosts
-[submodule "overlays/ps3-gentoo-overlay"]
-	path = overlays/ps3-gentoo-overlay
-	url = https://github.com/damiandudycz/ps3-gentoo-overlay

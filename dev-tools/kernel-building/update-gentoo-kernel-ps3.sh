@@ -214,8 +214,9 @@ setup_sources() {
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make ${defconfig_name}
             try cp .config "${ps3_defconfig_generated_path}"
 
-            ${dir}/data/apply-diffconfig.rb "${ps3_defconfig_modifications_path}" "$ps3_defconfig_generated_path" > .config_changed
-            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try ./scripts/kconfig/merge_config.sh .config_changed
+            ${dir}/data/apply-diffconfig.rb "${ps3_defconfig_modifications_path}" "$ps3_defconfig_generated_path" > .config_updated
+            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try ./scripts/kconfig/merge_config.sh .config_updated
+            rm .config_updated
 
 	    try cd "${dir}"
 	fi
@@ -250,7 +251,7 @@ create_ebuild() {
 save() {
     if [ $save = true ]; then
         local files_path="${sources_selected_root_path}/files"
-	local overlay_local_path="/var/db/repos/local"
+	local overlay_local_path="/var/db/repos/${overlay_name}"
 	local ebuild_local_dir="${overlay_local_path}/sys-kernel/gentoo-kernel-ps3"
 	local ebuild_local_path="${ebuild_local_dir}/gentoo-kernel-ps3-${kernel_version}.ebuild"
         local ebuild_path="${files_path}/gentoo-kernel-ps3-${kernel_version}.ebuild"
@@ -269,11 +270,13 @@ save() {
 		try mkdir -p "${overlay_remote_path}"
 	fi
 	try cp "${files_compressed_path}" "${overlay_remote_path}/files-${kernel_version}.tar.xz"
-	local upload_file_path="../../overlays/${overlay_name}.files/sys-kernel/gentoo-kernel-ps3/files-${kernel_version}.tar.xz"
+#	local upload_file_path=$(realpath -m "../../overlays/${overlay_name}.files/sys-kernel/gentoo-kernel-ps3/files-${kernel_version}.tar.xz")
         # Upload patches file to overlay repository
-	try git add "${upload_file_path}"
-	try git commit -m "Uploading kernel files: files-${kernel_version}.tar.xz"
-	try git push
+#	try git add "${upload_file_path}"
+#	try git commit -m "Uploading kernel files: files-${kernel_version}.tar.xz"
+#	try git push
+# Its not needed to upload at this point yet! Just copy files to distfiles directory
+	try cp "${files_compressed_path}" "/var/cache/distfiles/"
 
 	# Store ebuild in local overlay and create manifest for it.
 	# Copy ebuild and manifest to overlay git, and publish it
@@ -282,8 +285,17 @@ save() {
 	fi
 	try cp "${ebuild_path}" "${ebuild_local_path}"
 
+	# Clear old manifest and create new one
+	if [ -f "${ebuild_local_dir}/Manifest" ]; then
+		try rm "${ebuild_local_dir}/Manifest"
+	fi
+	try cd "${ebuild_local_dir}"
+	try pkgdev manifest
+
 	# Override "${dir}/data/${defconfig_name}_diffs" with new diffs
 	try cp "${ps3_defconfig_modifications_new_path}" "${ps3_defconfig_modifications_path}"
+
+	cd "${dir}"
     fi
 
 }

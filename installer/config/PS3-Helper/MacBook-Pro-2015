@@ -81,6 +81,8 @@ export -a guest_tools=(
     app-portage/gentoolkit
     app-portage/genlop
     app-eselect/eselect-repository
+    dev-lang/ruby
+    dev-util/pkgdev
     net-dns/avahi
     sys-devel/distcc
     sys-devel/crossdev

@@ -128,7 +128,7 @@
  	local merge_configs=(
  		"${T}"/version.config
 -		"${dist_conf_path}"/base.config
-+		"${WORKDIR}"/config-ps3
++
  	)
 +
  	use debug || merge_configs+=(

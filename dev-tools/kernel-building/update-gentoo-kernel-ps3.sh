@@ -180,9 +180,9 @@ setup_default_repo() {
 }
 
 setup_local_overlay() {
-	local overlay_path="/var/db/repos/local"
+	local overlay_path="/var/db/repos/${overlay_name}"
 	if [ ! -d "$overlay_path" ]; then
-            try eselect repository create local
+            try eselect repository create "${overlay_name}"
 	fi
 }
 
@@ -242,7 +242,7 @@ create_ebuild() {
 	    local ebuild_original_path="/var/db/repos/gentoo/sys-kernel/gentoo-kernel/gentoo-kernel-${kernel_version}.ebuild"
             try cp "${ebuild_original_path}" "${ebuild_path}"
             try patch -u "${ebuild_path}" -i "${ebuild_patch_path}"
-	    # NOTE: To change generated ebuild, its required to generate new patch in $ebuild_patch_path.
+	    # NOTE: To change generated ebuild, its required to generate new patch in data/gentoo-kernel-ps3.ebuild.patch.
             # use: diff -u $ebuild_original_path $ebuild_path to create one. Before this, edit $ebuild_path file.
 }
 
@@ -268,8 +268,11 @@ save() {
 		try mkdir -p "${overlay_remote_path}"
 	fi
 	try cp "${files_compressed_path}" "${overlay_remote_path}/files-${kernel_version}.tar.xz"
-
+	local upload_file_path="../../overlays/${overlay_name}.files/sys-kernel/gentoo-kernel-ps3/files-${kernel_version}.tar.xz"
         # Upload patches file to overlay repository
+	try git add "${upload_file_path}"
+	try git commit -m "Uploading kernel files: files-${kernel_version}.tar.xz"
+	try git push
 
 	# Store ebuild in local overlay and create manifest for it.
 	# Copy ebuild and manifest to overlay git, and publish it

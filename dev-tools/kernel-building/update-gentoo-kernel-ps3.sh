@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# TODO: This tool requires configured /etc/portage/repos.conf/gentoo.conf with default gentoo configuration.
-# And local repository, to be able to build package manifests
+# TODO: Uploading new generated files to submodules repositories with GIT.
+# TODO: Allow updating by settings version manually.
+# TODO: Cleanup
+# TODO: Allow skipping if package was already creadted, for automatic updates
 
 # HELPER VARIABLES ==============================================================================
 
@@ -9,12 +11,14 @@ dir="$(pwd)"                   # Current directory where script was called from.
 quiet_flag='--quiet'           # Quiet flag used to silence the output.
 defconfig_name='ps3_defconfig' # Name of base kernel configuration.
 defconfig_gentoo_name='ps3_gentoo_defconfig' # Name of modified kernel configuration.
-clear=false                    # Clear sources and emerge them again.
-menuconfig=false               # Run make menuconfig to adjust kernel configuration.
 config="PS3"
-save=false                     # Should generated ebuild be saved in overlay repository, and configuration diff file stored as default for future builds.
 overlay_name="ps3-gentoo-overlay"
 overlay_path=$(realpath -m "$dir/../../overlays/${overlay_name}")
+overlay_distfiles_path=$(realpath -m "$dir/../../overlays/${overlay_name}.distfiles")
+
+save=false                     # Should generated ebuild be saved in overlay repository, and configuration diff file stored as default for future builds.
+clear=false                    # Clear sources and emerge them again.
+menuconfig=false               # Run make menuconfig to adjust kernel configuration.
 
 # MAIN PROGRAM ==================================================================================
 
@@ -256,7 +260,7 @@ save() {
         local ebuild_path="${files_path}/gentoo-kernel-ps3-${kernel_version}.ebuild"
         local ps3_defconfig_modifications_path="${dir}/data/${defconfig_name}_diffs"
         local ps3_defconfig_modifications_new_path="${files_path}/${defconfig_name}_diffs"
-	local overlay_remote_path=$(realpath -m "${dir}/../../overlays/${overlay_name}.distfiles/sys-kernel/gentoo-kernel-ps3")
+	local overlay_remote_path="${overlay_distfiles_path}/sys-kernel/gentoo-kernel-ps3"
         local files_compressed_path="${files_path}/gentoo-kernel-ps3-files-${kernel_version}.tar.xz"
         local files_to_compress=(
             ps3_defconfig_diffs
@@ -269,12 +273,6 @@ save() {
 		try mkdir -p "${overlay_remote_path}"
 	fi
 	try cp "${files_compressed_path}" "${overlay_remote_path}/gentoo-kernel-ps3-files-${kernel_version}.tar.xz"
-#	local upload_file_path=$(realpath -m "../../overlays/${overlay_name}.distfiles/sys-kernel/gentoo-kernel-ps3/gentoo-kernel-ps3-files-${kernel_version}.tar.xz")
-        # Upload patches file to overlay repository
-#	try git add "${upload_file_path}"
-#	try git commit -m "Uploading kernel files: gentoo-kernel-ps3-files-${kernel_version}.tar.xz"
-#	try git push
-# Its not needed to upload at this point yet! Just copy files to distfiles directory
 	try cp "${files_compressed_path}" "/var/cache/distfiles/"
 
 	# Store ebuild in local overlay and create manifest for it.

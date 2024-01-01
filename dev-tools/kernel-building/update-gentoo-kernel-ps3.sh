@@ -4,6 +4,8 @@
 # TODO: Allow updating by settings version manually.
 # TODO: Cleanup
 # TODO: Allow skipping if package was already creadted, for automatic updates
+# TODO: Make sure this script works also on PS3 directly
+# TODO: Add metadata.xml to repository
 
 # HELPER VARIABLES ==============================================================================
 

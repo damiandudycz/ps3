@@ -256,7 +256,7 @@ save() {
         local ebuild_path="${files_path}/gentoo-kernel-ps3-${kernel_version}.ebuild"
         local ps3_defconfig_modifications_path="${dir}/data/${defconfig_name}_diffs"
         local ps3_defconfig_modifications_new_path="${files_path}/${defconfig_name}_diffs"
-	local overlay_remote_path=$(realpath -m "${dir}/../../overlays/${overlay_name}.files/sys-kernel/gentoo-kernel-ps3")
+	local overlay_remote_path=$(realpath -m "${dir}/../../overlays/${overlay_name}.distfiles/sys-kernel/gentoo-kernel-ps3")
         local files_compressed_path="${files_path}/gentoo-kernel-ps3-files-${kernel_version}.tar.xz"
         local files_to_compress=(
             ps3_defconfig_diffs
@@ -269,7 +269,7 @@ save() {
 		try mkdir -p "${overlay_remote_path}"
 	fi
 	try cp "${files_compressed_path}" "${overlay_remote_path}/gentoo-kernel-ps3-files-${kernel_version}.tar.xz"
-#	local upload_file_path=$(realpath -m "../../overlays/${overlay_name}.files/sys-kernel/gentoo-kernel-ps3/gentoo-kernel-ps3-files-${kernel_version}.tar.xz")
+#	local upload_file_path=$(realpath -m "../../overlays/${overlay_name}.distfiles/sys-kernel/gentoo-kernel-ps3/gentoo-kernel-ps3-files-${kernel_version}.tar.xz")
         # Upload patches file to overlay repository
 #	try git add "${upload_file_path}"
 #	try git commit -m "Uploading kernel files: gentoo-kernel-ps3-files-${kernel_version}.tar.xz"

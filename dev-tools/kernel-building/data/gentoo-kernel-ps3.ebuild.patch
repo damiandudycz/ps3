@@ -34,7 +34,7 @@
 -		https://raw.githubusercontent.com/projg2/fedora-kernel-config-for-gentoo/${CONFIG_VER}/kernel-i686-fedora.config
 -			-> kernel-i686-fedora.config.${CONFIG_VER}
 -	)
-+	https://raw.githubusercontent.com/damiandudycz/ps3/main/overlays/PS3.files/sys-kernel/gentoo-kernel-ps3/files-${PV}.tar.xz
++	https://raw.githubusercontent.com/damiandudycz/ps3/main/overlays/ps3-gentoo-overlay.files/sys-kernel/gentoo-kernel-ps3/files-${PV}.tar.xz
  "
  S=${WORKDIR}/${MY_P}
  

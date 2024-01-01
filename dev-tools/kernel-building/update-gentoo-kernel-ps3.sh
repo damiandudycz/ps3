@@ -13,6 +13,7 @@ clear=false                    # Clear sources and emerge them again.
 menuconfig=false               # Run make menuconfig to adjust kernel configuration.
 config="PS3"
 save=false                     # Should generated ebuild be saved in overlay repository, and configuration diff file stored as default for future builds.
+overlay_name="ps3-gentoo-overlay"
 
 # MAIN PROGRAM ==================================================================================
 
@@ -158,8 +159,6 @@ download_patches() {
     for patch_url in ${ps3_patches[@]}; do
         try wget "$patch_url" $quiet_flag
     done
-#    local patches_compressed_path="${sources_selected_root_path}/files/patches-ps3-${kernel_version}.tar.xz"
-#    try tar -caf "$patches_compressed_path" -C "${patches_path}" .
 
     cd "${dir}"
 }
@@ -256,6 +255,7 @@ save() {
         local ebuild_path="${files_path}/gentoo-kernel-ps3-${kernel_version}.ebuild"
         local ps3_defconfig_modifications_path="${dir}/data/${defconfig_name}_diffs"
         local ps3_defconfig_modifications_new_path="${files_path}/${defconfig_name}_diffs"
+	local overlay_remote_path=$(realpath -m "${dir}/../../overlays/${overlay_name}.files/sys-kernel/gentoo-kernel-ps3")
         local files_compressed_path="${files_path}/files-${kernel_version}.tar.xz"
         local files_to_compress=(
             ps3_defconfig_diffs
@@ -263,7 +263,12 @@ save() {
             ps3_patches
         )
         # Create package with additional files for ebuild, and upload it to overlay repository.
-        try tar -caf "$files_compressed_path" -C "${files_path}" "${files_to_compress[@]}"
+        try tar -caf "${files_compressed_path}" -C "${files_path}" "${files_to_compress[@]}"
+	if [ ! -d "${overlay_remote_path}" ]; then
+		try mkdir -p "${overlay_remote_path}"
+	fi
+	try cp "${files_compressed_path}" "${overlay_remote_path}/files-${kernel_version}.tar.xz"
+
         # Upload patches file to overlay repository
 
 	# Store ebuild in local overlay and create manifest for it.

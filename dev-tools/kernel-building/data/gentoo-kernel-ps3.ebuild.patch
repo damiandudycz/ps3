@@ -71,7 +71,7 @@
  	local PATCHES=(
 -		# meh, genpatches have no directory
  		"${WORKDIR}"/*.patch
-+		"${WORKDIR}/ps3_patches"/*.patch
++
  	)
  	default
  

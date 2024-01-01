@@ -1,51 +1,36 @@
 #!/bin/bash
 
+# TODO: This tool requires configured /etc/portage/repos.conf/gentoo.conf with default gentoo configuration.
+# And local repository, to be able to build package manifests
+
 # HELPER VARIABLES ==============================================================================
 
-dir="$(pwd)"                           # Current directory where script was called from.
-path_tmp="/tmp/gentoo-kernel-building" # Temporary files storage directory.
-quiet_flag='--quiet'                   # Quiet flag used to silence the output.
-quiet_flag_short='-q'                  # Quiet flag used to silence the output.
-defconfig_name='ps3_defconfig'         # Name of base kernel configuration.
-clear=false                            # Clear sources and emerge them again.
-menuconfig=false                       # Run make menuconfig to adjust kernel configuration.
+dir="$(pwd)"                   # Current directory where script was called from.
+quiet_flag='--quiet'           # Quiet flag used to silence the output.
+defconfig_name='ps3_defconfig' # Name of base kernel configuration.
+defconfig_gentoo_name='ps3_gentoo_defconfig' # Name of modified kernel configuration.
+clear=false                    # Clear sources and emerge them again.
+menuconfig=false               # Run make menuconfig to adjust kernel configuration.
+config="PS3"
+save=false                     # Should generated ebuild be saved in overlay repository, and configuration diff file stored as default for future builds.
 
 # MAIN PROGRAM ==================================================================================
 
 ## Prepare --------------------------------------------------------------------------------------
 source <(sed '1,/^# FUNCTIONS #.*$/d' "$0") # Load functions at the bottom of the script.
+source "${dir}/data/patches_ps3_list.txt"
 
 read_variables "$@"        # Read user input variables.
 validate_input_data        # Validate if input data is correct.
-get_config                 # Download configuration or load local configuration file.
 get_newest_kernel_version  # Read newest kernel available in portage.
-validate_config            # Checks if all settings in configuration are set correctly.
+setup_default_repo         # Creates file /etc/portage/repos.conf/gentoo.conf with default configuration. Needed for pkgdev manifest to work.
+setup_local_overlay        # Creates local overlay for building manifests.
 setup_sources              # Downloads kernel sources, Applies patches and current stored configuration.
 prepare_new_kernel_configs # Sets up new ps3_defconfig_diffs and ps3_gentoo_defconfig
-
-## Setup sources and ebuild ---------------------------------------------------------------------
-# MAKE FUNCTION FROM THIS
-#local sources_selected_root_path=$(realpath -m "${dir}/../../local/gentoo-sources/${kernel_version}")
-
-# Modifu configs if requested
-# Check if compiles correctly
-# Store new changes in default configuration
-# Create ebuild for gentoo-kernel with new config and patches
-
-# Cleanup configuration and apply previous config
-############
-# Modify kernel configuration for dev ebuild kernel, upload it to dev
-upload_dev_patches_and_config
-# Create dev ebuild in local repository
-# Build dev ebuild
-# Copy installed kernel files, and create release tar, upload it
-# Change ebuild to release ebuild
-# Upload release ebuild
-# Update PS3 config for the newest kernel and headers
-
-## Cleanup and exit -----------------------------------------------------------------------------
-cleanup                         # Cleans unneded files.
-summary                         # Show summary information if applicable.
+create_ebuild              # Generates ebuild
+save
+cleanup                    # Cleans unneded files.
+summary                    # Show summary information if applicable.
 
 ## Summary --------------------------------------------------------------------------------------
 log green "Done"
@@ -117,7 +102,9 @@ try() {
 print_usage() {
     echo "Usage: $0 [OPTIONS]"
     echo "Options:"
-    echo "  --verbose	Enable verbose output."
+    echo "  --verbose		Enable verbose output."
+    echo ""
+    echo "  --menuconfig	Modify kernel configuration befire generating new ebuild."
     echo ""
     exit 1
 }
@@ -144,6 +131,9 @@ read_variables() {
         --menuconfig)
             menuconfig=true
             ;;
+        --save)
+            save=true
+            ;;
         *)
             error "Unknown option: $1"
             ;;
@@ -157,44 +147,44 @@ validate_input_data() {
 return;
 }
 
-get_config() {
-    # Get config from the repository or local file.
-    local path_config=$(realpath "${dir}/../../installer/config/${config}")
-    try source "$path_config"
-    # prepare additional fields
-    arch_family=$(echo $arch | cut -d'/' -f1)
-    arch_short=$(echo $arch | cut -d'/' -f2)
-    arch_long=$(echo $arch | cut -d'/' -f3)
-}
-
-validate_config() {
-    # TODO: Validate settings.
-return;
-}
-
 download_patches() {
-    if [ ! -d "${sources_selected_root_path}/kernel_patches" ]; then
-        try mkdir -p "${sources_selected_root_path}/kernel_patches"
+    local files_path="${sources_selected_root_path}/files"
+    local patches_path="${files_path}/ps3_patches"
+
+    if [ ! -d "${patches_path}" ]; then
+        try mkdir -p "${patches_path}"
     fi
-    cd "${sources_selected_root_path}/kernel_patches"
-    for patch_url in ${kernel_patches[@]}; do
+    cd "${patches_path}"
+    for patch_url in ${ps3_patches[@]}; do
         try wget "$patch_url" $quiet_flag
     done
+#    local patches_compressed_path="${sources_selected_root_path}/files/patches-ps3-${kernel_version}.tar.xz"
+#    try tar -caf "$patches_compressed_path" -C "${patches_path}" .
+
     cd "${dir}"
 }
 
 get_newest_kernel_version() {
     local newest_kernel=$(equery m sys-kernel/gentoo-kernel | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | tail -n 1)
-    local newest_headers=$(equery m sys-kernel/linux-headers | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+(-r[0-9]+)?' | tail -n 1)
     kernel_version="$newest_kernel"
-    kernel_headers_version="$newest_headers"
     sources_selected_root_path=$(realpath -m "${dir}/../../local/gentoo-sources/${config}/${kernel_version}")
 }
 
-upload_dev_patches_and_config() {
-    # Compress patches
-    local patches_path="${sources_selected_root_path}/patches-ps3-${kernel_version}.tar.xz"
-    try tar -caf "$patches_path" -C "${sources_selected_root_path}/kernel_patches" .
+setup_default_repo() {
+	local conf_path="/etc/portage/repos.conf"
+	local conf_gentoo_path="${conf_path}/gentoo.conf"
+	local conf_gentoo_default_path="${dir}/data/gentoo.conf"
+	if [ ! -e "${conf_gentoo_path}" ]; then
+		try mkdir -p "${conf_path}"
+		try cp "${conf_gentoo_default_path}" "${conf_gentoo_path}"
+	fi
+}
+
+setup_local_overlay() {
+	local overlay_path="/var/db/repos/local"
+	if [ ! -d "$overlay_path" ]; then
+            try eselect repository create local
+	fi
 }
 
 setup_sources() {
@@ -202,36 +192,79 @@ setup_sources() {
 	    try rm -rf "${sources_selected_root_path}"
 	fi
 	if [ ! -d "${sources_selected_root_path}" ]; then
-            local ps3_defconfig_generated_path="${sources_selected_root_path}/${defconfig_name}_raw"
-            local ps3_defconfig_modifications_path="${dir}/${defconfig_name}_diffs"
+            local files_path="${sources_selected_root_path}/files"
+	    local patches_path="${files_path}/ps3_patches"
+            local src_path="${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo"
+            local ps3_defconfig_generated_path="${files_path}/${defconfig_name}_raw"
+            local ps3_defconfig_modifications_path="${dir}/data/${defconfig_name}_diffs"
 
 	    try mkdir -p "${sources_selected_root_path}" # Create sources directory
+            try mkdir -p "${files_path}"
+
 	    # Download and configure gentoo sources in temp
 	    ACCEPT_KEYWORDS="~*" try emerge --nodeps --root="${sources_selected_root_path}" --oneshot =sys-kernel/gentoo-sources-${kernel_version} $quiet_flag
+
 	    # Apply patches
 	    download_patches
-	    try cd "${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo"
-	    for patch in "${sources_selected_root_path}/kernel_patches"/*; do
+	    try cd "${src_path}"
+	    for patch in "${patches_path}"/*; do
 		try patch -p1 -i "$patch"
 	    done
+
             # Generate kernel configuration - ps3_defconfig + (current)ps3_defconfig_diffs
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make ${defconfig_name}
-            try cp .config "$ps3_defconfig_generated_path"
-            ${dir}/apply-diffconfig.rb "${ps3_defconfig_modifications_path}" "$ps3_defconfig_generated_path" > .config
+            try cp .config "${ps3_defconfig_generated_path}"
+            ${dir}/data/apply-diffconfig.rb "${ps3_defconfig_modifications_path}" "$ps3_defconfig_generated_path" > .config
 
 	    try cd "${dir}"
 	fi
 }
 
 prepare_new_kernel_configs() {
-	    try cd "${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo"
+            local files_path="${sources_selected_root_path}/files"
+            local src_path="${sources_selected_root_path}/usr/src/linux-${kernel_version}-gentoo"
+            local ps3_defconfig_modifications_new_path="${files_path}/${defconfig_name}_diffs"
+            local ps3_gentoo_defconfig_new_path="${files_path}/${defconfig_gentoo_name}"
+	    try cd "${src_path}"
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make oldconfig
      	    if [ $menuconfig = true ]; then
                 ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make menuconfig
             fi
-	    # TODO: Generate new ps3_defconfig_diffs
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make savedefconfig
+            try cp "defconfig" "${ps3_gentoo_defconfig_new_path}"
+            ./scripts/diffconfig arch/powerpc/configs/ps3_defconfig defconfig > "${ps3_defconfig_modifications_new_path}"
 	    try cd "${dir}"
+}
+
+create_ebuild() {
+            local files_path="${sources_selected_root_path}/files"
+	    local ebuild_path="${files_path}/gentoo-kernel-ps3-${kernel_version}.ebuild"
+	    local ebuild_patch_path="${dir}/data/gentoo-kernel-ps3.ebuild.patch" # Changes to original ebuild
+	    local ebuild_original_path="/var/db/repos/gentoo/sys-kernel/gentoo-kernel/gentoo-kernel-${kernel_version}.ebuild"
+            try cp "${ebuild_original_path}" "${ebuild_path}"
+            try patch -u "${ebuild_path}" -i "${ebuild_patch_path}"
+	    # NOTE: To change generated ebuild, its required to generate new patch in $ebuild_patch_path.
+            # use: diff -u $ebuild_original_path $ebuild_path to create one. Before this, edit $ebuild_path file.
+}
+
+save() {
+    # Upload patches file to overlay repository
+    # Save ebuild in local overlay, build manifest for it and upload it to repository
+
+    if [ $save = true ]; then
+        local files_path="${sources_selected_root_path}/files"
+        local files_compressed_path="${files_path}/files-${kernel_version}.tar.xz"
+        local files_to_compress=(
+            ps3_defconfig_diffs
+            ps3_gentoo_defconfig
+            ps3_patches
+        )
+
+        try tar -caf "$files_compressed_path" -C "${files_path}" "${files_to_compress[@]}"
+
+	# TODO: Override "${dir}/data/${defconfig_name}_diffs" with new diffs
+    fi
+
 }
 
 # Cleaning ======================================================================================

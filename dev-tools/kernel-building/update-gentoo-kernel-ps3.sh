@@ -213,7 +213,9 @@ setup_sources() {
             # Generate kernel configuration - ps3_defconfig + (current)ps3_defconfig_diffs
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make ${defconfig_name}
             try cp .config "${ps3_defconfig_generated_path}"
-            ${dir}/data/apply-diffconfig.rb "${ps3_defconfig_modifications_path}" "$ps3_defconfig_generated_path" > .config
+
+            ${dir}/data/apply-diffconfig.rb "${ps3_defconfig_modifications_path}" "$ps3_defconfig_generated_path" > .config_changed
+            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try ./scripts/kconfig/merge_config.sh .config_changed
 
 	    try cd "${dir}"
 	fi
@@ -225,7 +227,6 @@ prepare_new_kernel_configs() {
             local ps3_defconfig_modifications_new_path="${files_path}/${defconfig_name}_diffs"
             local ps3_gentoo_defconfig_new_path="${files_path}/${defconfig_gentoo_name}"
 	    try cd "${src_path}"
-            ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make oldconfig
      	    if [ $menuconfig = true ]; then
                 ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- make menuconfig
             fi

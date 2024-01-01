@@ -14,6 +14,7 @@ menuconfig=false               # Run make menuconfig to adjust kernel configurat
 config="PS3"
 save=false                     # Should generated ebuild be saved in overlay repository, and configuration diff file stored as default for future builds.
 overlay_name="ps3-gentoo-overlay"
+overlay_path=$(realpath -m "$dir/../../overlays/${overlay_name}")
 
 # MAIN PROGRAM ==================================================================================
 
@@ -180,9 +181,8 @@ setup_default_repo() {
 }
 
 setup_local_overlay() {
-	local overlay_path="/var/db/repos/${overlay_name}"
 	if [ ! -d "$overlay_path" ]; then
-            try eselect repository create "${overlay_name}"
+            try eselect repository create "${overlay_name}" "${overlay_path}"
 	fi
 }
 
@@ -251,8 +251,7 @@ create_ebuild() {
 save() {
     if [ $save = true ]; then
         local files_path="${sources_selected_root_path}/files"
-	local overlay_local_path="/var/db/repos/${overlay_name}"
-	local ebuild_local_dir="${overlay_local_path}/sys-kernel/gentoo-kernel-ps3"
+	local ebuild_local_dir="${overlay_path}/sys-kernel/gentoo-kernel-ps3"
 	local ebuild_local_path="${ebuild_local_dir}/gentoo-kernel-ps3-${kernel_version}.ebuild"
         local ebuild_path="${files_path}/gentoo-kernel-ps3-${kernel_version}.ebuild"
         local ps3_defconfig_modifications_path="${dir}/data/${defconfig_name}_diffs"

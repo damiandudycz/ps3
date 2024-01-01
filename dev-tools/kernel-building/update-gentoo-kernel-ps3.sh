@@ -228,7 +228,7 @@ prepare_new_kernel_configs() {
 	    try cd "${src_path}"
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make oldconfig
      	    if [ $menuconfig = true ]; then
-                ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make menuconfig
+                ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- make menuconfig
             fi
             ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- try make savedefconfig
             try cp "defconfig" "${ps3_gentoo_defconfig_new_path}"
@@ -248,21 +248,25 @@ create_ebuild() {
 }
 
 save() {
-    # Upload patches file to overlay repository
-    # Save ebuild in local overlay, build manifest for it and upload it to repository
-
     if [ $save = true ]; then
         local files_path="${sources_selected_root_path}/files"
+        local ps3_defconfig_modifications_path="${dir}/data/${defconfig_name}_diffs"
+        local ps3_defconfig_modifications_new_path="${files_path}/${defconfig_name}_diffs"
         local files_compressed_path="${files_path}/files-${kernel_version}.tar.xz"
         local files_to_compress=(
             ps3_defconfig_diffs
             ps3_gentoo_defconfig
             ps3_patches
         )
-
+        # Create package with additional files for ebuild, and upload it to overlay repository.
         try tar -caf "$files_compressed_path" -C "${files_path}" "${files_to_compress[@]}"
+        # Upload patches file to overlay repository
 
-	# TODO: Override "${dir}/data/${defconfig_name}_diffs" with new diffs
+	# Store ebuild in local overlay and create manifest for it.
+	# Copy ebuild and manifest to overlay git, and publish it
+
+	# Override "${dir}/data/${defconfig_name}_diffs" with new diffs
+	try cp "${ps3_defconfig_modifications_new_path}" "${ps3_defconfig_modifications_path}"
     fi
 
 }

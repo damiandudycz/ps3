@@ -250,6 +250,10 @@ create_ebuild() {
 save() {
     if [ $save = true ]; then
         local files_path="${sources_selected_root_path}/files"
+	local overlay_local_path="/var/db/repos/local"
+	local ebuild_local_dir="${overlay_local_path}/sys-kernel/gentoo-kernel-ps3"
+	local ebuild_local_path="${ebuild_local_dir}/gentoo-kernel-ps3-${kernel_version}.ebuild"
+        local ebuild_path="${files_path}/gentoo-kernel-ps3-${kernel_version}.ebuild"
         local ps3_defconfig_modifications_path="${dir}/data/${defconfig_name}_diffs"
         local ps3_defconfig_modifications_new_path="${files_path}/${defconfig_name}_diffs"
         local files_compressed_path="${files_path}/files-${kernel_version}.tar.xz"
@@ -264,6 +268,10 @@ save() {
 
 	# Store ebuild in local overlay and create manifest for it.
 	# Copy ebuild and manifest to overlay git, and publish it
+	if [ ! -d "${ebuild_local_dir}" ]; then
+	    try mkdir -p "${ebuild_local_dir}"
+	fi
+	try cp "${ebuild_path}" "${ebuild_local_path}"
 
 	# Override "${dir}/data/${defconfig_name}_diffs" with new diffs
 	try cp "${ps3_defconfig_modifications_new_path}" "${ps3_defconfig_modifications_path}"

@@ -651,10 +651,12 @@ setup_timezone() {
 }
 
 setup_portage_repository() {
-    chroot_call "emerge-webrsync $quiet_flag"
-    if [ $sync_portage = true ]; then
-        chroot_call "emerge --sync $quiet_flag"
-    fi
+    # Setup gentoo repo default configuration.
+    try mkdir -p "$path_chroot/etc/portage/repos.conf"
+    try cp "$path_chroot/usr/share/portage/config/repos.conf" "$path_chroot/etc/portage/repos.conf/gentoo.conf"
+    # Synchronize portage tree.
+    chroot_call "emerge --sync $quiet_flag"
+    # Create keys.
     chroot_call "getuto"
     run_extra_scripts ${FUNCNAME[0]}
 }

@@ -40,8 +40,9 @@ export -a network_links=(
 export -A make_conf=(
     # Add -flto for better optimization. This slows down compilation time a lot.
     [COMMON_FLAGS]='-O3 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple'
-    [KCFLAGS]='${COMMON_FLAGS}'
-    [KCPPFLAGS]='${COMMON_FLAGS}'
+    # Kernel flags, probably will not work in this form
+    #[KCFLAGS]='${COMMON_FLAGS}'
+    #[KCPPFLAGS]='${COMMON_FLAGS}'
     [MAKEOPTS]='-j5 -l2'
     [ACCEPT_LICENSE]='*'
     [FEATURES]='-news parallel-fetch parallel-install getbinpkg'

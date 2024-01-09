@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Required packages: git, pkgdev, ruby
+
 # TODO: Add metadata.xml to repository
 # TODO: Generate also gentoo-sources ebuild
 
@@ -10,19 +12,22 @@ path_local=$(realpath -m "${path_initial}/../../local")
 flag_quiet='--quiet' # Quiet flag used to silence the output.
 
 # CONFIGURATION =================================================================================
-config_save=false       # Should generated ebuild be saved in overlay repository, and configuration diff file stored as default for future builds.
+config_save=true       # Should generated ebuild be saved in overlay repository, and configuration diff file stored as default for future builds.
 config_clear=false      # Clear sources and emerge them again.
 config_menuconfig=false # Run make menuconfig to adjust kernel configuration.
 config_overwrite=false  # Allow owerwriting already existing ebuild. Also if set, new generated config diff file is set as the new default.
+config_test_build=false # Try to compile locally to see if it works.
+config_unmask=false     # Unmask PPC64 keyword in this ebuild
 
 # CONSTANT NAMES ================================================================================
-fname_overlay="ps3-gentoo-overlay"                  # Name of ebuild overlay repository.
-fname_defconfig_ps3_original='ps3_defconfig'        # Name of base kernel configuration.
-fname_defconfig_ps3_modified='ps3_gentoo_defconfig' # Name of modified kernel configuration.
-fname_ebuild="gentoo-kernel-ps3"                    # Ebuild name.
-fname_ebuild_raw="gentoo-kernel"                    # Original (raw) ebuild name.
-fname_ebuild_sources_raw="gentoo-sources"           # Ebuild with gentoo sources.
-fname_ebuild_category="sys-kernel"                  # Ebuild category.
+fname_overlay="ps3-gentoo-overlay"              # Name of PS3 ebuild overlay repository.
+fname_defconfig_original='ps3_defconfig'        # Name of original kernel configuration.
+fname_defconfig_modified='ps3_gentoo_defconfig' # Name of modified kernel configuration.
+fname_ebuild_category="sys-kernel"              # Ebuilds category.
+fname_ebuild_ps3_kernel="gentoo-kernel-ps3"     # PS3 Kenrel ebuild name.
+fname_ebuild_ps3_sources="gentoo-sources-ps3"   # PS3 Kenrel ebuild name.
+fname_ebuild_gentoo_kernel="gentoo-kernel"      # Gentoo Kernel ebuild name.
+fname_ebuild_gentoo_sources="gentoo-sources"    # Gentoo Sources ebuild name.
 
 # LOAD USER SETTINGS ============================================================================
 cd "${path_initial}"
@@ -33,34 +38,43 @@ setup_work_path     # Read newest kernel available in portage.
 path_data=$(realpath "${path_initial}/data")
 path_data_patches_list=$(realpath "${path_data}/patches_ps3_list.txt")
 path_data_gentoo_conf="${path_data}/gentoo.conf"
-path_data_defconfig_diffs="${path_data}/${fname_defconfig_ps3_original}_diffs"
-path_data_ebuild_patch="${path_data}/${fname_ebuild}.ebuild.patch"
-path_work_src="${path_work}/usr/src/linux-${kernel_version}-gentoo"
+path_data_defconfig_diffs="${path_data}/${fname_defconfig_original}_diffs"
+path_data_ebuild_ps3_kernel_patch="${path_data}/${fname_ebuild_ps3_kernel}.ebuild.patch"
+path_data_ebuild_ps3_sources_patch="${path_data}/${fname_ebuild_ps3_sources}.ebuild.patch"
+path_work_src="${path_work}/usr/src/linux-$(echo $kernel_version | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')-gentoo$(echo $kernel_version | grep -Eo '(-r[0-9]+)?')"
 path_work_files="${path_work}/files"
 path_work_files_patches="${path_work_files}/ps3_patches"
-path_work_files_defconfig_original="${path_work_files}/${fname_defconfig_ps3_original}"
-path_work_files_defconfig_modified="${path_work_files}/${fname_defconfig_ps3_modified}"
-path_work_files_defconfig_diffs="${path_work_files}/${fname_defconfig_ps3_original}_diffs"
-path_work_files_entry_ebuild="${path_work_files}/${fname_ebuild}.ebuild"
-path_work_files_ebuild_distfiles_tar="${path_work_files}/${fname_ebuild}-files-${kernel_version}.tar.xz"
+path_work_files_defconfig_original="${path_work_files}/${fname_defconfig_original}"
+path_work_files_defconfig_modified="${path_work_files}/${fname_defconfig_modified}"
+path_work_files_defconfig_diffs="${path_work_files}/${fname_defconfig_original}_diffs"
+path_work_files_ebuild_ps3_kernel="${path_work_files}/${fname_ebuild_ps3_kernel}.ebuild"
+path_work_files_ebuild_ps3_sources="${path_work_files}/${fname_ebuild_ps3_sources}.ebuild"
+path_work_files_distfiles_tar_ps3_kernel="${path_work_files}/${fname_ebuild_ps3_kernel}-files-${kernel_version}.tar.xz"
+path_work_files_distfiles_tar_ps3_sources="${path_work_files}/${fname_ebuild_ps3_sources}-files-${kernel_version}.tar.xz"
 path_overlay=$(realpath -m "${path_initial}/../../overlays/${fname_overlay}")
 path_overlay_distfiles=$(realpath -m "${path_overlay}.distfiles")
-path_overlay_distfiles_entry="${path_overlay_distfiles}/${fname_ebuild_category}/${fname_ebuild}"
-path_overlay_distfiles_tarball="${path_overlay_distfiles_entry}/${fname_ebuild}-files-${kernel_version}.tar.xz"
-path_overlay_entry="${path_overlay}/${fname_ebuild_category}/${fname_ebuild}"
-path_overlay_entry_ebuild="${path_overlay_entry}/${fname_ebuild}-${kernel_version}.ebuild"
-path_overlay_entry_manifest="${path_overlay_entry}/Manifest"
+path_overlay_distfiles_ps3_kernel_entry="${path_overlay_distfiles}/${fname_ebuild_category}/${fname_ebuild_ps3_kernel}"
+path_overlay_distfiles_ps3_sources_entry="${path_overlay_distfiles}/${fname_ebuild_category}/${fname_ebuild_ps3_sources}"
+path_overlay_distfiles_ps3_kernel_tarball="${path_overlay_distfiles_ps3_kernel_entry}/${fname_ebuild_ps3_kernel}-files-${kernel_version}.tar.xz"
+path_overlay_distfiles_ps3_sources_tarball="${path_overlay_distfiles_ps3_sources_entry}/${fname_ebuild_ps3_sources}-files-${kernel_version}.tar.xz"
+path_overlay_entry_ps3_kernel="${path_overlay}/${fname_ebuild_category}/${fname_ebuild_ps3_kernel}"
+path_overlay_entry_ps3_kernel_ebuild="${path_overlay_entry_ps3_kernel}/${fname_ebuild_ps3_kernel}-${kernel_version}.ebuild"
+path_overlay_entry_ps3_kernel_manifest="${path_overlay_entry_ps3_kernel}/Manifest"
+path_overlay_entry_ps3_sources="${path_overlay}/${fname_ebuild_category}/${fname_ebuild_ps3_sources}"
+path_overlay_entry_ps3_sources_ebuild="${path_overlay_entry_ps3_sources}/${fname_ebuild_ps3_sources}-${kernel_version}.ebuild"
+path_overlay_entry_ps3_sources_manifest="${path_overlay_entry_ps3_sources}/Manifest"
 path_portage_repos="/etc/portage/repos.conf"
 path_portage_repos_gentoo="${path_portage_repos}/gentoo.conf"
-path_repos_gentoo_kernel_ebuild="/var/db/repos/gentoo/${fname_ebuild_category}/${fname_ebuild_raw}/${fname_ebuild_raw}-${kernel_version}.ebuild"
+path_repos_gentoo_kernel_ebuild="/var/db/repos/gentoo/${fname_ebuild_category}/${fname_ebuild_gentoo_kernel}/${fname_ebuild_gentoo_kernel}-${kernel_version}.ebuild"
+path_repos_gentoo_sources_ebuild="/var/db/repos/gentoo/${fname_ebuild_category}/${fname_ebuild_gentoo_sources}/${fname_ebuild_gentoo_sources}-${kernel_version}.ebuild"
 
 # OTHER =========================================================================================
 
 list_distfiles_tar_files=(
     # List of files and directories compressed into distfiles tarball for overlay distfiles repository.
-    ps3_defconfig_diffs
-    ps3_gentoo_defconfig
-    ps3_patches
+    ps3_defconfig_diffs # Not needed, but kept for tracking changes between versions.
+    ps3_gentoo_defconfig # Updated ps3_defconfig that will replace the original one.
+    ps3_patches # PS3 specific patches to be applied to kernel. Snapshot created with ebuild.
 )
 
 # MAIN PROGRAM ==================================================================================
@@ -71,8 +85,9 @@ source "${path_data_patches_list}"
 check_if_should_continue   # Skip if ebuild already exists.
 setup_default_repo         # Creates file /etc/portage/repos.conf/gentoo.conf with default configuration. Needed for pkgdev manifest to work.
 setup_sources              # Downloads kernel sources, Applies patches and current stored configuration.
-prepare_new_kernel_configs # Sets up new ps3_defconfig_diffs and ps3_gentoo_defconfig
-create_ebuild              # Generates ebuild
+prepare_new_kernel_configs # Sets up new ps3_defconfig_diffs and ps3_gentoo_defconfig.
+create_ebuild              # Generates ebuild.
+run_test                   # Perform test build.
 save                       # Save generated files in overlay repository.
 upload_overlays
 
@@ -152,6 +167,8 @@ print_usage() {
     echo "  --version     Specify kernel version. If not set, uses newest one in portage."
     echo "  --save        Store new ebuild and distfiles in overlay repositories."
     echo "  --overwrite   Allow overwriting already existing ebuilds. Also if set, overwrites default config diff file."
+    echo "  --test        Build locally to test if it works."
+    echo "  --unmask      Unmask this build for PPC64."
     echo ""
     exit 1
 }
@@ -178,11 +195,17 @@ read_variables() {
         --clear)
             config_clear=true
             ;;
+    --unmask)
+        config_unmask=true
+        ;;
         --menuconfig)
             config_menuconfig=true
             ;;
         --overwrite)
             config_overwrite=true
+            ;;
+        --test)
+            config_test_build=true
             ;;
         --version)
             shift
@@ -203,15 +226,19 @@ read_variables() {
 
 setup_work_path() {
     if [ -z ${kernel_version} ]; then
-        kernel_version=$(equery m "${fname_ebuild_category}/${fname_ebuild_raw}" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | tail -n 1)
+    kernel_version=$(equery m "${fname_ebuild_category}/${fname_ebuild_gentoo_kernel}" | grep " ppc64" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-r[0-9]+)?' | sort -V | tail -n 1)
     fi
-    path_work=$(realpath -m "${path_local}/${fname_ebuild_sources_raw}/${kernel_version}")
+    path_work=$(realpath -m "${path_local}/kernel_ebuild/${kernel_version}")
 }
 
 check_if_should_continue() {
     # If ebuild for this version already exists, return.
-    if [ -f "${path_overlay_entry_ebuild}" ] && [ $config_overwrite = false ]; then
-        log magneta "Ebuild for version ${kernel_version} already exists. To overwrite use --overwrite flag. Skipping."
+    if [ -f "${path_overlay_entry_ps3_kernel_ebuild}" ] && [ $config_overwrite = false ]; then
+        log magneta "Ebuild for kernel version ${kernel_version} already exists. To overwrite use --overwrite flag. Skipping."
+        exit 0
+    fi
+    if [ -f "${path_overlay_entry_ps3_sources_ebuild}" ] && [ $config_overwrite = false ]; then
+        log magneta "Ebuild for sources version ${kernel_version} already exists. To overwrite use --overwrite flag. Skipping."
         exit 0
     fi
 }
@@ -241,7 +268,7 @@ setup_sources() {
         try mkdir -p "${path_work_files}"
 
         # Download and configure gentoo sources in temp
-        ACCEPT_KEYWORDS="~*" try emerge --nodeps --root="${path_work}" --oneshot =${fname_ebuild_category}/${fname_ebuild_sources_raw}-${kernel_version} $flag_quiet
+        ACCEPT_KEYWORDS="~*" try emerge --nodeps --root="${path_work}" --oneshot =${fname_ebuild_category}/${fname_ebuild_gentoo_sources}-${kernel_version} $flag_quiet
 
         # Apply patches
         download_patches
@@ -251,7 +278,7 @@ setup_sources() {
         done
 
         # Generate kernel configuration - ps3_defconfig + (current)ps3_defconfig_diffs
-        try ppc64_run make ${fname_defconfig_ps3_original}
+        try ppc64_run make ${fname_defconfig_original}
         try cp .config "${path_work_files_defconfig_original}"
 
         # Merge original ps3_defconfig with stored changes.
@@ -272,16 +299,33 @@ prepare_new_kernel_configs() {
     try ppc64_run make savedefconfig
     try mv "defconfig" "${path_work_files_defconfig_modified}"
     # Determine new file with changes between ps3_defconfig and ps3_gentoo_defconfig.
-    ./scripts/diffconfig arch/powerpc/configs/${fname_defconfig_ps3_original} "${path_work_files_defconfig_modified}" > "${path_work_files_defconfig_diffs}"
+    ./scripts/diffconfig arch/powerpc/configs/${fname_defconfig_original} "${path_work_files_defconfig_modified}" > "${path_work_files_defconfig_diffs}"
     try cd "${path_initial}"
 }
 
+run_test() {
+    if [ ${config_test_build} = true ]; then
+        try cd "${path_work_src}"
+        ppc64_run make
+        try cd "${path_initial}"
+    fi
+}
+
 create_ebuild() {
-	# Create ebuild in work_files.
-        try cp "${path_repos_gentoo_kernel_ebuild}" "${path_work_files_entry_ebuild}"
-        try patch -u "${path_work_files_entry_ebuild}" -i "${path_data_ebuild_patch}"
-        # NOTE: To change generated ebuild, its required to generate new patch in data/fname_ebuild.ebuild.patch.
-        # use: diff -u $ebuild_original_path $ebuild_path to create one. Before this, edit $ebuild_path file.
+    # Create ps3 kernel ebuild in work_files.
+    try cp "${path_repos_gentoo_kernel_ebuild}" "${path_work_files_ebuild_ps3_kernel}"
+    try patch -u "${path_work_files_ebuild_ps3_kernel}" -i "${path_data_ebuild_ps3_kernel_patch}"
+    if [ ${config_unmask} = true ]; then
+        sed -i "/^KEYWORDS=/ s/~ppc64/ppc64/g" "${path_work_files_ebuild_ps3_kernel}"
+    fi
+    # Create ps3 sources ebuild in work_files.
+    try cp "${path_repos_gentoo_sources_ebuild}" "${path_work_files_ebuild_ps3_sources}"
+    try patch -u "${path_work_files_ebuild_ps3_sources}" -i "${path_data_ebuild_ps3_sources_patch}"
+    if [ ${config_unmask} = true ]; then
+        sed -i "/^KEYWORDS=/ s/~ppc64/ppc64/g" "${path_work_files_ebuild_ps3_sources}"
+    fi
+    # NOTE: To change generated ebuild, its required to generate new patch in data/fname_ebuild.ebuild.patch.
+    # use: diff -u $ebuild_original_path $ebuild_path to create one. Before this, edit $ebuild_path file.
 }
 
 save() {
@@ -291,23 +335,41 @@ save() {
             --mtime="" \
             --owner=0 --group=0 --numeric-owner \
             --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
-            -caf "${path_work_files_ebuild_distfiles_tar}" \
+            -caf "${path_work_files_distfiles_tar_ps3_kernel}" \
             -C "${path_work_files}" "${list_distfiles_tar_files[@]}"
-        if [ ! -d "${path_overlay_entry}" ]; then
-            try mkdir -p "${path_overlay_entry}"
+        try tar --sort=name \
+            --mtime="" \
+            --owner=0 --group=0 --numeric-owner \
+            --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
+            -caf "${path_work_files_distfiles_tar_ps3_sources}" \
+            -C "${path_work_files}" "${list_distfiles_tar_files[@]}"
+        if [ ! -d "${path_overlay_entry_ps3_kernel}" ]; then
+            try mkdir -p "${path_overlay_entry_ps3_kernel}"
         fi
-        try cp "${path_work_files_ebuild_distfiles_tar}" "${path_overlay_distfiles_tarball}"
-        try cp "${path_work_files_ebuild_distfiles_tar}" "/var/cache/distfiles/" # Store in distfiles, for pkgdev manifest to work without downloading.
+        if [ ! -d "${path_overlay_entry_ps3_sources}" ]; then
+            try mkdir -p "${path_overlay_entry_ps3_sources}"
+        fi
+        try cp "${path_work_files_distfiles_tar_ps3_kernel}" "${path_overlay_distfiles_ps3_kernel_tarball}"
+        try cp "${path_work_files_distfiles_tar_ps3_kernel}" "/var/cache/distfiles/" # Store in distfiles, for pkgdev manifest to work without downloading.
+        try cp "${path_work_files_distfiles_tar_ps3_sources}" "${path_overlay_distfiles_ps3_sources_tarball}"
+        try cp "${path_work_files_distfiles_tar_ps3_sources}" "/var/cache/distfiles/" # Store in distfiles, for pkgdev manifest to work without downloading.
 
         # Save ebuild to overlay.
-        try mkdir -p "${path_overlay_entry}"
-        try cp "${path_work_files_entry_ebuild}" "${path_overlay_entry_ebuild}"
+        try mkdir -p "${path_overlay_entry_ps3_kernel}"
+        try mkdir -p "${path_overlay_entry_ps3_sources}"
+        try cp "${path_work_files_ebuild_ps3_kernel}" "${path_overlay_entry_ps3_kernel_ebuild}"
+        try cp "${path_work_files_ebuild_ps3_sources}" "${path_overlay_entry_ps3_sources_ebuild}"
 
         # Generate new Manifest file.
-        if [ -f "${path_overlay_entry_manifest}" ]; then
-            try rm "${path_overlay_entry_manifest}"
+        if [ -f "${path_overlay_entry_ps3_kernel_manifest}" ]; then
+            try rm "${path_overlay_entry_ps3_kernel_manifest}"
         fi
-        try cd "${path_overlay_entry}"
+        if [ -f "${path_overlay_entry_ps3_sources_manifest}" ]; then
+            try rm "${path_overlay_entry_ps3_sources_manifest}"
+        fi
+        try cd "${path_overlay_entry_ps3_kernel}"
+        try pkgdev manifest
+        try cd "${path_overlay_entry_ps3_sources}"
         try pkgdev manifest
 
         # Store updated diffs file as default (requires overwrite flag).
@@ -346,3 +408,4 @@ upload_overlays() {
         fi
     fi
 }
+

@@ -2,13 +2,23 @@
 
 export arch='ppc/ppc64/powerpc64'         # Architecture of CELL CPU.
 export init_system='openrc'               # [openrc/systemd] # currently only openrc is supported.
-export profile="default/linux/ppc64/17.0" # Base profile.
+export profile="default/linux/ppc64/23.0" # Base profile.
 export hostname='PS3'                     # Hostname of installed system.
-export root_password=''                   # Empty string removes password.
-export bootloader='petitboot'             # [petitboot/grub/grub-efi]. For PS3 use petitboot.
-export sync_portage=true                  # Run emerge --sync after emerge-webrsync to get the newest tarball.
 export update_system=false                # Run emerge --update --newuse --deep @world during installation.
 export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds"
+
+# Uncomment to set root password.
+#export root_password=''
+
+## User account ---------------------------------------------------------------------------------
+
+export -A user=(
+  [username]='ps3'
+  [fullname]='Default User'
+  [password]='' # <IMPORTANT! Please set your user password here>
+  [groups]='users,wheel,audio,cdrom,video,usb'
+  [autologin]=true # Login automatically on tty1
+)
 
 ## Partitions -----------------------------------------------------------------------------------
 
@@ -16,7 +26,7 @@ export disk_scheme='gpt' # [gpt/dos].
 
 export -a disk_partitions=( 
     # index:mount_order:file_system:mount_point:size:options:dump:pass.
-    1:1:vfat:/boot:+256MiB:defaults,noatime:1:2 # BOOT
+    1:1:ext3:/boot:+256MiB:defaults,noatime:1:2 # BOOT
     2:0:btrfs:/:-4100MiB:defaults,noauto:0:1    # ROOT
     3:2:swap:none:+4GiB:sw:0:0                  # SWAP
 )
@@ -38,30 +48,34 @@ export -a network_links=(
 ## Make conf ------------------------------------------------------------------------------------
 
 export -A make_conf=(
-    # Add -flto for better optimization. This slows down compilation time a lot.
-    [COMMON_FLAGS]='-O3 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple'
-    [KCFLAGS]='${COMMON_FLAGS}'
-    [KCPPFLAGS]='${COMMON_FLAGS}'
-    [MAKEOPTS]='-j5 -l2'
+    # Add -flto and -O3 for better optimization. This slows down compilation time a lot. For LTO also enable use flags and envs.
+    [COMMON_FLAGS]='-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple'
+    # Kernel flags. Only overwrite the flags that are suppressed by gentoo-kernel-ps3 ebuild by default.
+    # Rest of flags will be used from COMMON_FLAGS anyway.
+    [KCFLAGS]='-mabi=altivec'
+    [KCPPFLAGS]='${KCFLAGS}'
+    [MAKEOPTS]='-j3'
     [ACCEPT_LICENSE]='*'
     [FEATURES]='-news parallel-fetch parallel-install getbinpkg'
-    [USE]='ps3'
+    [USE]='ps3 dist-kernel'
     [VIDEO_CARDS]='fbdev'
-    [INPUT_DEVICES]='evdev'
+    [INPUT_DEVICES]='evdev libinput'
     [BINPKG_FORMAT]='gpkg'
+    [EMERGE_DEFAULT_OPTS]='--binpkg-respect-use'
 )
 
 export -A env_overrides=(
     # distcc fails compilation with lto enabled.
-    [sys-devel/distcc_1]='COMMON_CFLAGS="${COMMON_CFLAGS/ -flto/}"'
+    #[sys-devel/distcc_1]='COMMON_CFLAGS="${COMMON_CFLAGS/ -flto/}"'
 )
 
 ## Packages and tools ---------------------------------------------------------------------------
 
 export -A package_use=(
     [00cpu-flags]='*/* CPU_FLAGS_PPC: altivec'
-    [10gcc]='sys-devel/gcc lto'
-    [20python]='dev-lang/python lto'
+    [10installkernel]='sys-kernel/installkernel dracut' # Needed for gentoo-kernel-ps3
+    #[10gcc]='sys-devel/gcc lto'
+    #[20python]='dev-lang/python lto'
 )
 
 export -A package_accept_keywords=(
@@ -83,25 +97,24 @@ export -a guest_base_tools=(
 export -a guest_tools=(
     # Platform utils
     sys-kernel/gentoo-kernel-ps3 # From ps3-gentoo-overlay.
-    sys-apps/ps3vram             # From ps3-gentoo-overlay. 
+    sys-apps/ps3vram-swap        # From ps3-gentoo-overlay. 
     app-misc/ps3pf_utils
     # Gentoo helper tools
     app-portage/gentoolkit
     # System tools
+    app-admin/sudo
     net-misc/ntp # Note: When RTC is fixes this should be removed
     app-admin/sysklogd
 )
 
 export -A guest_rc_startup=(
-    [boot]='ps3vram net.eth0'
+    [boot]='ps3vram-swap net.eth0'
     [default]='sshd ntpd ntp-client'
 )
 
-export -A extra_scripts=(
-)
-
 export -A binhosts=(
-    [PS3]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/PS3"
+    [PS3-Base]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/base"
+    [PS3-Desktop]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/desktop"
 )
 
 export -A overlays=(

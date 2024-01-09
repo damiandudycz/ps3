@@ -1,0 +1,41 @@
+From 3d7b8d24e3c81504301c1c079c25ebdb3cdbd53b Mon Sep 17 00:00:00 2001
+From: damiandudycz <damiandudycz@yahoo.com>
+Date: Sun, 12 May 2024 07:44:00 +0200
+Subject: [PATCH] Fix missing vmlinux filename support
+
+---
+ targets/support/functions.sh | 4 ++++
+ targets/support/kmerge.sh    | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/targets/support/functions.sh b/targets/support/functions.sh
+index 4340a3c7..8f229d22 100755
+--- a/targets/support/functions.sh
++++ b/targets/support/functions.sh
+@@ -83,6 +83,10 @@ extract_kernels() {
+ 		then
+ 			mv ${1}/vmlinuz-* ${1}/${x}
+ 		fi
++		if [ -e ${1}/vmlinux-* ]
++		then
++			mv ${1}/vmlinux-* ${1}/${x}
++		fi
+ 
+ 		# change initrd name from "initrd" to "gentoo.igz", for example
+ 		if [ -e ${1}/initrd-* ]
+diff --git a/targets/support/kmerge.sh b/targets/support/kmerge.sh
+index 41fac810..49be3e9c 100755
+--- a/targets/support/kmerge.sh
++++ b/targets/support/kmerge.sh
+@@ -173,7 +173,7 @@ if [[ ${distkernel} = "yes" ]] ; then
+ 
+   # Create minkernel package to mimic genkernel's behaviour
+   cd /boot
+-  tar jcvf /tmp/kerncache/${kname}-kernel-initrd-${clst_version_stamp}.tar.bz2 System.map* config* initramfs* vmlinuz*
++  tar jcvf /tmp/kerncache/${kname}-kernel-initrd-${clst_version_stamp}.tar.bz2 System.map* config* initramfs* vmlinuz* vmlinux*
+   cd /
+   tar jcvf /tmp/kerncache/${kname}-modules-${clst_version_stamp}.tar.bz2 lib/modules
+ 
+-- 
+2.39.3 (Apple Git-145)
+

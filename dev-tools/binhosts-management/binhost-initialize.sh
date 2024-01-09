@@ -11,7 +11,7 @@ config="PS3"
 path="../../local/binhost-maintainers/$config"
 path_repo="../../binhosts/$config"
 
-../../installer/installer.sh --directory "$path" --config $config --verbose
+../../installer/installer.sh --directory "$path" --config $config --verbose --edit-config
 
 prepare_chroot() {
 	mount --type proc /proc "$path/proc"
@@ -37,6 +37,6 @@ unprepare_chroot() {
 prepare_chroot
 mount -o bind "$path_repo" "$path/var/cache/binpkgs"
 rm -rf "$path/var/cache/binpkgs"/* # Delete previous database of binpkgs to get a fresh start
-chroot "$path" /bin/bash -c "FEATURES=\"buildpkg -getbinpkg\" emerge @system @world --deep --emptytree --with-bdeps=y"
+chroot "$path" /bin/bash -c "FEATURES=\"buildpkg -getbinpkg\" emerge @system @world --deep --emptytree --with-bdeps=y --binpkg-respect-use=y"
 umount "$path/var/cache/binpkgs"
 unprepare_chroot

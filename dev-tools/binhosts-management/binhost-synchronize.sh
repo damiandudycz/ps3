@@ -29,8 +29,8 @@ prepare_chroot
 mount -o bind "$path_repo" "$path/var/cache/binpkgs"
 
 chroot "$path" /bin/bash -c "emerge --sync"
-chroot "$path" /bin/bash -c "FEATURES=\"buildpkg -getbinpkg\" emerge @system @world --update --newuse --deep --quiet"
-#chroot "$path" /bin/bash -c "FEATURES=\"buildpkg distcc -getbinpkg\" emerge --update --newuse --deep --quiet @world @system"
+chroot "$path" /bin/bash -c "FEATURES=\"buildpkg -getbinpkg\" emerge @world --update --newuse --deep --quiet"
+#chroot "$path" /bin/bash -c "FEATURES=\"buildpkg distcc -getbinpkg\" emerge --update --newuse --deep --quiet @world"
 
 if [[ -n $(git status --porcelain -- "$path_repo") ]]; then
 	git add "$path_repo"/*

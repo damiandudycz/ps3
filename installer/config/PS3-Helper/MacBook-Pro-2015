@@ -17,7 +17,6 @@ export kernel_version='' # Empty value will skip prebuilt kernel installation
 
 ## System
 
-export sync_portage=true # Run emerge --sync after emerge-webrsync to get the newest tarball.
 export update_system=true # Run emerge --update --newuse --deep @world during installation.
 
 ## Bootloaders ----------------------------------------------------------------------------------

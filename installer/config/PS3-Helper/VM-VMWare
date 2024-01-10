@@ -1,6 +1,6 @@
 export arch='amd64/amd64/amd64'
 export init_system='openrc' # [openrc/systemd]. Currently works only with openrc.
-export profile="default/linux/$(echo $arch | cut -d'/' -f2)/23.0”
+export profile="default/linux/$(echo $arch | cut -d'/' -f2)/23.0"
 export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds"
 export disk_scheme='gpt' # [gpt/dos]. Suggest using gpt.
 
@@ -36,7 +36,7 @@ export -a locales=(
 export -A make_conf=(
     [COMMON_FLAGS]='-O2 -pipe -march=native -mcpu=native'
     [USE]=''
-    [MAKEOPTS]='-j5’
+    [MAKEOPTS]='-j5'
     [ACCEPT_LICENSE]='*' # Automatically accept all licenses.
     [GRUB_PLATFORMS]='efi-64'
     [FEATURES]='-news'

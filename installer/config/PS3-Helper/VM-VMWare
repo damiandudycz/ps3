@@ -1,0 +1,95 @@
+export arch=‚amd64/amd64/amd64'
+export init_system='openrc' # [openrc/systemd]. Currently works only with openrc.
+export profile="default/linux/$(echo $arch | cut -d'/' -f2)/23.0”
+export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds"
+export disk_scheme='gpt' # [gpt/dos]. Suggest using gpt.
+
+export hostname='VM-PS3-Helper'
+export root_password='' # Empty string means remove password.
+export locale='en_US.utf8' # Default locale. Please include also in locales.
+
+export -a network_links=(
+    enp2s1
+)
+
+## Bootloaders ----------------------------------------------------------------------------------
+
+export bootloader='grub-efi' # [petitboot/grub/grub-efi]
+export update_system=true # Run emerge --update --newuse --deep @world during installation.
+
+## Partitions -----------------------------------------------------------------------------------
+
+export -a disk_partitions=( # index:mount_order:file_system:mount_point:size:options:dump:pass.
+# To use entire remaining space, use "-0" as size. Dont leave empty space, it will not work.
+    1:1:vfat:/boot:+256MiB:defaults,noatime:1:2 # BOOT
+    2:0:btrfs:/:-0:defaults,noauto:0:1 # ROOT
+)
+
+## Locales --------------------------------------------------------------------------------------
+
+export -a locales=(
+    'en_US.UTF-8 UTF-8'
+)
+
+## Make conf ------------------------------------------------------------------------------------
+
+export -A make_conf=(
+    [COMMON_FLAGS]='-O2 -pipe -march=native -mcpu=native'
+    [USE]=''
+    [MAKEOPTS]='-j5’
+    [ACCEPT_LICENSE]='*' # Automatically accept all licenses.
+    [GRUB_PLATFORMS]='efi-64'
+    [FEATURES]='-news'
+)
+
+export -A env_overrides=(
+)
+
+## Packages and tools ---------------------------------------------------------------------------
+
+export -A package_use=(
+)
+
+export -A package_accept_keywords=(
+)
+
+# Tools neded as fast as possible, before updating system etc.
+export -a guest_base_tools=(
+    sys-kernel/gentoo-kernel-bin
+    sys-boot/grub
+)
+
+# Rest of the tools, that can be installed at later stage.
+export -a guest_tools=(
+    app-portage/gentoolkit
+    app-eselect/eselect-repository
+    sys-devel/distcc
+    sys-devel/crossdev
+    sys-kernel/genkernel
+    dev-lang/ruby
+)
+
+# TODO: Update these automatically
+export -A crossdev_config=(
+    [a]='altivec'
+    [b]='2.41-r2'
+    [g]='13.2.1_p20230826'
+    [k]='6.6'
+    [l]=[2.37-r7]
+)
+
+export -A guest_rc_startup=(
+    [default]='sshd distccd'
+)
+
+# Additional platform-specific scripts, incjected after given primary function finishes successfully.
+export -A extra_scripts=(
+    [setup_autostart]='setup_crossdev_host setup_distccd_host setup_bootloader_config'
+)
+
+export -a distccd_host_allow=(
+    "192.168.0.0/16"
+)
+
+export -A overlays=(
+)

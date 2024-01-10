@@ -61,7 +61,7 @@ setup_timezone                  # Selects timezone.
 install_base_tools              # Installs tools needed at early stage, before distcc is available.
 setup_distcc_client             # Downloads and configures distcc if used.
 setup_overlays                  # Add overlays using eselect repository.
-install_updates                 # Updates and rebuilds @world and @system including new use flags.
+install_updates                 # Updates and rebuilds @world system including new use flags.
 install_other_tools             # Installs other selected tools.
 setup_autostart                 # Adds init scripts to selected runlevels.
 
@@ -669,7 +669,7 @@ setup_profile() {
 
 install_updates() {
     if [ $update_system = true ]; then
-        chroot_call "emerge --newuse --deep --update --with-bdeps=y @system @world $quiet_flag"
+        chroot_call "emerge --newuse --deep --update --with-bdeps=y @world $quiet_flag"
     fi
     run_extra_scripts ${FUNCNAME[0]}
 }

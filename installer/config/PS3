@@ -6,7 +6,6 @@ export profile="default/linux/ppc64/17.0" # Base profile.
 export hostname='PS3'                     # Hostname of installed system.
 export root_password=''                   # Empty string removes password.
 export bootloader='petitboot'             # [petitboot/grub/grub-efi]. For PS3 use petitboot.
-export sync_portage=true                  # Run emerge --sync after emerge-webrsync to get the newest tarball.
 export update_system=false                # Run emerge --update --newuse --deep @world during installation.
 export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds"
 

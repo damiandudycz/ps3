@@ -20,7 +20,6 @@ export kernel_version='' # Empty value will skip prebuilt kernel installation
 ## Bootloaders ----------------------------------------------------------------------------------
 
 export bootloader='grub-efi' # [petitboot/grub/grub-efi]
-export sync_portage=false # Run emerge --sync after emerge-webrsync to get the newest tarball.
 export update_system=false # Run emerge --update --newuse --deep @world during installation.
 
 ## Partitions -----------------------------------------------------------------------------------

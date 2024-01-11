@@ -50,6 +50,7 @@ export -A make_conf=(
     [VIDEO_CARDS]='fbdev'
     [INPUT_DEVICES]='evdev'
     [BINPKG_FORMAT]='gpkg'
+    [EMERGE_DEFAULT_OPTS]='--binpkg-respect-use'
 )
 
 export -A env_overrides=(

@@ -37,11 +37,11 @@ export -a network_links=(
 ## Make conf ------------------------------------------------------------------------------------
 
 export -A make_conf=(
-    # Add -flto for better optimization. This slows down compilation time a lot.
-    [COMMON_FLAGS]='-O3 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple -flto'
+    # Add -flto and -O3 for better optimization. This slows down compilation time a lot. For LTO also enable use flags and envs.
+    [COMMON_FLAGS]='-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple'
     # Kernel flags. Only overwrite the flags that are suppressed by gentoo-kernel-ps3 ebuild by default.
     # Rest of flags will be used from COMMON_FLAGS anyway.
-    [KCFLAGS]='-O3 -mabi=altivec'
+    [KCFLAGS]='-mabi=altivec'
     [KCPPFLAGS]='${KCFLAGS}'
     [MAKEOPTS]='-j5 -l2'
     [ACCEPT_LICENSE]='*'
@@ -55,15 +55,15 @@ export -A make_conf=(
 
 export -A env_overrides=(
     # distcc fails compilation with lto enabled.
-    [sys-devel/distcc_1]='COMMON_CFLAGS="${COMMON_CFLAGS/ -flto/}"'
+    #[sys-devel/distcc_1]='COMMON_CFLAGS="${COMMON_CFLAGS/ -flto/}"'
 )
 
 ## Packages and tools ---------------------------------------------------------------------------
 
 export -A package_use=(
     [00cpu-flags]='*/* CPU_FLAGS_PPC: altivec'
-    [10gcc]='sys-devel/gcc lto'
-    [20python]='dev-lang/python lto'
+    #[10gcc]='sys-devel/gcc lto'
+    #[20python]='dev-lang/python lto'
 )
 
 export -A package_accept_keywords=(

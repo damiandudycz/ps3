@@ -1,5 +1,6 @@
 export ps3_patches=(
     # T2SDE
+    https://svn.exactcode.de/t2/trunk/package/kernel/linux/ps3-partition.patch # Correspond to patch 0035 from CheeseCake
     http://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0009-ps3disk-blk_mq_queue_stopped.patch
     http://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0010-ps3stor-multiple-regions.patch
     http://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0011-ps3stor-send-cmd-timeout.patch
@@ -38,7 +39,7 @@ export ps3_patches=(
 #    https://raw.githubusercontent.com/CheezeCake/ps3linux-patches/master/0011-ps3stor-send-cmd-timeout.patch
 #    https://raw.githubusercontent.com/CheezeCake/ps3linux-patches/master/0020-ps3fb-use-fifo.patch
 #    https://raw.githubusercontent.com/CheezeCake/ps3linux-patches/master/0030-ps3flash.patch
-    https://raw.githubusercontent.com/CheezeCake/ps3linux-patches/master/0035-ps3-partition.patch
+#    https://raw.githubusercontent.com/CheezeCake/ps3linux-patches/master/0035-ps3-partition.patch
 #    https://raw.githubusercontent.com/CheezeCake/ps3linux-patches/master/0040-ps3sysmgr-lpar-reboot.patch
 #    https://raw.githubusercontent.com/CheezeCake/ps3linux-patches/master/0050-ps3sysmgr-char-device.patch
 #    https://raw.githubusercontent.com/CheezeCake/ps3linux-patches/master/0060-ps3avmgr-char-device.patch

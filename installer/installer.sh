@@ -64,6 +64,7 @@ setup_overlays                  # Add overlays using eselect repository.
 install_updates                 # Updates and rebuilds @world system including new use flags.
 install_other_tools             # Installs other selected tools.
 setup_autostart                 # Adds init scripts to selected runlevels.
+setup_user			# Create default user if configured.
 
 ## Cleanup and exit -----------------------------------------------------------------------------
 revdep_rebuild                  # Fixes broken dependencies.
@@ -707,6 +708,18 @@ setup_autostart() {
             chroot_call "rc-update add $tool $key"
         done
     done
+    run_extra_scripts ${FUNCNAME[0]}
+}
+
+setup_user() {
+    if [ ! -n "${user}" ]; then
+	local user_username="${user['username']}"
+	local user_fullname="${user['fullname']}"
+	local user_password="${user['password']}"
+	local user_groups="${user['groups']}"
+	local command="useradd -m -G ${user_groups} -c '${user_fullname}' -p '${user_password}' ${user_username}"
+	chroot_call "${command}"
+    fi
     run_extra_scripts ${FUNCNAME[0]}
 }
 

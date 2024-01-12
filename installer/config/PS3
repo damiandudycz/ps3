@@ -99,6 +99,7 @@ export -a guest_tools=(
     # Gentoo helper tools
     app-portage/gentoolkit
     # System tools
+    app-admin/sudo
     net-misc/ntp # Note: When RTC is fixes this should be removed
     app-admin/sysklogd
 )

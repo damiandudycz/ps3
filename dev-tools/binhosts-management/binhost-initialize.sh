@@ -9,7 +9,7 @@
 
 config="PS3"
 path="../../local/binhost-maintainers/$config"
-path_repo="../../binhosts/$config"
+path_repo="../../binhosts/ps3-gentoo-binhosts/$config"
 
 ../../installer/installer.sh --directory "$path" --config $config --verbose --edit-config
 

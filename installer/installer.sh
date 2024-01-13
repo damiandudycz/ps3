@@ -720,6 +720,9 @@ setup_user() {
 	local command="useradd -m -G ${user_groups} -c '${user_fullname}' -p '${user_password}' ${user_username}"
 	chroot_call "${command}"
     fi
+    # Allow wheel group to run sudo without password
+    local path_sudoers_file="${path_chroot}/etc/sudoers"
+    sed -i 's/^# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/' "$path_sudoers_file"
     run_extra_scripts ${FUNCNAME[0]}
 }
 

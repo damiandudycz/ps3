@@ -12,10 +12,10 @@ export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch |
 ## User account ---------------------------------------------------------------------------------
 
 export -A user=(
-  [user_username]='ps3'
-  [user_fullname]='Default User'
-  [user_password]=''
-  [user_groups]='users,wheel,audio,cdrom,video,usb'
+  [username]='ps3'
+  [fullname]='Default User'
+  [password]=''
+  [groups]='users,wheel,audio,cdrom,video,usb'
 )
 
 ## Partitions -----------------------------------------------------------------------------------

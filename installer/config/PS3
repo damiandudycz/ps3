@@ -52,7 +52,7 @@ export -A make_conf=(
     # Rest of flags will be used from COMMON_FLAGS anyway.
     [KCFLAGS]='-mabi=altivec'
     [KCPPFLAGS]='${KCFLAGS}'
-    [MAKEOPTS]='-j5 -l2'
+    [MAKEOPTS]='-j3'
     [ACCEPT_LICENSE]='*'
     [FEATURES]='-news parallel-fetch parallel-install getbinpkg'
     [USE]='ps3'

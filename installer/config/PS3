@@ -24,7 +24,7 @@ export disk_scheme='gpt' # [gpt/dos].
 
 export -a disk_partitions=( 
     # index:mount_order:file_system:mount_point:size:options:dump:pass.
-    1:1:vfat:/boot:+256MiB:defaults,noatime:1:2 # BOOT
+    1:1:ext3:/boot:+256MiB:defaults,noatime:1:2 # BOOT
     2:0:btrfs:/:-4100MiB:defaults,noauto:0:1    # ROOT
     3:2:swap:none:+4GiB:sw:0:0                  # SWAP
 )

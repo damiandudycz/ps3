@@ -783,7 +783,7 @@ disk_unmount_partitions() {
 cleanup_directories() {
     try rm -rf "$path_tmp"
     if [ "$installation_type" = 'disk' ]; then
-        try rm -rf "$path_chroot"
+        try rmdir "$path_chroot"
     fi
     run_extra_scripts ${FUNCNAME[0]}
 }

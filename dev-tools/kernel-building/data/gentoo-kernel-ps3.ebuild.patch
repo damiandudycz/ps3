@@ -1,7 +1,7 @@
---- gentoo-kernel-6.6.9.ebuild	2024-01-03 11:38:37.439562679 -0000
-+++ gentoo-kernel-ps3-6.6.9.ebuild	2024-01-03 11:47:37.396264858 -0000
+--- 2.ebuild	2024-01-29 08:56:53.971447013 -0000
++++ gentoo-kernel-6.7.2.ebuild	2024-01-29 09:03:19.057783010 -0000
 @@ -15,7 +15,7 @@
- CONFIG_VER=6.6.4-gentoo
+ CONFIG_VER=6.7.0-gentoo
  GENTOO_CONFIG_VER=g11
  
 -DESCRIPTION="Linux kernel built with Gentoo patches"
@@ -9,7 +9,7 @@
  HOMEPAGE="
  	https://wiki.gentoo.org/wiki/Project:Distribution_Kernel
  	https://www.kernel.org/
-@@ -26,33 +26,13 @@
+@@ -26,22 +26,7 @@
  	https://dev.gentoo.org/~mpagano/dist/genpatches/${GENPATCHES_P}.extras.tar.xz
  	https://github.com/projg2/gentoo-kernel-config/archive/${GENTOO_CONFIG_VER}.tar.gz
  		-> gentoo-kernel-config-${GENTOO_CONFIG_VER}.tar.gz
@@ -33,20 +33,7 @@
  "
  S=${WORKDIR}/${MY_P}
  
--KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
-+KEYWORDS="~ppc64"
- IUSE="debug hardened"
--REQUIRED_USE="
--	arm? ( savedconfig )
--	hppa? ( savedconfig )
--	riscv? ( savedconfig )
--	sparc? ( savedconfig )
--"
-+REQUIRED_USE=""
- 
- RDEPEND="
- 	!sys-kernel/gentoo-kernel-bin:${SLOT}
-@@ -60,9 +40,7 @@
+@@ -60,9 +45,7 @@
  BDEPEND="
  	debug? ( dev-util/pahole )
  "
@@ -57,19 +44,17 @@
  
  QA_FLAGS_IGNORED="
  	usr/src/linux-.*/scripts/gcc-plugins/.*.so
-@@ -72,62 +50,20 @@
- 
+@@ -73,61 +56,19 @@
  src_prepare() {
  	local PATCHES=(
--		# meh, genpatches have no directory
- 		"${WORKDIR}"/*.patch
+ 		# meh, genpatches have no directory
+-		"${WORKDIR}"/*.patch
 +		"${WORKDIR}/ps3_patches"/*.patch
  	)
  	default
  
 -	local biendian=false
-+	cp "${WORKDIR}/ps3_gentoo_defconfig" .config || die
- 
+-
 -	# prepare the default config
 -	case ${ARCH} in
 -		amd64)
@@ -110,7 +95,8 @@
 -			die "Unsupported arch ${ARCH}"
 -			;;
 -	esac
--
++	cp "${WORKDIR}/ps3_gentoo_defconfig" .config || die
+ 
 -	local myversion="-gentoo-dist"
 +	local myversion="-gentoo-ps3-dist"
  	use hardened && myversion+="-hardened"
@@ -123,7 +109,7 @@
  	)
  	use debug || merge_configs+=(
  		"${dist_conf_path}"/no-debug.config
-@@ -143,11 +79,37 @@
+@@ -143,11 +84,43 @@
  	fi
  
  	# this covers ppc64 and aarch64_be only for now
@@ -138,36 +124,35 @@
  }
 +
 +pkg_postinst() {
-+ linux-mod_pkg_postinst
++       linux-mod_pkg_postinst
 +
-+	# Update KBOOT entry:
++       # Update KBOOT entry:
 +
-+	# Find root and boot partition
-+	root_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/" {print $1}' /etc/fstab)
-+	boot_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/boot" {print $1}' /etc/fstab)
++       # Find root and boot partition
++       root_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/" {print $1}' /etc/fstab)
++       boot_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/boot" {print $1}' /etc/fstab)
 +
-+	if [ ! -z "$root_partition" ]; then
-+		einfo "Root partition detected: $root_partition."
-+		kboot_path="/etc/kboot.conf"
-+	fi
-+	if [ ! -z "$boot_partition" ]; then
-+		einfo "Boot partition detected: $boot_partition."
-+		kboot_path="/boot/kboot.conf"
-+	fi
-+	if [ -z "$root_partition" ]; then
-+		ewarn "Skipping kboot configuration, because root partition was not detected."
-+		ewarn "Please configure it manually."
-+	fi
-+	# If there is no seperate /boot partition, boot entry needs /boot prefix/
-+	if [ -z "$boot_partition" ]; then
-+		$vmlinux_path_prefix="/boot"
-+	fi
-+	kboot_entry="Gentoo-Kernel-${PV}='/vmlinux-${PV}-gentoo-ps3-dist initrd=/initramfs-${PV}-gentoo-ps3-dist.img root=${root_partition} video=ps3fb:mode:133 rhgb'"
-+	if [ -f "${kboot_path}" ]; then
-+		sed -i "1i ${kboot_entry}" "${kboot_path}"
-+	else
-+		echo "${kboot_entry}" >> "${kboot_path}"
-+	fi
-+	elog "KBOOT entry added to ${kboot_path}"
++       if [ ! -z "$root_partition" ]; then
++               einfo "Root partition detected: $root_partition."
++               kboot_path="/etc/kboot.conf"
++       fi
++       if [ ! -z "$boot_partition" ]; then
++               einfo "Boot partition detected: $boot_partition."
++               kboot_path="/boot/kboot.conf"
++       fi
++       if [ -z "$root_partition" ]; then
++               ewarn "Skipping kboot configuration, because root partition was not detected."
++               ewarn "Please configure it manually."
++       fi
++       # If there is no seperate /boot partition, boot entry needs /boot prefix/
++       if [ -z "$boot_partition" ]; then
++               $vmlinux_path_prefix="/boot"
++       fi
++       kboot_entry="Gentoo-Kernel-${PV}='/vmlinux-${PV}-gentoo-ps3-dist initrd=/initramfs-${PV}-gentoo-ps3-dist.img root=${root_partition} video=ps3fb:mode:133 rhgb'"
++       if [ -f "${kboot_path}" ]; then
++               sed -i "1i ${kboot_entry}" "${kboot_path}"
++       else
++               echo "${kboot_entry}" >> "${kboot_path}"
++       fi
++       elog "KBOOT entry added to ${kboot_path}"
 +}
-

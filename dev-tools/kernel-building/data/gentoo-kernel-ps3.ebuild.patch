@@ -1,7 +1,11 @@
---- 2.ebuild	2024-01-29 08:56:53.971447013 -0000
-+++ gentoo-kernel-6.7.2.ebuild	2024-01-29 09:03:19.057783010 -0000
-@@ -15,7 +15,7 @@
- CONFIG_VER=6.7.0-gentoo
+--- org	2024-01-30 17:26:48.249530006 -0000
++++ gentoo-kernel-6.7.2-r1.ebuild	2024-01-30 17:27:44.204449004 -0000
+@@ -12,10 +12,10 @@
+ GENPATCHES_P=genpatches-${PV%.*}-$(( ${PV##*.} + 3 ))
+ # https://koji.fedoraproject.org/koji/packageinfo?packageID=8
+ # forked to https://github.com/projg2/fedora-kernel-config-for-gentoo
+-CONFIG_VER=6.7.0-gentoo
++CONFIG_VER=6.7.2-gentoo
  GENTOO_CONFIG_VER=g11
  
 -DESCRIPTION="Linux kernel built with Gentoo patches"
@@ -44,11 +48,10 @@
  
  QA_FLAGS_IGNORED="
  	usr/src/linux-.*/scripts/gcc-plugins/.*.so
-@@ -73,61 +56,19 @@
- src_prepare() {
+@@ -74,60 +57,19 @@
  	local PATCHES=(
  		# meh, genpatches have no directory
--		"${WORKDIR}"/*.patch
+ 		"${WORKDIR}"/*.patch
 +		"${WORKDIR}/ps3_patches"/*.patch
  	)
  	default
@@ -109,7 +112,7 @@
  	)
  	use debug || merge_configs+=(
  		"${dist_conf_path}"/no-debug.config
-@@ -143,11 +84,43 @@
+@@ -143,11 +85,43 @@
  	fi
  
  	# this covers ppc64 and aarch64_be only for now

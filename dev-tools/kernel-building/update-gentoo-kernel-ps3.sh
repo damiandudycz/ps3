@@ -14,6 +14,7 @@ config_save=false       # Should generated ebuild be saved in overlay repository
 config_clear=false      # Clear sources and emerge them again.
 config_menuconfig=false # Run make menuconfig to adjust kernel configuration.
 config_overwrite=false  # Allow owerwriting already existing ebuild. Also if set, new generated config diff file is set as the new default.
+config_test_build=false # Try to compile locally to see if it works.
 
 # CONSTANT NAMES ================================================================================
 fname_overlay="ps3-gentoo-overlay"                  # Name of ebuild overlay repository.
@@ -71,8 +72,9 @@ source "${path_data_patches_list}"
 check_if_should_continue   # Skip if ebuild already exists.
 setup_default_repo         # Creates file /etc/portage/repos.conf/gentoo.conf with default configuration. Needed for pkgdev manifest to work.
 setup_sources              # Downloads kernel sources, Applies patches and current stored configuration.
-prepare_new_kernel_configs # Sets up new ps3_defconfig_diffs and ps3_gentoo_defconfig
-create_ebuild              # Generates ebuild
+prepare_new_kernel_configs # Sets up new ps3_defconfig_diffs and ps3_gentoo_defconfig.
+create_ebuild              # Generates ebuild.
+run_test                   # Perform test build.
 save                       # Save generated files in overlay repository.
 upload_overlays
 
@@ -152,6 +154,7 @@ print_usage() {
     echo "  --version     Specify kernel version. If not set, uses newest one in portage."
     echo "  --save        Store new ebuild and distfiles in overlay repositories."
     echo "  --overwrite   Allow overwriting already existing ebuilds. Also if set, overwrites default config diff file."
+    echo "  --test        Build locally to test if it works."
     echo ""
     exit 1
 }
@@ -183,6 +186,9 @@ read_variables() {
             ;;
         --overwrite)
             config_overwrite=true
+            ;;
+        --test)
+            config_test_build=true
             ;;
         --version)
             shift
@@ -274,6 +280,14 @@ prepare_new_kernel_configs() {
     # Determine new file with changes between ps3_defconfig and ps3_gentoo_defconfig.
     ./scripts/diffconfig arch/powerpc/configs/${fname_defconfig_ps3_original} "${path_work_files_defconfig_modified}" > "${path_work_files_defconfig_diffs}"
     try cd "${path_initial}"
+}
+
+run_test() {
+    if [ ${config_test_build} = true ]; then
+        try cd "${path_work_src}"
+        ppc64_run make
+        try cd "${path_initial}"
+    fi
 }
 
 create_ebuild() {

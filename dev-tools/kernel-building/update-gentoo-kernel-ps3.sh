@@ -35,7 +35,7 @@ path_data_patches_list=$(realpath "${path_data}/patches_ps3_list.txt")
 path_data_gentoo_conf="${path_data}/gentoo.conf"
 path_data_defconfig_diffs="${path_data}/${fname_defconfig_ps3_original}_diffs"
 path_data_ebuild_patch="${path_data}/${fname_ebuild}.ebuild.patch"
-path_work_src="${path_work}/usr/src/linux-${kernel_version}-gentoo"
+path_work_src="${path_work}/usr/src/linux-$(echo $kernel_version | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')-gentoo$(echo $kernel_version | grep -Eo '(-r[0-9]+)?')"
 path_work_files="${path_work}/files"
 path_work_files_patches="${path_work_files}/ps3_patches"
 path_work_files_defconfig_original="${path_work_files}/${fname_defconfig_ps3_original}"
@@ -203,7 +203,7 @@ read_variables() {
 
 setup_work_path() {
     if [ -z ${kernel_version} ]; then
-        kernel_version=$(equery m "${fname_ebuild_category}/${fname_ebuild_raw}" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | tail -n 1)
+	kernel_version=$(equery m "${fname_ebuild_category}/${fname_ebuild_raw}" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-r[0-9]+)?' | sort -V | tail -n 1)
     fi
     path_work=$(realpath -m "${path_local}/${fname_ebuild_sources_raw}/${kernel_version}")
 }

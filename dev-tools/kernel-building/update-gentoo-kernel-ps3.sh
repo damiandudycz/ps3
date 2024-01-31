@@ -209,7 +209,7 @@ read_variables() {
 
 setup_work_path() {
     if [ -z ${kernel_version} ]; then
-	kernel_version=$(equery m "${fname_ebuild_category}/${fname_ebuild_raw}" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-r[0-9]+)?' | sort -V | tail -n 1)
+	kernel_version=$(equery m "${fname_ebuild_category}/${fname_ebuild_raw}" | grep " ppc64" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-r[0-9]+)?' | sort -V | tail -n 1)
     fi
     path_work=$(realpath -m "${path_local}/${fname_ebuild_sources_raw}/${kernel_version}")
 }

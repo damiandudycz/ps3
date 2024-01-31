@@ -1,10 +1,10 @@
---- org	2024-01-30 20:30:20.263448001 -0000
-+++ new	2024-01-30 20:33:26.506869004 -0000
+--- gentoo-kernel-6.6.13.ebuild.org	2024-01-31 17:05:46.540686009 -0000
++++ gentoo-kernel-6.6.13.ebuild	2024-01-31 17:14:11.595449006 -0000
 @@ -12,10 +12,9 @@
  GENPATCHES_P=genpatches-${PV%.*}-$(( ${PV##*.} + 3 ))
  # https://koji.fedoraproject.org/koji/packageinfo?packageID=8
  # forked to https://github.com/projg2/fedora-kernel-config-for-gentoo
--CONFIG_VER=6.7.0-gentoo
+-CONFIG_VER=6.6.12-gentoo
  GENTOO_CONFIG_VER=g11
  
 -DESCRIPTION="Linux kernel built with Gentoo patches"
@@ -36,8 +36,8 @@
  "
  S=${WORKDIR}/${MY_P}
  
--KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
-+KEYWORDS="~ppc64"
+-KEYWORDS="amd64 ~arm arm64 ~hppa ~loong ~ppc ppc64 ~riscv ~sparc x86"
++KEYWORDS="ppc64"
  IUSE="debug hardened"
 -REQUIRED_USE="
 -	arm? ( savedconfig )
@@ -60,11 +60,9 @@
  
  QA_FLAGS_IGNORED="
  	usr/src/linux-.*/scripts/gcc-plugins/.*.so
-@@ -72,62 +49,20 @@
- 
- src_prepare() {
+@@ -74,51 +51,11 @@
  	local PATCHES=(
--		# meh, genpatches have no directory
+ 		# meh, genpatches have no directory
  		"${WORKDIR}"/*.patch
 +		"${WORKDIR}/ps3_patches"/*.patch
  	)
@@ -114,11 +112,9 @@
 -	esac
 +	cp "${WORKDIR}/ps3_gentoo_defconfig" .config || die
  
--	local myversion="-gentoo-dist"
-+	local myversion="-gentoo-ps3-dist"
+ 	local myversion="-gentoo-dist"
  	use hardened && myversion+="-hardened"
- 	echo "CONFIG_LOCALVERSION=\"${myversion}\"" > "${T}"/version.config || die
- 	local dist_conf_path="${WORKDIR}/gentoo-kernel-config-${GENTOO_CONFIG_VER}"
+@@ -127,7 +64,6 @@
  
  	local merge_configs=(
  		"${T}"/version.config
@@ -126,7 +122,7 @@
  	)
  	use debug || merge_configs+=(
  		"${dist_conf_path}"/no-debug.config
-@@ -143,11 +78,44 @@
+@@ -143,11 +79,44 @@
  	fi
  
  	# this covers ppc64 and aarch64_be only for now
@@ -141,36 +137,36 @@
  }
 +
 +pkg_postinst() {
-+       # Install kernel files.
-+       kernel-build_pkg_postinst
++	# Call linux-mod_pkg_postinst to handle module installation and other tasks
++	kernel-build_pkg_postinst
 +
-+       # Update KBOOT entry:
++	# Update KBOOT entry:
 +
-+       # Find root and boot partition.
-+       root_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/" {print $1}' /etc/fstab)
-+       boot_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/boot" {print $1}' /etc/fstab)
++	# Find root and boot partition
++	root_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/" {print $1}' /etc/fstab)
++	boot_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/boot" {print $1}' /etc/fstab)
 +
-+       if [ ! -z "$root_partition" ]; then
-+               einfo "Root partition detected: $root_partition."
-+               kboot_path="/etc/kboot.conf"
-+       fi
-+       if [ ! -z "$boot_partition" ]; then
-+               einfo "Boot partition detected: $boot_partition."
-+               kboot_path="/boot/kboot.conf"
-+       fi
-+       if [ -z "$root_partition" ]; then
-+               ewarn "Skipping kboot configuration, because root partition was not detected."
-+               ewarn "Please configure it manually."
-+       fi
-+       # If there is no seperate /boot partition, boot entry needs /boot prefix/.
-+       if [ -z "$boot_partition" ]; then
-+               $vmlinux_path_prefix="/boot"
-+       fi
++	if [ ! -z "$root_partition" ]; then
++		einfo "Root partition detected: $root_partition."
++		kboot_path="/etc/kboot.conf"
++	fi
++	if [ ! -z "$boot_partition" ]; then
++		einfo "Boot partition detected: $boot_partition."
++		kboot_path="/boot/kboot.conf"
++	fi
++	if [ -z "$root_partition" ]; then
++		ewarn "Skipping kboot configuration, because the root partition was not detected."
++		ewarn "Please configure it manually."
++	fi
++	# If there is no separate /boot partition, the boot entry needs /boot prefix/
++	if [ -z "$boot_partition" ]; then
++		vmlinux_path_prefix="/boot"
++	fi
 +	kboot_entry="Gentoo-Kernel-${PV}='${vmlinux_path_prefix}/vmlinux-${PV}-gentoo-ps3-dist initrd=${vmlinux_path_prefix}/initramfs-${PV}-gentoo-ps3-dist.img root=${root_partition} video=ps3fb:mode:133 rhgb'"
-+       if [ -f "${kboot_path}" ]; then
-+               sed -i "1i ${kboot_entry}" "${kboot_path}"
-+       else
-+               echo "${kboot_entry}" >> "${kboot_path}"
-+       fi
-+       elog "KBOOT entry added to ${kboot_path}"
++	if [ -f "${kboot_path}" ]; then
++		sed -i "1i ${kboot_entry}" "${kboot_path}"
++	else
++		echo "${kboot_entry}" >> "${kboot_path}"
++	fi
++        elog "KBOOT entry added to ${kboot_path}"
 +}

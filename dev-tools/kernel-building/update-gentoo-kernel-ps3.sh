@@ -59,9 +59,9 @@ path_repos_gentoo_kernel_ebuild="/var/db/repos/gentoo/${fname_ebuild_category}/$
 
 list_distfiles_tar_files=(
     # List of files and directories compressed into distfiles tarball for overlay distfiles repository.
-    ps3_defconfig_diffs
-    ps3_gentoo_defconfig
-    ps3_patches
+    ps3_defconfig_diffs # Not needed, but kept for tracking changes between versions.
+    ps3_gentoo_defconfig # Updated ps3_defconfig that will replace the original one.
+    ps3_patches # PS3 specific patches to be applied to kernel. Snapshot created with ebuild.
 )
 
 # MAIN PROGRAM ==================================================================================

@@ -8,7 +8,7 @@ This includes information about all manually changed settings for the PS3 OtherO
 Patch file that converts default gentoo-kernel.ebuild into gentoo-kernel-ps3.ebuild.
 Need to be manually updated sometimes, when it's changed between versions.
 To create new patch, edit gentoo-kernel.ebuild with all required changes, and run against original file:
-diff -u gentoo-kernel-<version>.ebuild gentoo-kernel-ps3-<version>.ebuild > gentoo-kernel.ebuild
+diff -u1 gentoo-kernel-<version>.ebuild gentoo-kernel-ps3-<version>.ebuild > data/gentoo-kernel-ps3.ebuild.patch
 
 - gentoo.conf
 Default configuration for gentoo portage repository. Required by pkgdev manifest to work correctly.

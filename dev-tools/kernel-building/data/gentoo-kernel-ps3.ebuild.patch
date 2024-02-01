@@ -1,5 +1,5 @@
---- gentoo-kernel-6.6.13.ebuild	2024-02-01 08:15:28.338035002 -0000
-+++ gentoo-kernel-ps3-6.6.13.ebuild	2024-02-01 08:21:17.299365011 -0000
+--- gentoo-kernel-6.6.13.ebuild	2024-02-01 16:21:52.560284000 -0000
++++ gentoo-kernel-ps3-6.6.13.ebuild	2024-02-01 16:23:34.975043006 -0000
 @@ -17,3 +17,3 @@
  
 -DESCRIPTION="Linux kernel built with Gentoo patches"
@@ -46,10 +46,11 @@
  		"${WORKDIR}"/*.patch
 +		"${WORKDIR}/ps3_patches"/*.patch
  	)
-@@ -79,44 +58,3 @@
+@@ -79,46 +58,5 @@
  
 -	local biendian=false
--
++	cp "${WORKDIR}/ps3_gentoo_defconfig" .config || die
+ 
 -	# prepare the default config
 -	case ${ARCH} in
 -		amd64)
@@ -90,8 +91,10 @@
 -			die "Unsupported arch ${ARCH}"
 -			;;
 -	esac
-+	cp "${WORKDIR}/ps3_gentoo_defconfig" .config || die
- 
+-
+-	local myversion="-gentoo-dist"
++	local myversion="-gentoo-ps3-dist"
+ 	use hardened && myversion+="-hardened"
 @@ -129,3 +67,2 @@
  		"${T}"/version.config
 -		"${dist_conf_path}"/base.config

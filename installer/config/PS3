@@ -16,6 +16,7 @@ export -A user=(
   [fullname]='Default User'
   [password]=''
   [groups]='users,wheel,audio,cdrom,video,usb'
+  [autologin]=true
 )
 
 ## Partitions -----------------------------------------------------------------------------------

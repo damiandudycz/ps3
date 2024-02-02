@@ -71,7 +71,7 @@ export -A env_overrides=(
 
 export -A package_use=(
     [00cpu-flags]='*/* CPU_FLAGS_PPC: altivec'
-    [10installkernel]='dracut' # Needed for gentoo-kernel-ps3
+    [10installkernel]='sys-kernel/installkernel dracut' # Needed for gentoo-kernel-ps3
     #[10gcc]='sys-devel/gcc lto'
     #[20python]='dev-lang/python lto'
 )

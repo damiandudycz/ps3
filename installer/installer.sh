@@ -717,8 +717,12 @@ setup_user() {
 	local user_fullname="${user['fullname']}"
 	local user_password="${user['password']}"
 	local user_groups="${user['groups']}"
+ 	local user_autologin=${user['autologin']}
 	local command="useradd -m -G ${user_groups} -c '${user_fullname}' -p '${user_password}' ${user_username}"
 	chroot_call "${command}"
+ 	if [ ! -n ${user_autologin} ] && [ ${user_autologin} = true ]; then
+		chroot_call "sed -i '/^c1:12345:respawn:\/sbin\/agetty/c\c1:12345:respawn:\/sbin\/agetty --noclear -a ${user_username} 38400 tty1 linux' /etc/inittab"
+  	fi
     fi
     # Allow wheel group to run sudo without password
     local path_sudoers_file="${path_chroot}/etc/sudoers"

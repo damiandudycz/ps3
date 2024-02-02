@@ -37,6 +37,8 @@ unprepare_chroot() {
 prepare_chroot
 mount -o bind "$path_repo" "$path/var/cache/binpkgs"
 rm -rf "$path/var/cache/binpkgs"/* # Delete previous database of binpkgs to get a fresh start
-chroot "$path" /bin/bash -c "FEATURES=\"buildpkg -getbinpkg\" emerge @world --deep --emptytree --with-bdeps=y --binpkg-respect-use=y"
+chroot "$path" /bin/bash -c "FEATURES=\"buildpkg\" emerge @world --deep --emptytree --with-bdeps=y --binpkg-respect-use=y"
+# Replace with below to rebuild all packages, previously compiled.
+#chroot "$path" /bin/bash -c "FEATURES=\"buildpkg -getbinpkg\" emerge @world --deep --emptytree --with-bdeps=y --binpkg-respect-use=y"
 umount "$path/var/cache/binpkgs"
 unprepare_chroot

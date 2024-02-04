@@ -111,9 +111,6 @@ export -A guest_rc_startup=(
     [default]='sshd ntpd ntp-client'
 )
 
-export -A extra_scripts=(
-)
-
 export -A binhosts=(
     [PS3]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/PS3"
 )

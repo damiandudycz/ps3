@@ -250,7 +250,6 @@ read_variables() {
         esac
         shift
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 validate_input_data() {
@@ -274,7 +273,6 @@ validate_input_data() {
     if [ "$installation_type" = 'device' ] && [ lsblk -no MOUNTPOINT "$disk_device" | grep -q -v "^$" ]; then
         error "Device $disk_device is currently in use. Unmount it before usage."
     fi
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 warn_about_disk_wiping() {
@@ -296,7 +294,6 @@ warn_about_disk_wiping() {
             esac
         done
     fi
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 prepare_directories() {
@@ -309,7 +306,6 @@ prepare_directories() {
     if [ ! -d "$path_chroot" ]; then
         try mkdir -p "$path_chroot"
     fi
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 get_config() {
@@ -329,17 +325,15 @@ get_config() {
     arch_family=$(echo $arch | cut -d'/' -f1)
     arch_short=$(echo $arch | cut -d'/' -f2)
     arch_long=$(echo $arch | cut -d'/' -f3)
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 validate_config() {
     # TODO: Validate settings.
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 sort_partitions_by_mount_order() {
     if [ "$installation_type" != 'disk' ]; then
-        run_extra_scripts ${FUNCNAME[0]}
+   
         return
     fi
     IFS=$'\n' read -r -d '' -a disk_partitions_sorted_by_mount_order < <(
@@ -347,13 +341,12 @@ sort_partitions_by_mount_order() {
             echo "$partition"
         done | tr ':' $'\t' | sort -k2,2n | tr $'\t' ':'
     )
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 disk_clean_signatures() {
     # Cleans signatures from partition table and every partition.
     if [ "$installation_type" != 'disk' ]; then
-        run_extra_scripts ${FUNCNAME[0]}
+   
         return
     fi
     for partition in "$disk_device"*; do
@@ -364,13 +357,12 @@ disk_clean_signatures() {
     try wipefs -fa "$disk_device"
     try sleep 1 # Without sleep blockdev below sometimes fails
     try blockdev --rereadpt -v "$disk_device"
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 disk_create_partitions() {
     # Create partitions on device.
     if [ "$installation_type" != 'disk' ]; then
-        run_extra_scripts ${FUNCNAME[0]}
+   
         return
     fi
     local fdisk_command=''
@@ -403,13 +395,12 @@ disk_create_partitions() {
     # Write new partition scheme
     fdisk_command="${fdisk_command}w\n"
     printf "$fdisk_command" | try fdisk "$disk_device" --wipe auto
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 disk_create_filesystems() {
     # Creating filesystem for given configuration.
     if [ "$installation_type" != 'disk' ]; then
-        run_extra_scripts ${FUNCNAME[0]}
+   
         return
     fi
     create_filesystem_from_config() {
@@ -434,12 +425,11 @@ disk_create_filesystems() {
     for part_config in "${disk_partitions[@]}"; do
         create_filesystem_from_config "$disk_device" "$part_config"
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 disk_mount_partitions() {
     if [ "$installation_type" != 'disk' ]; then
-        run_extra_scripts ${FUNCNAME[0]}
+   
         return
     fi
     mount_filesystem_from_config() {
@@ -464,7 +454,6 @@ disk_mount_partitions() {
     for part_config in "${disk_partitions_sorted_by_mount_order[@]}"; do
         mount_filesystem_from_config "$disk_device" "$part_config"
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 # Downloading files =============================================================================
@@ -482,14 +471,12 @@ gentoo_download() {
     fi
     # Download stage3/4 file
     try wget "$url_gentoo_tarball" -O "$path_download" $quiet_flag
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 gentoo_extract() {
     local path_stage3or4="$path_chroot/gentoo.tar.xz"
     try tar -xvpf "$path_stage3or4" --xattrs-include="*/*" --numeric-owner -C "$path_chroot/"
     try rm "$path_stage3or4"
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 # Configuring system ============================================================================
@@ -505,7 +492,6 @@ prepare_chroot() {
     try mount --make-slave "$path_chroot/run"
     # Copy DNS information.
     try cp --dereference '/etc/resolv.conf' "$path_chroot/etc/resolv.conf"
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_make_conf() {
@@ -515,7 +501,6 @@ setup_make_conf() {
     if [ ! -z "$add_features" ]; then
         append_make_config "FEATURES" "$add_features"
     fi
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_env() {
@@ -527,7 +512,6 @@ setup_env() {
   	try mkdir -p "$category_path"
    	echo "${env_overrides[$key]}" | try tee -a "$category_path/$package" >/dev/null
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_packages_config() {
@@ -543,7 +527,6 @@ setup_packages_config() {
         local key_short=$(echo $key | cut -d'_' -f1)
         echo "${package_accept_keywords[$key]}" | try tee -a "$path_package_accept_keywords/$key" >/dev/null
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_binhosts() {
@@ -556,13 +539,12 @@ setup_binhosts() {
         echo "[$key]" | try tee -a "$path_binrepo" >/dev/null
         echo "sync-uri = ${binhosts[$key]}" | try tee -a "$path_binrepo" >/dev/null
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_fstab() {
     if [ "$installation_type" != 'disk' ]; then
         log green 'Skipping fstab configuration due to directory installation'
-        run_extra_scripts ${FUNCNAME[0]}
+   
         return
     fi
     local path_fstab="$path_chroot/etc/fstab"
@@ -584,23 +566,20 @@ setup_fstab() {
     for part_config in "${disk_partitions_sorted_by_mount_order[@]}"; do
         add_partition_entry "$disk_device" "$part_config"
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_hostname() {
     local path_hostname="$path_chroot/etc/hostname"
     echo "$hostname" | try tee "$path_hostname" >/dev/null
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_distcc_client() {
     if [ -z "$distcc_hosts" ]; then
-        run_extra_scripts ${FUNCNAME[0]}
+   
         return
     fi
     chroot_call "distcc-config --set-hosts '$distcc_hosts'"
     append_make_config "FEATURES" "distcc"
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 # TODO: Add other ways of configuring network, line network manager api.
@@ -609,7 +588,6 @@ setup_network_link() {
     for link in "${network_links[@]}"; do
         ln -s 'net.lo' "$path_initd/net.$link"
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 # Actions inside chroot =========================================================================
@@ -617,17 +595,14 @@ setup_network_link() {
 setup_main_repo() {
     # Silences warnings before emerge-webrsync was run.
     chroot_call 'mkdir -p /var/db/repos/gentoo'
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 update_environment() {
     chroot_call 'env-update && source /etc/profile'
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_root_password() {
     chroot_call "usermod --password '$root_password' root"
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_locales() {
@@ -641,7 +616,6 @@ setup_locales() {
     chroot_call 'locale-gen'
     chroot_call "eselect locale set $locale"
     chroot_call 'env-update && source /etc/profile'
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_timezone() {
@@ -659,34 +633,29 @@ setup_portage_repository() {
     chroot_call "emerge --sync $quiet_flag"
     # Create keys.
     chroot_call "getuto"
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_profile() {
     chroot_call "eselect profile set $profile"
     chroot_call 'env-update && source /etc/profile'
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 install_updates() {
     if [ $update_system = true ]; then
         chroot_call "emerge --newuse --deep --update --with-bdeps=y @world $quiet_flag"
     fi
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 install_base_tools() {
     for package in "${guest_base_tools[@]}"; do
         chroot_call "FEATURES='-distcc' emerge --update --newuse $package $quiet_flag"
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 install_other_tools() {
     for package in "${guest_tools[@]}"; do
         chroot_call "emerge --update --newuse $package $quiet_flag"
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_overlays() {
@@ -694,12 +663,10 @@ setup_overlays() {
         chroot_call "eselect repository add $key git ${overlays[$key]}"
 	chroot_call "emerge --sync $key"
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 revdep_rebuild() {
     chroot_call "revdep-rebuild $quiet_flag"
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_autostart() {
@@ -708,7 +675,6 @@ setup_autostart() {
             chroot_call "rc-update add $tool $key"
         done
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 setup_user() {
@@ -727,7 +693,6 @@ setup_user() {
     # Allow wheel group to run sudo without password
     local path_sudoers_file="${path_chroot}/etc/sudoers"
     sed -i 's/^# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/' "$path_sudoers_file"
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 # Cleaning ======================================================================================
@@ -741,7 +706,6 @@ cleanup() {
     chroot_call "eclean --deep $quiet_flag packages"
     try rm -rf "$path_chroot/var/cache/distfiles"/*
     try rm -rf "$path_chroot/var/cache/binpkgs"/*
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 unprepare_chroot() {
@@ -753,12 +717,11 @@ unprepare_chroot() {
     try umount -R "$path_chroot/sys"
     # DNS information
     try rm "$path_chroot/etc/resolv.conf"
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 disk_unmount_partitions() {
     if [ "$installation_type" != 'disk' ]; then
-        run_extra_scripts ${FUNCNAME[0]}
+   
         return
     fi
     unmount_filesystem_from_config() {
@@ -781,7 +744,6 @@ disk_unmount_partitions() {
         local part_config="${disk_partitions_sorted_by_mount_order[$i]}"
         unmount_filesystem_from_config $disk_device $part_config
     done
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 cleanup_directories() {
@@ -789,7 +751,6 @@ cleanup_directories() {
     if [ "$installation_type" = 'disk' ]; then
         try rmdir "$path_chroot"
     fi
-    run_extra_scripts ${FUNCNAME[0]}
 }
 
 summary() {
@@ -797,5 +758,4 @@ summary() {
     if [ "$installation_type" == 'directory' ]; then
         log yellow "Remeber to configure fstab and bootloader"
     fi
-    run_extra_scripts ${FUNCNAME[0]}
 }

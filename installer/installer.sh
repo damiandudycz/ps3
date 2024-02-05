@@ -164,20 +164,6 @@ chroot_call() {
 
 ## Main functions -------------------------------------------------------------------------------
 
-run_extra_scripts() {
-    # Extra scripts are stored in target configuration, and run after finishing or skipping given functions.
-    local post_function_name="$1"
-    if [ -z "${extra_scripts[$post_function_name]}" ]; then
-        return
-    fi
-    for script in ${extra_scripts[$post_function_name]}; do
-        local url_script="$url_installer/scripts/$script.sh"
-        local path_script="$path_tmp/scripts/$script.sh"
-        try wget "$url_script" -O "$path_script" --no-cache --no-cookies $quiet_flag
-        try source "$path_script"
-    done
-}
-
 # Append values for existing settings in make.conf
 append_make_config() {
     local path_make_conf="$path_chroot/etc/portage/make.conf"

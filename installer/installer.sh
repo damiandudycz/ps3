@@ -10,7 +10,8 @@ url_installer="$url_repo/installer"
 path_tmp="/tmp/gentoo-setup"     # Temporary files storage directory.
 path_chroot="/mnt/gentoo-setup"  # Gentoo chroot environment directory.
 quiet_flag='--quiet'             # Quiet flag used to silence the output.
-edit_config=false
+config="PS3"			 # Default configuration.
+edit_config=false		 # Modify configuration file.
 
 # MAIN PROGRAM ==================================================================================
 
@@ -223,12 +224,14 @@ read_variables() {
             shift
             if [ $# -gt 0 ]; then
                 config="$1"
+		unset custom_config
             fi
             ;;
         --custom-config)
             shift
             if [ $# -gt 0 ]; then
                 custom_config="$1"
+		unset config
             fi
             ;;
 	--edit-config)

@@ -627,8 +627,6 @@ setup_portage_repository() {
     try cp "$path_chroot/usr/share/portage/config/repos.conf" "$path_chroot/etc/portage/repos.conf/gentoo.conf"
     # Synchronize portage tree.
     chroot_call "emerge --sync $quiet_flag"
-    # Create keys.
-    chroot_call "getuto"
 }
 
 setup_profile() {

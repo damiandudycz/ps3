@@ -2,7 +2,7 @@
 
 config="PS3"
 path="../../local/binhost-maintainers/$config"
-path_repo="../../binhosts/$config"
+path_repo="../../binhosts/ps3-gentoo-binhosts/$config"
 
 prepare_chroot() {
 	mount --type proc /proc "$path/proc"

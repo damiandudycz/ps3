@@ -29,7 +29,6 @@ unprepare_chroot() {
 # -----------------------------------------------------------------------------------
 
 distcc="192.168.86.53"
-config="PS3"
 
 name_base="base"
 path_local_base="../../local/binhost-maintainers/${name_base}"
@@ -46,7 +45,7 @@ rm -rf "${patl_local_base}"
 rm -rf "${patl_local_desktop}"
 
 # Initialize Base binrepo installation.
-../../installer/installer.sh --directory "${path_local_base}" --config ${config} --edit-config --distcc ${distcc}
+../../installer/installer.sh --directory "${path_local_base}" --edit-config --distcc ${distcc}
 # Mount chroot.
 prepare_chroot "${path_local_base}"
 # Change profile

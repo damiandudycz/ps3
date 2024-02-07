@@ -318,11 +318,11 @@ get_config() {
 
 validate_config() {
     # TODO: Validate settings.
+    return
 }
 
 sort_partitions_by_mount_order() {
     if [ "$installation_type" != 'disk' ]; then
-   
         return
     fi
     IFS=$'\n' read -r -d '' -a disk_partitions_sorted_by_mount_order < <(
@@ -335,7 +335,6 @@ sort_partitions_by_mount_order() {
 disk_clean_signatures() {
     # Cleans signatures from partition table and every partition.
     if [ "$installation_type" != 'disk' ]; then
-   
         return
     fi
     for partition in "$disk_device"*; do
@@ -351,7 +350,6 @@ disk_clean_signatures() {
 disk_create_partitions() {
     # Create partitions on device.
     if [ "$installation_type" != 'disk' ]; then
-   
         return
     fi
     local fdisk_command=''
@@ -389,7 +387,6 @@ disk_create_partitions() {
 disk_create_filesystems() {
     # Creating filesystem for given configuration.
     if [ "$installation_type" != 'disk' ]; then
-   
         return
     fi
     create_filesystem_from_config() {
@@ -418,7 +415,6 @@ disk_create_filesystems() {
 
 disk_mount_partitions() {
     if [ "$installation_type" != 'disk' ]; then
-   
         return
     fi
     mount_filesystem_from_config() {
@@ -533,7 +529,6 @@ setup_binhosts() {
 setup_fstab() {
     if [ "$installation_type" != 'disk' ]; then
         log green 'Skipping fstab configuration due to directory installation'
-   
         return
     fi
     local path_fstab="$path_chroot/etc/fstab"
@@ -564,7 +559,6 @@ setup_hostname() {
 
 setup_distcc_client() {
     if [ -z "$distcc_hosts" ]; then
-   
         return
     fi
     chroot_call "distcc-config --set-hosts '$distcc_hosts'"
@@ -710,7 +704,6 @@ unprepare_chroot() {
 
 disk_unmount_partitions() {
     if [ "$installation_type" != 'disk' ]; then
-   
         return
     fi
     unmount_filesystem_from_config() {

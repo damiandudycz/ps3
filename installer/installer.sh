@@ -661,7 +661,7 @@ setup_autostart() {
 }
 
 setup_user() {
-    if [ ! -n "${user}" ]; then
+    if [ -v user ]; then
 	local user_username="${user['username']}"
 	local user_fullname="${user['fullname']}"
 	local user_password="${user['password']}"

@@ -1,9 +1,6 @@
 #!/bin/bash
 
-# This script builds clean installation in directory, used for Binhosts rebuild.
-# First it builds a clean PS3 configuration install.
-# Then it configures distcc host, and rebuilds all packages, to generate all binpkgs.
-# Finally it should send new packages to the git repository.
+# Creates clean installations for managing binhost repository.
 
 # TODO: Automatically remove unused variables from config - networking, rc, user, etc
 
@@ -36,6 +33,7 @@ distcc="192.168.86.53"
 name_base="PS3"
 path_local_base="../../local/binhost-maintainers/${name_base}"
 path_binhost_base="../../binhosts/ps3-gentoo-binhosts/${name_base}"
+profile_base="default/linux/ppc64/17.0"
 
 name_desktop="PS3-desktop"
 path_local_desktop="../../local/binhost-maintainers/${name_desktop}"
@@ -46,6 +44,8 @@ profile_desktop="default/linux/ppc64/17.0/desktop"
 ../../installer/installer.sh --directory "${path_local_base}" --config ${name_base} --edit-config --distcc ${distcc}
 # Mount chroot.
 prepare_chroot "${path_local_base}"
+# Change profile
+chroot "${path_local_base}" /bin/bash -c "eselect profile set ${profile_base}"
 # Reset distcc host to localhost.
 chroot "${path_local_base}" /bin/bash -c "distcc-config --set-hosts 127.0.0.1"
 # Rebuild packages in base binrepo.

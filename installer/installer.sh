@@ -591,6 +591,9 @@ update_environment() {
 }
 
 setup_root_password() {
+    if [ -z "$root_password" ]; then
+        return
+    fi
     chroot_call "usermod --password '$root_password' root"
 }
 

@@ -5,7 +5,6 @@ export init_system='openrc'               # [openrc/systemd] # currently only op
 export profile="default/linux/ppc64/17.0" # Base profile.
 export hostname='PS3'                     # Hostname of installed system.
 #export root_password=''                   # Empty string removes password.
-export bootloader='petitboot'             # [petitboot/grub/grub-efi]. For PS3 use petitboot.
 export update_system=false                # Run emerge --update --newuse --deep @world during installation.
 export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds"
 
@@ -112,7 +111,8 @@ export -A guest_rc_startup=(
 )
 
 export -A binhosts=(
-    [PS3]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/PS3"
+    [PS3-Base]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/PS3-base"
+    [PS3-Desktop]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/PS3-desktop"
 )
 
 export -A overlays=(

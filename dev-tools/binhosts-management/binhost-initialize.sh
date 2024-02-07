@@ -29,8 +29,9 @@ unprepare_chroot() {
 # -----------------------------------------------------------------------------------
 
 distcc="192.168.86.53"
+config="PS3"
 
-name_base="PS3"
+name_base="PS3-base"
 path_local_base="../../local/binhost-maintainers/${name_base}"
 path_binhost_base="../../binhosts/ps3-gentoo-binhosts/${name_base}"
 profile_base="default/linux/ppc64/17.0"
@@ -41,7 +42,7 @@ path_binhost_desktop="../../binhosts/ps3-gentoo-binhosts/${name_desktop}"
 profile_desktop="default/linux/ppc64/17.0/desktop"
 
 # Initialize Base binrepo installation.
-../../installer/installer.sh --directory "${path_local_base}" --config ${name_base} --edit-config --distcc ${distcc}
+../../installer/installer.sh --directory "${path_local_base}" --config ${config} --edit-config --distcc ${distcc}
 # Mount chroot.
 prepare_chroot "${path_local_base}"
 # Change profile

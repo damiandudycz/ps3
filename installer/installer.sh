@@ -553,6 +553,9 @@ setup_fstab() {
 }
 
 setup_hostname() {
+    if [ -z "$hostname" ]; then
+        return
+    fi
     local path_hostname="$path_chroot/etc/hostname"
     echo "$hostname" | try tee "$path_hostname" >/dev/null
 }
@@ -567,6 +570,9 @@ setup_distcc_client() {
 
 # TODO: Add other ways of configuring network, line network manager api.
 setup_network_link() {
+    if [ -z "$network_links" ]; then
+        return
+    fi
     local path_initd="$path_chroot/etc/init.d"
     for link in "${network_links[@]}"; do
         ln -s 'net.lo' "$path_initd/net.$link"
@@ -592,12 +598,16 @@ setup_locales() {
     # Add locales.
     local path_make_conf="$path_chroot/etc/locale.gen"
     echo "C.UTF8 UTF-8" | try tee "$path_make_conf" >/dev/null
-    for ((i = 0; i < "${#locales[@]}"; i++)); do
-        echo "${locales[$i]}" | try tee -a "$path_make_conf" >/dev/null
-    done
+    if [ ! -z "$locales" ]; then
+        for ((i = 0; i < "${#locales[@]}"; i++)); do
+            echo "${locales[$i]}" | try tee -a "$path_make_conf" >/dev/null
+        done
+    fi
     # Generate locales and select default.
     chroot_call 'locale-gen'
-    chroot_call "eselect locale set $locale"
+    if [ ! -z "$locale" ]; then
+        chroot_call "eselect locale set $locale"
+    fi
     chroot_call 'env-update && source /etc/profile'
 }
 

@@ -41,6 +41,10 @@ path_local_desktop="../../local/binhost-maintainers/${name_desktop}"
 path_binhost_desktop="../../binhosts/ps3-gentoo-binhosts/${name_desktop}"
 profile_desktop="default/linux/ppc64/17.0/desktop"
 
+# Clean old installations.
+rm -rf "${patl_local_base}"
+rm -rf "${patl_local_desktop}"
+
 # Initialize Base binrepo installation.
 ../../installer/installer.sh --directory "${path_local_base}" --config ${config} --edit-config --distcc ${distcc}
 # Mount chroot.

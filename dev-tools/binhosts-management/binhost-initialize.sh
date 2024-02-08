@@ -31,12 +31,12 @@ unprepare_chroot() {
 distcc="192.168.86.53"
 config="PS3"
 
-name_base="PS3-base"
+name_base="base"
 path_local_base="../../local/binhost-maintainers/${name_base}"
 path_binhost_base="../../binhosts/ps3-gentoo-binhosts/${name_base}"
 profile_base="default/linux/ppc64/17.0"
 
-name_desktop="PS3-desktop"
+name_desktop="desktop"
 path_local_desktop="../../local/binhost-maintainers/${name_desktop}"
 path_binhost_desktop="../../binhosts/ps3-gentoo-binhosts/${name_desktop}"
 profile_desktop="default/linux/ppc64/17.0/desktop"

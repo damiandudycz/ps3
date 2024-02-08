@@ -69,7 +69,7 @@ chroot "${path_local_desktop}" /bin/bash -c "eselect profile set ${profile_deskt
 # Rebuild packages in desktop binrepo.
 mount -o bind "$path_binhost_desktop" "$path_local_desktop/var/cache/binpkgs"
 rm -rf "$path_local_desktop/var/cache/binpkgs"/* # Delete previous database of binpkgs to get a fresh start
-chroot "$path_local_desktop" /bin/bash -c "FEATURES=\"buildpkg\" emerge @world --deep --emptytree --with-bdeps=y --binpkg-respect-use=y --quiet"
+chroot "$path_local_desktop" /bin/bash -c "FEATURES=\"buildpkg\" emerge @world --deep --newuse --update --with-bdeps=y --binpkg-respect-use=y --quiet"
 umount "$path_local_desktop/var/cache/binpkgs"
 # Umount chroot.
 unprepare_chroot "${path_local_desktop}"

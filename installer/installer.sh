@@ -2,81 +2,75 @@
 
 # HELPER VARIABLES ==============================================================================
 
-dir="$(pwd)" # Current directory where script was called from.
-branch="main"
-url_repo_root="https://raw.githubusercontent.com/damiandudycz/ps3"
-url_repo="$url_repo_root/$branch"
-url_installer="$url_repo/installer"
-path_tmp="/tmp/gentoo-setup"     # Temporary files storage directory.
-path_chroot="/mnt/gentoo-setup"  # Gentoo chroot environment directory.
-quiet_flag='--quiet'             # Quiet flag used to silence the output.
-config="PS3"			 # Default configuration.
-edit_config=false		 # Modify configuration file.
+dir="$(pwd)"                                               # Directory where script was started.
+iid="$(tr -dc A-Za-z0-9 </dev/urandom | head -c 10; echo)" # Random ID for tmp and chroot pathes.
+path_tmp="/tmp/gentoo-setup-${iid}"                        # Temporary files storage directory.
+path_chroot="/mnt/gentoo-setup-${iid}"                     # Gentoo chroot environment directory.
+config='PS3'                                               # Default configuration.
+edit_config=false                                          # Modify configuration file.
+quiet_flag='--quiet'                                       # Flag used to silence the output.
+url_installer='https://raw.githubusercontent.com/damiandudycz/ps3/main/installer'
 
 # MAIN PROGRAM ==================================================================================
 
 ## Prepare --------------------------------------------------------------------------------------
 source <(sed '1,/^# FUNCTIONS #.*$/d' "$0") # Load functions at the bottom of the script.
 
-read_variables "$@"             # Read user input variables - device, configuration, verbose.
-validate_input_data             # Validate if input data is correct.
-warn_about_disk_wiping          # Asks user to confirm disk formatting.
-
-prepare_directories             # Create path_tmp and path_chroot.
-get_config                      # Download configuration or load local configuration file.
-validate_config                 # Checks if all settings in configuration are set correctly.
+read_variables "$@"      # Read user input variables - device, configuration, verbose.
+validate_input_data      # Validate if input data is correct.
+warn_about_disk_wiping   # Asks user to confirm disk formatting.
+prepare_directories      # Create path_tmp and path_chroot.
+get_config               # Download configuration or load local configuration file.
+validate_config          # Checks if all settings in configuration are set correctly.
 
 ## Setup disk -----------------------------------------------------------------------------------
-sort_partitions_by_mount_order  # Prepare array of devices sorted by mounting order.
-disk_clean_signatures           # Remove existing signatures of partition table, and partitions from the disk.
-disk_create_partitions          # Create new partitions, definied in the configuration.
-disk_create_filesystems         # Create filesystems definied in the configuration.
-disk_mount_partitions           # Mount new partitions to temporary locations in chroot.
+sort_partitions          # Prepare array of devices sorted by mounting order.
+disk_clean_signatures    # Remove signatures of partition table, and partitions from the disk.
+disk_create_partitions   # Create new partitions, definied in the configuration.
+disk_create_filesystems  # Create filesystems definied in the configuration.
+disk_mount_partitions    # Mount new partitions to temporary locations in chroot.
 
 ## Download and extract stage3/4 ----------------------------------------------------------------
-gentoo_download                 # Download newest Stage3 or Stage4 tarball.
-gentoo_extract                  # Extract tarball to chroot directory.
+gentoo_download          # Download newest Stage3 or Stage4 tarball.
+gentoo_extract           # Extract tarball to chroot directory.
 
 ## Prepare for chroot ---------------------------------------------------------------------------
-prepare_chroot                  # Mount devices required for chroot to work and copies resolve.conf.
+prepare_chroot           # Mount devices required for chroot to work and copies resolve.conf.
 
 ## Portage configuration ------------------------------------------------------------------------
-setup_make_conf                 # Configure make.conf flags.
-setup_env			# Writes env overrides for selected packages.
-setup_packages_config           # Configure package.use, package.accep_keywords.
+setup_make_conf          # Configure make.conf flags.
+setup_env                # Writes env overrides for selected packages.
+setup_packages_config    # Configure package.use, package.accep_keywords.
 
 ## Various configs ------------------------------------------------------------------------------
-setup_root_password             # Sets root password to selected.
-setup_fstab                     # Generates fstab file from configuration.
-setup_hostname                  # Sets hostname.
-setup_network_link              # Setup network devices links and configs.
-setup_main_repo                 # Creates empty directory, removes warning before syncing portage.
+setup_root_password      # Sets root password to selected.
+setup_fstab              # Generates fstab file from configuration.
+setup_hostname           # Sets hostname.
+setup_network_link       # Setup network devices links and configs.
+setup_main_repo          # Creates empty directory, removes warning before syncing portage.
 
 ## Setup PS3 Gentoo internal chroot environment -------------------------------------------------
-update_environment              # Refreshing env variables.
-setup_locales                   # Generate locales and select default one.
-setup_portage_repository        # Downloads latest portage tree.
-setup_binhosts                  # Configure binrepos if added in config.
-setup_profile                   # Changes profile to selected.
-setup_timezone                  # Selects timezone.
-install_base_tools              # Installs tools needed at early stage, before distcc is available.
-setup_distcc_client             # Downloads and configures distcc if used.
-setup_overlays                  # Add overlays using eselect repository.
-install_updates                 # Updates and rebuilds @world system including new use flags.
-install_other_tools             # Installs other selected tools.
-setup_autostart                 # Adds init scripts to selected runlevels.
-setup_user			# Create default user if configured.
+update_environment       # Refreshing env variables.
+setup_locales            # Generate locales and select default one.
+setup_portage_repository # Downloads latest portage tree.
+setup_binhosts           # Configure binrepos if added in config.
+setup_profile            # Changes profile to selected.
+setup_timezone           # Selects timezone.
+install_base_tools       # Installs tools needed at early stage, before distcc is available.
+setup_distcc_client      # Downloads and configures distcc if used.
+setup_overlays           # Add overlays using eselect repository.
+install_updates          # Updates and rebuilds @world system including new use flags.
+install_other_tools      # Installs other selected tools.
+setup_autostart          # Adds init scripts to selected runlevels.
+setup_user               # Create default user if configured.
 
 ## Cleanup and exit -----------------------------------------------------------------------------
-revdep_rebuild                  # Fixes broken dependencies.
-cleanup                         # Cleans unneded files.
-unprepare_chroot                # Unmounts devices and removed DNS configuration.
-disk_unmount_partitions         # Unmounts partitions.
-cleanup_directories             # Removes temporart installation files.
-summary                         # Show summary information if applicable.
-
-## Summary --------------------------------------------------------------------------------------
-log green "Installation done"
+revdep_rebuild           # Fixes broken dependencies.
+cleanup                  # Cleans unneded files.
+unprepare_chroot         # Unmounts devices and removed DNS configuration.
+disk_unmount_partitions  # Unmounts partitions.
+cleanup_directories      # Removes temporart installation files.
+summary                  # Show summary information if applicable.
 
 exit # The rest of the script is loaded automatically using 'source'.
 
@@ -321,7 +315,7 @@ validate_config() {
     return
 }
 
-sort_partitions_by_mount_order() {
+sort_partitions() {
     if [ "$installation_type" != 'disk' ]; then
         return
     fi
@@ -752,6 +746,6 @@ cleanup_directories() {
 summary() {
     log magenta "Installation completed"
     if [ "$installation_type" == 'directory' ]; then
-        log yellow "Remeber to configure fstab and bootloader"
+        log yellow "Remeber to configure fstab and bootloader."
     fi
 }

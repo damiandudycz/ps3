@@ -669,7 +669,7 @@ setup_autostart() {
 }
 
 setup_user() {
-    if [ -v user ]; then
+    if [ ! -v user ]; then
 	local user_username="${user['username']}"
 	local user_fullname="${user['fullname']}"
 	local user_password="${user['password']}"
@@ -677,7 +677,6 @@ setup_user() {
  	local user_autologin=${user['autologin']}
 	local command="useradd -m -G ${user_groups} -c '${user_fullname}' -p '${user_password}' ${user_username}"
 	chroot_call "${command}"
-	chroot_call "usermod --password '$user_password' $user_username"
  	if [ ${user_autologin} = true ]; then
 		chroot_call "sed -i '/^c1:12345:respawn:\/sbin\/agetty/c\c1:12345:respawn:\/sbin\/agetty --noclear --autologin ${user_username} 38400 tty1 linux' /etc/inittab"
   	fi

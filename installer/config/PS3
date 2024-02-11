@@ -15,7 +15,7 @@ export -A user=(
   [fullname]='Default User'
   [password]=''
   [groups]='users,wheel,audio,cdrom,video,usb'
-  [autologin]=false # restore when functionality confirmed
+  [autologin]=true # restore when functionality confirmed
 )
 
 ## Partitions -----------------------------------------------------------------------------------

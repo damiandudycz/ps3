@@ -9,7 +9,7 @@ export ps3_patches=(
  https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0060-ps3avmgr-char-device.patch
  https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0070-ps3dispmgr.patch
  https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0080-ps3rom-vendor-specific-command.patch
-# https://raw.githubusercontent.com/CheezeCake/ps3linux-patches/master/0090-spu-enum-shared-param.patch
+ https://raw.githubusercontent.com/CheezeCake/ps3linux-patches/master/0090-spu-enum-shared-param.patch
  https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0110-lv1call-add-hvcalls-114-115.patch
  https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0120-lv1call-add-storage-region-hvcalls.patch
  https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0140-ps3strgmngr.patch

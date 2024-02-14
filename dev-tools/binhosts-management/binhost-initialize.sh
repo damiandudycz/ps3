@@ -35,7 +35,7 @@ path_local_base="../../local/binhost-maintainers/${name_base}"
 path_binhost_base="../../binhosts/ps3-gentoo-binhosts/${name_base}"
 profile_base="default/linux/ppc64/17.0"
 packages_base=( # Additional packages for base binhost
-	"htop"
+	"sys-process/htop"
 )
 
 name_desktop="desktop"
@@ -43,7 +43,8 @@ path_local_desktop="../../local/binhost-maintainers/${name_desktop}"
 path_binhost_desktop="../../binhosts/ps3-gentoo-binhosts/${name_desktop}"
 profile_desktop="default/linux/ppc64/17.0/desktop"
 packages_desktop=( # Additional packages for desktop binhost
-	"xorg-server"
+	"x11-base/xorg-server"
+ 	"x11-misc/lightdm"
 )
 
 # Clean old installations.

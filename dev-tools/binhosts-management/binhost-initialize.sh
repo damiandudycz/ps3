@@ -44,7 +44,7 @@ path_binhost_desktop="../../binhosts/ps3-gentoo-binhosts/${name_desktop}"
 profile_desktop="default/linux/ppc64/17.0/desktop"
 packages_desktop=( # Additional packages for desktop binhost
 	"x11-base/xorg-server"
- 	"x11-misc/lightdm"
+	"xfce-base/xfce4-meta"
 )
 
 # Clean old installations.

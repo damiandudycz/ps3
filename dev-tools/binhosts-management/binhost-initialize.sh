@@ -42,6 +42,7 @@ name_desktop="desktop"
 path_local_desktop="../../local/binhost-maintainers/${name_desktop}"
 path_binhost_desktop="../../binhosts/ps3-gentoo-binhosts/${name_desktop}"
 profile_desktop="default/linux/ppc64/17.0/desktop"
+use_desktop="gtk3"
 packages_desktop=( # Additional packages for desktop binhost
 	"x11-base/xorg-server"
 	"xfce-base/xfce4-meta"
@@ -77,6 +78,7 @@ prepare_chroot "${path_local_desktop}"
 # Change profile
 chroot "${path_local_desktop}" /bin/bash -c "eselect profile set ${profile_desktop}"
 # TODO: ADD use flags and ENV overwrites
+chroot "${path_local_desktop}" /bin/bash -c "echo 'USE=\"\$USE\ $use_desktop"' >> /etc/portage/make.conf"
 # Rebuild packages in desktop binrepo.
 mount -o bind "$path_binhost_desktop" "$path_local_desktop/var/cache/binpkgs"
 rm -rf "$path_local_desktop/var/cache/binpkgs"/* # Delete previous database of binpkgs to get a fresh start

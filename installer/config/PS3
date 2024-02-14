@@ -57,7 +57,7 @@ export -A make_conf=(
     [FEATURES]='-news parallel-fetch parallel-install getbinpkg'
     [USE]='ps3 dist-kernel'
     [VIDEO_CARDS]='fbdev'
-    [INPUT_DEVICES]='evdev'
+    [INPUT_DEVICES]='evdev libinput'
     [BINPKG_FORMAT]='gpkg'
     [EMERGE_DEFAULT_OPTS]='--binpkg-respect-use'
 )

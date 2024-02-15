@@ -63,9 +63,9 @@ chroot "${path_local_base}" /bin/bash -c "distcc-config --set-hosts 127.0.0.1"
 # Rebuild packages in base binrepo.
 mount -o bind "$path_binhost_base" "$path_local_base/var/cache/binpkgs"
 rm -rf "$path_local_base/var/cache/binpkgs"/* # Delete previous database of binpkgs to get a fresh start
-chroot "$path_local_base" /bin/bash -c "FEATURES=\"buildpkg\" emerge @world --deep --emptytree --with-bdeps=y --binpkg-respect-use=y --quiet"
+chroot "$path_local_base" /bin/bash -c "FEATURES=\"buildpkg -distcc\" emerge @world --deep --emptytree --with-bdeps=y --binpkg-respect-use=y --quiet"
 for package in "${packages_base[@]}"; do
-	chroot "$path_local_base" /bin/bash -c "FEATURES=\"buildpkg\" emerge ${package} --with-bdeps=y --binpkg-respect-use=y --quiet"
+	chroot "$path_local_base" /bin/bash -c "FEATURES=\"buildpkg -distcc\" emerge ${package} --with-bdeps=y --binpkg-respect-use=y --quiet"
 done
 umount "$path_local_base/var/cache/binpkgs"
 # Umount chroot.
@@ -82,9 +82,9 @@ chroot "${path_local_desktop}" /bin/bash -c "echo 'USE=\"\$USE $use_desktop\"' >
 # Rebuild packages in desktop binrepo.
 mount -o bind "$path_binhost_desktop" "$path_local_desktop/var/cache/binpkgs"
 rm -rf "$path_local_desktop/var/cache/binpkgs"/* # Delete previous database of binpkgs to get a fresh start
-chroot "$path_local_desktop" /bin/bash -c "FEATURES=\"buildpkg\" emerge @world --deep --update --newuse --binpkg-respect-use=y --quiet"
+chroot "$path_local_desktop" /bin/bash -c "FEATURES=\"buildpkg -distcc\" emerge @world --deep --update --newuse --binpkg-respect-use=y --quiet"
 for package in "${packages_desktop[@]}"; do
-	chroot "$path_local_desktop" /bin/bash -c "FEATURES=\"buildpkg\" emerge ${package} --with-bdeps=y --quiet"
+	chroot "$path_local_desktop" /bin/bash -c "FEATURES=\"buildpkg -distcc\" emerge ${package} --with-bdeps=y --quiet"
 done
 umount "$path_local_desktop/var/cache/binpkgs"
 # Umount chroot.

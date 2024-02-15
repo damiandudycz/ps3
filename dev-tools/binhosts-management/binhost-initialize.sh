@@ -78,7 +78,7 @@ prepare_chroot "${path_local_desktop}"
 # Change profile
 chroot "${path_local_desktop}" /bin/bash -c "eselect profile set ${profile_desktop}"
 # TODO: ADD use flags and ENV overwrites
-chroot "${path_local_desktop}" /bin/bash -c "echo 'USE=\"\$USE\ $use_desktop"' >> /etc/portage/make.conf"
+chroot "${path_local_desktop}" /bin/bash -c "echo 'USE=\"\$USE\ $use_desktop\"' >> /etc/portage/make.conf"
 # Rebuild packages in desktop binrepo.
 mount -o bind "$path_binhost_desktop" "$path_local_desktop/var/cache/binpkgs"
 rm -rf "$path_local_desktop/var/cache/binpkgs"/* # Delete previous database of binpkgs to get a fresh start

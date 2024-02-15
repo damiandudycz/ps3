@@ -82,9 +82,9 @@ chroot "${path_local_desktop}" /bin/bash -c "echo 'USE=\"\$USE $use_desktop\"' >
 # Rebuild packages in desktop binrepo.
 mount -o bind "$path_binhost_desktop" "$path_local_desktop/var/cache/binpkgs"
 rm -rf "$path_local_desktop/var/cache/binpkgs"/* # Delete previous database of binpkgs to get a fresh start
-chroot "$path_local_desktop" /bin/bash -c "FEATURES=\"buildpkg\" emerge @world --deep --update --newuse --with-bdeps=y --binpkg-respect-use=y --quiet"
+chroot "$path_local_desktop" /bin/bash -c "FEATURES=\"buildpkg\" emerge @world --deep --update --newuse --binpkg-respect-use=y --quiet"
 for package in "${packages_desktop[@]}"; do
-	chroot "$path_local_desktop" /bin/bash -c "FEATURES=\"buildpkg\" emerge ${package} --with-bdeps=y --binpkg-respect-use=y --quiet"
+	chroot "$path_local_desktop" /bin/bash -c "FEATURES=\"buildpkg\" emerge ${package} --with-bdeps=y --quiet"
 done
 umount "$path_local_desktop/var/cache/binpkgs"
 # Umount chroot.

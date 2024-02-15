@@ -28,8 +28,6 @@ unprepare_chroot() {
 
 # -----------------------------------------------------------------------------------
 
-distcc="192.168.86.53"
-
 name_base="base"
 path_local_base="../../local/binhost-maintainers/${name_base}"
 path_binhost_base="../../binhosts/ps3-gentoo-binhosts/${name_base}"
@@ -53,13 +51,11 @@ rm -rf "${path_local_base}"
 rm -rf "${path_local_desktop}"
 
 # Initialize Base binrepo installation.
-../../installer/installer.sh --directory "${path_local_base}" --edit-config --distcc ${distcc}
+../../installer/installer.sh --directory "${path_local_base}" --edit-config
 # Mount chroot.
 prepare_chroot "${path_local_base}"
 # Change profile
 chroot "${path_local_base}" /bin/bash -c "eselect profile set ${profile_base}"
-# Reset distcc host to localhost.
-chroot "${path_local_base}" /bin/bash -c "distcc-config --set-hosts 127.0.0.1"
 # Rebuild packages in base binrepo.
 mount -o bind "$path_binhost_base" "$path_local_base/var/cache/binpkgs"
 rm -rf "$path_local_base/var/cache/binpkgs"/* # Delete previous database of binpkgs to get a fresh start

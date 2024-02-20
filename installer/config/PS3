@@ -4,18 +4,20 @@ export arch='ppc/ppc64/powerpc64'         # Architecture of CELL CPU.
 export init_system='openrc'               # [openrc/systemd] # currently only openrc is supported.
 export profile="default/linux/ppc64/17.0" # Base profile.
 export hostname='PS3'                     # Hostname of installed system.
-#export root_password=''                   # Empty string removes password.
 export update_system=false                # Run emerge --update --newuse --deep @world during installation.
 export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds"
+
+# Uncomment to set root password. Empty string removes password (not recommended).
+#export root_password=''
 
 ## User account ---------------------------------------------------------------------------------
 
 export -A user=(
   [username]='ps3'
   [fullname]='Default User'
-  [password]=''
+  [password]='' # <IMPORTANT! Please set your user password here>
   [groups]='users,wheel,audio,cdrom,video,usb'
-  [autologin]=true # restore when functionality confirmed
+  [autologin]=true # Login automatically on tty1
 )
 
 ## Partitions -----------------------------------------------------------------------------------

@@ -87,3 +87,14 @@ To use distcc during installation, use --distcc flag:
 # Acknowledgement
 
 If you use my project as a base for other forks or projects, please add contribution with url to my repository.
+
+Special thanks to:
+Model Citizen PS3 - for sharing knowledgle about Linux on PS3
+Rene Rebe - for updating and maintaining kernel patches for the PS3
+Immolo - for sharing knowledge about Gentoo
+OtherOS++ team - for making it all possible
+
+
+
+
+

@@ -83,3 +83,7 @@ If you want to customize configuration, you can download file config/ps3, edit i
 To use distcc during installation, use --distcc flag:
 
 `./installer.sh --device /dev/ps3dd --config PS3 --distcc "192.168.0.50"`
+
+# Acknowledgement
+
+If you use my project as a base for other forks or projects, please add contribution with url to my repository.

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Required packages: git, pkgdev, ruby
+
 # TODO: Add metadata.xml to repository
 # TODO: Generate also gentoo-sources ebuild
 

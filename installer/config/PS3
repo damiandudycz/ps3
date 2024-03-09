@@ -79,8 +79,8 @@ export -A package_use=(
 )
 
 export -A package_accept_keywords=(
-#    [sys-kernel_gentoo-kernel-ps3]="sys-kernel/gentoo-kernel-ps3 ~ppc64"
-#    [sys-kernel_linux-headers]="sys-kernel/linux-headers ~ppc64"
+    [sys-kernel_gentoo-kernel-ps3]="sys-kernel/gentoo-kernel-ps3 ~ppc64"
+    [sys-kernel_linux-headers]="sys-kernel/linux-headers ~ppc64"
     [app-misc_ps3pf_utils]='app-misc/ps3pf_utils ~ppc64'
 )
 

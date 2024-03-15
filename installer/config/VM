@@ -62,6 +62,7 @@ export -A env_overrides=(
 
 export -A package_use=(
     [00cpu-flags]='*/* CPU_FLAGS_ARM: edsp neon thumb vfp vfpv3 vfpv4 vfp-d32 aes sha1 sha2 crc32 v4 v5 v6 v7 v8 thumb2'
+    [10installkernel]='sys-kernel/installkernel dracut' # Needed for gentoo-kernel-ps3
 )
 
 export -A package_accept_keywords=(

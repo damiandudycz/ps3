@@ -11,6 +11,14 @@ export hostname='VM-PS3-Helper'
 export root_password='' # Empty string means remove password.
 export locale='en_US.utf8' # Default locale. Please include also in locales.
 
+export -A user=(
+  [username]='gentoo'
+  [fullname]='Default User'
+  [password]='' # <IMPORTANT! Please set your user password here>
+  [groups]='users,wheel,audio,cdrom,video,usb'
+  [autologin]=true # Login automatically on tty1
+)
+
 export -a network_links=(
     enp0s1
 )
@@ -33,7 +41,6 @@ export -a disk_partitions=( # index:mount_order:file_system:mount_point:size:opt
 ## Locales --------------------------------------------------------------------------------------
 
 export -a locales=(
-    'en_US ISO-8859-1'
     'en_US.UTF-8 UTF-8'
 )
 

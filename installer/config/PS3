@@ -2,7 +2,7 @@
 
 export arch='ppc/ppc64/powerpc64'         # Architecture of CELL CPU.
 export init_system='openrc'               # [openrc/systemd] # currently only openrc is supported.
-export profile="default/linux/ppc64/17.0" # Base profile.
+export profile="default/linux/ppc64/23.0" # Base profile.
 export hostname='PS3'                     # Hostname of installed system.
 export update_system=false                # Run emerge --update --newuse --deep @world during installation.
 export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds"

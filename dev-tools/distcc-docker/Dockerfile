@@ -2,6 +2,8 @@
 # docker build -t ps3-distcc-host-arch .
 # Create container:
 # docker run -itd -p 3632:3632 -p 3633:3633 ps3-distcc-host:latest
+# Create container from remote:
+# docker run -itd -p 3632:3632 -p 3633:3633 damiandudycz/ps3-distcc-host:latest
 
 FROM gentoo/stage3:latest
 

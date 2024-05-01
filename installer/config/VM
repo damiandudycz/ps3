@@ -83,6 +83,7 @@ export -a guest_tools=(
     sys-devel/crossdev
     sys-kernel/genkernel
     dev-lang/ruby
+    app-admin/sudo
 )
 
 export -A guest_rc_startup=(

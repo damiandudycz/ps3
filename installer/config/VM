@@ -95,7 +95,7 @@ export -A crossdev_config=(
     [a]='altivec'
     [b]='2.41-r2'
     [g]='13.2.1_p20230826'
-    [k]='6.6'
+    [k]='6.7'
     [l]=[2.37-r7]
 )
 

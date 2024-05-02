@@ -1,4 +1,9 @@
-use_qemu=true
+ARCHITECTURE=$(uname -m)
+if [ "$ARCHITECTURE" != "ppc64" ]; then
+    use_qemu=true
+else
+    use_qemu=false
+fi
 
 if [ ! -d "/usr/share/catalyst" ]; then
     # Emerge catalyst

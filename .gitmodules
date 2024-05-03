@@ -10,3 +10,8 @@
 	path = overlays/ps3-gentoo-overlay.distfiles
 	url = git@github.com:damiandudycz/ps3-gentoo-overlay.distfiles.git
 	branch = main
+[submodule "stages"]
+	path = stages
+	url = git@github.com:damiandudycz/ps3-gentoo-stages.git
+	branch = main
+

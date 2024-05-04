@@ -1,8 +1,8 @@
 ARCHITECTURE=$(uname -m)
 timestamp=$(date +"%Y.%m.%d")
 path_download_stage3="/var/tmp/catalyst/builds/23.0-default/stage3-ppc64-openrc-$timestamp.tar.xz"
-spec_dir="../../local/catalyst"
 path_start="$(pwd)"
+spec_dir="$path_start/../../local/catalyst"
 path_stage1="$spec_dir/stage1-cell.$timestamp.spec"
 path_stage3="$spec_dir/stage3-cell.$timestamp.spec"
 path_stage1_installcd="$spec_dir/stage1-cell.installcd.$timestamp.spec"

@@ -1,6 +1,13 @@
 ARCHITECTURE=$(uname -m)
 timestamp=$(date +"%Y.%m.%d")
 path_download_stage3="/var/tmp/catalyst/builds/23-default/stage3-ppc64-openrc-$timestamp.tar.xz"
+spec_dir="../../local/catalyst-ps3"
+path_start="$(pwd)"
+path_stage1="$spec_dir/stage1-cell.$timestamp.spec"
+path_stage3="$spec_dir/stage3-cell.$timestamp.spec"
+path_stage1_installcd="$spec_dir/stage1-cell.installcd.$timestamp.spec"
+path_stage2_installcd="$spec_dir/stage2-cell.installcd.$timestamp.spec"
+
 if [ "$ARCHITECTURE" != "ppc64" ]; then
     use_qemu=true
 else
@@ -17,7 +24,7 @@ if [ ! -d "/usr/share/catalyst" ]; then
     # Create working dirs
     mkdir -p /var/tmp/catalyst/builds/23-default
     mkdir -p /var/tmp/catalyst/config/stages
-    mkdir -p ~/catalyst-ps3
+    mkdir -p "$spec_dir"
 
     # Configure catalyst
     #sed -i 's/\(\s*\)# "distcc",/\1"distcc",/' /etc/catalyst/catalyst.conf
@@ -58,6 +65,12 @@ if [ "$use_qemu" = true ] && [ ! -f "/usr/bin/qemu-ppc64" ]; then
     echo ':ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:/usr/bin/qemu-ppc64:' > /proc/sys/fs/binfmt_misc/register
 fi
 
+# Download releng
+if [ ! -d /var/tmp/catalyst/releng ]; then
+    cd /var/tmp/catalyst
+    git clone -o upstream https://github.com/gentoo/releng.git
+fi
+
 # Fetch Stage3 seed
 if [ -f "${path_download_stage3}" ]; then
     rm -f "${path_download_stage3}"
@@ -71,45 +84,36 @@ else
     echo "Failed to download Stage3 URL"
     exit 1
 fi
-# Download stage3/4 file
+# Download stage3 file
 wget "$url_gentoo_tarball" -O "$path_download_stage3"
 
 # Fetch snapshot
-cd ~/catalyst-ps3
-rm -f snapshot_log.txt
+cd "$spec_dir"
 catalyst --snapshot stable | tee snapshot_log.txt
 squashfs_identifier=$(cat snapshot_log.txt | grep -oP 'Creating gentoo tree snapshot \K[0-9a-f]{40}')
+rm -f snapshot_log.txt
 
-# Download releng
-if [ ! -d /var/tmp/catalyst/releng ]; then
-    cd /var/tmp/catalyst
-    git clone -o upstream https://github.com/gentoo/releng.git
-    cd ~/catalyst-ps3
-fi
+# Prepare spec files
+cp "$path_start/stage1-cell.spec" "$path_stage1"
+cp "$path_start/stage3-cell.spec" "$path_stage3"
+cp "$path_start/stage1-cell.installcd.spec" "$path_stage1_installcd"
+cp "$path_start/stage2-cell.installcd.spec" "$path_stage2_installcd"
 
-# Prepare spec files (TODO)
-exit;
-rm -f stage1-openrc.spec stage3-openrc.spec
-
-# Download spec files
-wget -O stage1-openrc.spec https://gitweb.gentoo.org/proj/releng.git/plain/releases/specs/ppc/ppc64/stage1-openrc-23.spec
-wget -O stage3-openrc.spec https://gitweb.gentoo.org/proj/releng.git/plain/releases/specs/ppc/ppc64/stage3-openrc-23.spec
 # Modify spec files
-sed -i "s/openrc-@TIMESTAMP@/openrc-$(date +'%Y.%m.%d')/g" stage1-openrc.spec
-sed -i "s/@TREEISH@/${squashfs_identifier}/g" stage1-openrc.spec
-sed -i "s/@REPO_DIR@/\/var\/tmp\/catalyst\/releng/g" stage1-openrc.spec
-sed -i "s/subarch: ppc64/subarch: cell/g" stage1-openrc.spec
-if [ "$use_qemu" = true ]; then
-    echo "interpreter: /usr/bin/qemu-ppc64" >> stage1-openrc.spec
-fi
-echo 'binrepo_path: base' >> stage1-openrc.spec
-
-
-# TODO: Modify stage3 spec
+sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage1"
+sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage3"
+sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage1_installcd"
+sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage2_installcd"
+sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1"
+sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage3"
+sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1_installcd"
+sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage2_installcd"
 
 #NOTE: Need to add to /var/tmp/catalyst/tmp/default/stage1-cell-2024.03.26/etc/portage/make.conf:
 # FEATURES="-pid-sandbox -network-sandbox"
 
 # Run scripts
-#catalyst -f stage1-openrc.spec
-#catalyst -f stage3-openrc.spec
+#catalyst -f stage1-cell.spec
+#catalyst -f stage3-cell.spec
+#catalyst -f stage1-cell.installcd.spec
+#catalyst -f stage2-cell.installcd.spec

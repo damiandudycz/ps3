@@ -1,6 +1,6 @@
 # Relese version details
 version_stamp: openrc-@TIMESTAMP@
-source_subpath: 23-default/stage3-ppc64-openrc-@TIMESTAMP@
+source_subpath: 23.0-default/stage3-ppc64-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
 
 # Architecture and profile

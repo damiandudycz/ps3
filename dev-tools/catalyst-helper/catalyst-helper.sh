@@ -1,7 +1,7 @@
 ARCHITECTURE=$(uname -m)
 timestamp=$(date +"%Y.%m.%d")
 path_download_stage3="/var/tmp/catalyst/builds/23.0-default/stage3-ppc64-openrc-$timestamp.tar.xz"
-spec_dir="../../local/catalyst-ps3"
+spec_dir="../../local/catalyst"
 path_start="$(pwd)"
 path_stage1="$spec_dir/stage1-cell.$timestamp.spec"
 path_stage3="$spec_dir/stage3-cell.$timestamp.spec"
@@ -52,14 +52,14 @@ if [ "$use_qemu" = true ] && [ ! -f "/usr/bin/qemu-ppc64" ]; then
     echo "sys-apps/attr static-libs" >> /etc/portage/package.use/qemu
     echo "dev-libs/libpcre2 static-libs" >> /etc/portage/package.use/qemu
     emerge qemu
-        
+
     # Configure host features for qemu to work
     # This needs to be added to /var/tmp/catalyst/tmp/stage*/etc/portage/make.conf
     #echo 'FEATURES="-pid-sandbox -network-sandbox"' >> /etc/portage/make.conf
-    
+
     rc-update add qemu-binfmt default
     rc-config start qemu-binfmt
-    
+
     [ -d /proc/sys/fs/binfmt_misc ] || modprobe binfmt_misc
     [ -f /proc/sys/fs/binfmt_misc/register ] || mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
     echo ':ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:/usr/bin/qemu-ppc64:' > /proc/sys/fs/binfmt_misc/register
@@ -108,12 +108,5 @@ sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage3"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1_installcd"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage2_installcd"
-
-#NOTE: Need to add to /var/tmp/catalyst/tmp/default/stage1-cell-2024.03.26/etc/portage/make.conf:
-# FEATURES="-pid-sandbox -network-sandbox"
-
-# Run scripts
-#catalyst -f stage1-cell.spec
-#catalyst -f stage3-cell.spec
-#catalyst -f stage1-cell.installcd.spec
-#catalyst -f stage2-cell.installcd.spec
+# TODO: Rempve interpreter if running on PS3
+# TODO: Use spec versions without -qemu when running on PS3

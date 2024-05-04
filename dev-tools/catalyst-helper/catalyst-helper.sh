@@ -1,6 +1,6 @@
 ARCHITECTURE=$(uname -m)
 timestamp=$(date +"%Y.%m.%d")
-path_download_stage3="/var/tmp/catalyst/builds/default/stage3-ppc64-openrc-$timestamp.tar.xz"
+path_download_stage3="/var/tmp/catalyst/builds/23-default/stage3-ppc64-openrc-$timestamp.tar.xz"
 if [ "$ARCHITECTURE" != "ppc64" ]; then
     use_qemu=true
 else
@@ -15,7 +15,7 @@ if [ ! -d "/usr/share/catalyst" ]; then
     emerge dev-util/catalyst
 
     # Create working dirs
-    mkdir -p /var/tmp/catalyst/builds/default
+    mkdir -p /var/tmp/catalyst/builds/23-default
     mkdir -p /var/tmp/catalyst/config/stages
     mkdir -p ~/catalyst-ps3
 

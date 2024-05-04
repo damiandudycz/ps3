@@ -1,6 +1,6 @@
 ARCHITECTURE=$(uname -m)
 timestamp=$(date +"%Y.%m.%d")
-path_download_stage3="/var/tmp/catalyst/builds/23-default/stage3-ppc64-openrc-$timestamp.tar.xz"
+path_download_stage3="/var/tmp/catalyst/builds/23.0-default/stage3-ppc64-openrc-$timestamp.tar.xz"
 spec_dir="../../local/catalyst-ps3"
 path_start="$(pwd)"
 path_stage1="$spec_dir/stage1-cell.$timestamp.spec"
@@ -22,7 +22,7 @@ if [ ! -d "/usr/share/catalyst" ]; then
     emerge dev-util/catalyst
 
     # Create working dirs
-    mkdir -p /var/tmp/catalyst/builds/23-default
+    mkdir -p /var/tmp/catalyst/builds/23.0-default
     mkdir -p /var/tmp/catalyst/config/stages
     mkdir -p "$spec_dir"
 

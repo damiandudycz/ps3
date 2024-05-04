@@ -94,10 +94,10 @@ squashfs_identifier=$(cat snapshot_log.txt | grep -oP 'Creating gentoo tree snap
 rm -f snapshot_log.txt
 
 # Prepare spec files
-cp "$path_start/stage1-cell.spec" "$path_stage1"
-cp "$path_start/stage3-cell.spec" "$path_stage3"
-cp "$path_start/stage1-cell.installcd.spec" "$path_stage1_installcd"
-cp "$path_start/stage2-cell.installcd.spec" "$path_stage2_installcd"
+cp "$path_start/spec/stage1-cell.spec" "$path_stage1"
+cp "$path_start/spec/stage3-cell.spec" "$path_stage3"
+cp "$path_start/spec/stage1-cell.installcd.spec" "$path_stage1_installcd"
+cp "$path_start/spec/stage2-cell.installcd.spec" "$path_stage2_installcd"
 
 # Modify spec files
 sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage1"

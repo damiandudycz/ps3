@@ -52,10 +52,6 @@ if [ "$use_qemu" = true ] && [ ! -f "/usr/bin/qemu-ppc64" ]; then
     echo "dev-libs/libpcre2 static-libs" >> /etc/portage/package.use/qemu
     emerge qemu
 
-    # Configure host features for qemu to work
-    # This needs to be added to /var/tmp/catalyst/tmp/stage*/etc/portage/make.conf
-    #echo 'FEATURES="-pid-sandbox -network-sandbox"' >> /etc/portage/make.conf
-
     rc-update add qemu-binfmt default
     rc-config start qemu-binfmt
 

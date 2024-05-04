@@ -24,7 +24,6 @@ if [ ! -d "/usr/share/catalyst" ]; then
     # Create working dirs
     mkdir -p /var/tmp/catalyst/builds/23.0-default
     mkdir -p /var/tmp/catalyst/config/stages
-    mkdir -p "$spec_dir"
 
     # Configure catalyst
     #sed -i 's/\(\s*\)# "distcc",/\1"distcc",/' /etc/catalyst/catalyst.conf
@@ -72,22 +71,22 @@ if [ ! -d /var/tmp/catalyst/releng ]; then
 fi
 
 # Fetch Stage3 seed
-if [ -f "${path_download_stage3}" ]; then
-    rm -f "${path_download_stage3}"
+if [ ! -f "${path_download_stage3}" ]; then
+    stageinfo_url="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc/latest-stage3-ppc64-openrc.txt"
+    latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
+    latest_stage3="$(echo "$latest_gentoo_content" | grep "ppc64-openrc" | head -n 1 | cut -d' ' -f1)"
+    if [ -n "$path_download_stage3" ]; then
+        url_gentoo_tarball="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc/$latest_stage3"
+    else
+        echo "Failed to download Stage3 URL"
+        exit 1
+    fi
+    # Download stage3 file
+    wget "$url_gentoo_tarball" -O "$path_download_stage3"
 fi
-stageinfo_url="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc/latest-stage3-ppc64-openrc.txt"
-latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
-latest_stage3="$(echo "$latest_gentoo_content" | grep "ppc64-openrc" | head -n 1 | cut -d' ' -f1)"
-if [ -n "$path_download_stage3" ]; then
-    url_gentoo_tarball="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc/$latest_stage3"
-else
-    echo "Failed to download Stage3 URL"
-    exit 1
-fi
-# Download stage3 file
-wget "$url_gentoo_tarball" -O "$path_download_stage3"
 
 # Fetch snapshot
+mkdir -p "$spec_dir"
 cd "$spec_dir"
 catalyst --snapshot stable | tee snapshot_log.txt
 squashfs_identifier=$(cat snapshot_log.txt | grep -oP 'Creating gentoo tree snapshot \K[0-9a-f]{40}')

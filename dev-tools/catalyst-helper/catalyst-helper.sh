@@ -78,7 +78,7 @@ fi
 stageinfo_url="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc/latest-stage3-ppc64-openrc.txt"
 latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
 latest_stage3="$(echo "$latest_gentoo_content" | grep "ppc64-openrc" | head -n 1 | cut -d' ' -f1)"
-if [ -n "$path_download" ]; then
+if [ -n "$path_download_stage3" ]; then
     url_gentoo_tarball="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc/$latest_stage3"
 else
     echo "Failed to download Stage3 URL"

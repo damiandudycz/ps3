@@ -7,11 +7,18 @@ path_stage1="$path_spec/stage1-cell.$timestamp.spec"
 path_stage3="$path_spec/stage3-cell.$timestamp.spec"
 path_stage1_installcd="$path_spec/stage1-cell.installcd.$timestamp.spec"
 path_stage2_installcd="$path_spec/stage2-cell.installcd.$timestamp.spec"
+path_overlay=$(realpath -m "$path_start/../../overlays/ps3-gentoo-overlay")
 
 if [ "$ARCHITECTURE" != "ppc64" ]; then
     use_qemu=true
 else
     use_qemu=false
+fi
+
+# Make sure overlay directory is ready to work
+if [ ! -f "$path_overlay/metadata" ]; then
+    echo "Ebuild repository not ready. Run ./update-submodules.sh to prepare it in the root of repository tree."
+    exit 1
 fi
 
 if [ ! -d "/usr/share/catalyst" ]; then
@@ -108,10 +115,10 @@ sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1_installcd"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage2_installcd"
 
 # Run catalyst
-catalyst -f "${path_stage1}"
-catalyst -f "${path_stage3}"
-catalyst -f "${path_stage1_installcd}"
-catalyst -f "${path_stage2_installcd}"
+#catalyst -f "${path_stage1}"
+#catalyst -f "${path_stage3}"
+#catalyst -f "${path_stage1_installcd}"
+#catalyst -f "${path_stage2_installcd}"
 
 # TODO: Rempve interpreter if running on PS3
 # TODO: Use spec versions without -qemu when running on PS3

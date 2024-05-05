@@ -588,7 +588,7 @@ setup_root_password() {
     if [ -z "$root_password" ]; then
         return
     fi
-    chroot_call "usermod --password '$root_password' root"
+    chroot_call "echo -e '$root_password\n$root_password' | passwd 'root'
 }
 
 setup_locales() {
@@ -678,7 +678,7 @@ setup_user() {
 	local command="useradd -m -G ${user_groups} -c '${user_fullname}' ${user_username}"
 	chroot_call "${command}"
 	if [ ! -z "${user_password}" ]; then
-	    chroot_call "usermod --password '${user_password}' ${user_username}"
+	    chroot_call "chroot_call "echo -e '${user_password}\n${user_password}' | passwd '${user_username}'"
         fi
  	if [ ${user_autologin} = true ]; then
 		chroot_call "sed -i '/^c1:12345:respawn:\/sbin\/agetty/c\c1:12345:respawn:\/sbin\/agetty --noclear --autologin ${user_username} 38400 tty1 linux' /etc/inittab"

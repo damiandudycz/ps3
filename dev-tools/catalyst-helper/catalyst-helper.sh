@@ -34,7 +34,7 @@ if [ ! -d "/usr/share/catalyst" ]; then
     #echo 'distcc_hosts = "192.168.86.114"' >> /etc/catalyst/catalyst.conf
 
     # Configure CELL settings for catalyst
-    echo '' >> /usr/share/catalyst/arch/ppc.toml
+    echo '' > /usr/share/catalyst/arch/ppc.toml # Clear all to overwrite default cell settings
     echo '[ppc64.cell]' >> /usr/share/catalyst/arch/ppc.toml
     echo 'COMMON_FLAGS = "-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple"' >> /usr/share/catalyst/arch/ppc.toml
     echo 'CHOST = "powerpc64-unknown-linux-gnu"' >> /usr/share/catalyst/arch/ppc.toml

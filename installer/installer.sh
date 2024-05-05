@@ -588,7 +588,7 @@ setup_root_password() {
     if [ -z "$root_password" ]; then
         return
     fi
-    chroot_call "echo -e '$root_password\n$root_password' | passwd 'root'
+    chroot_call "echo -e '$root_password\n$root_password' | passwd 'root'"
 }
 
 setup_locales() {

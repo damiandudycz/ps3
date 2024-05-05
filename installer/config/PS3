@@ -7,7 +7,7 @@ export hostname='PS3'                     # Hostname of installed system.
 export update_system=false                # Run emerge --update --newuse --deep @world during installation.
 export base_url_autobuilds="https://distfiles.gentoo.org/releases/$(echo $arch | cut -d'/' -f1)/autobuilds"
 
-# Uncomment to set root password. Empty string removes password (not recommended).
+# Uncomment to set root password.
 #export root_password=''
 
 ## User account ---------------------------------------------------------------------------------

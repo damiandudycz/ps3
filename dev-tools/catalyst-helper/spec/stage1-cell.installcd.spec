@@ -15,17 +15,20 @@ binrepo_path: base
 
 # USE flags
 livecd/use:
-	alsa
+ 	ps3
+  	dist-kernel
+#	alsa
 	compile-locales
 	fbcon
 	livecd
-	portaudio
+#	portaudio
 	socks5
 	unicode
 	xml
 
 # Packages
 livecd/packages:
+	sys-apps/ps3vram-swap # TODO: Add ps3-gentoo-overlay to use this
 	app-accessibility/brltty
 	app-admin/pwgen
 	app-admin/syslog-ng
@@ -76,7 +79,7 @@ livecd/packages:
 	sys-apps/lsvpd
 	sys-apps/memtester
 	sys-apps/merge-usr
-	sys-apps/nvme-cli
+#	sys-apps/nvme-cli
 	sys-apps/opal-utils
 	sys-apps/pciutils
 	sys-apps/ppc64-diag
@@ -84,7 +87,7 @@ livecd/packages:
 	sys-apps/usbutils
 	sys-auth/ssh-import-id
 	sys-block/parted
-	sys-boot/grub
+#	sys-boot/grub
 	sys-fs/bcache-tools
 	sys-fs/btrfs-progs
 	sys-fs/cryptsetup

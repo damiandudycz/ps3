@@ -26,15 +26,16 @@ if [ ! -d "/usr/share/catalyst" ]; then
     mkdir -p /var/tmp/catalyst/config/stages
 
     # Configure catalyst
-    #sed -i 's/\(\s*\)# "distcc",/\1"distcc",/' /etc/catalyst/catalyst.conf
     sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' /etc/catalyst/catalyst.conf
     echo "jobs = 8" >> /etc/catalyst/catalyst.conf
     echo "load-average = 12.0" >> /etc/catalyst/catalyst.conf
-    #echo 'distcc_hosts = "192.168.86.114"' >> /etc/catalyst/catalyst.conf
     echo 'binhost = "https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/"' >> /etc/catalyst/catalyst.conf
+    #sed -i 's/\(\s*\)# "distcc",/\1"distcc",/' /etc/catalyst/catalyst.conf
+    #echo 'distcc_hosts = "192.168.86.114"' >> /etc/catalyst/catalyst.conf
 
     # Configure CELL settings for catalyst
-    echo '[ppc64.cell]' > /usr/share/catalyst/arch/ppc.toml
+    echo '' >> /usr/share/catalyst/arch/ppc.toml
+    echo '[ppc64.cell]' >> /usr/share/catalyst/arch/ppc.toml
     echo 'COMMON_FLAGS = "-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple"' >> /usr/share/catalyst/arch/ppc.toml
     echo 'CHOST = "powerpc64-unknown-linux-gnu"' >> /usr/share/catalyst/arch/ppc.toml
     echo 'USE = [ "altivec", "ibm", "ps3" ]' >> /usr/share/catalyst/arch/ppc.toml

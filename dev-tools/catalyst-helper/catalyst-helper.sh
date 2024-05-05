@@ -113,6 +113,7 @@ sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage3"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1_installcd"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage2_installcd"
+# TODO: Testing this
 sed -i "s/@REPOS@/${path_overlay}/g" "$path_stage1_installcd"
 sed -i "s/@REPOS@/${path_overlay}/g" "$path_stage2_installcd"
 

@@ -38,7 +38,7 @@ if [ ! -d "/usr/share/catalyst" ]; then
     echo '[ppc64.cell]' >> /usr/share/catalyst/arch/ppc.toml
     echo 'COMMON_FLAGS = "-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple"' >> /usr/share/catalyst/arch/ppc.toml
     echo 'CHOST = "powerpc64-unknown-linux-gnu"' >> /usr/share/catalyst/arch/ppc.toml
-    echo 'USE = [ "altivec", "ibm", "ps3" ]' >> /usr/share/catalyst/arch/ppc.toml
+    echo 'USE = [ "altivec", "ibm", "ps3",]' >> /usr/share/catalyst/arch/ppc.toml
 fi
 
 # For crosscompile environment

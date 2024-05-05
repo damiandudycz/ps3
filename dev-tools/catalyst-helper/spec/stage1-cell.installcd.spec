@@ -2,7 +2,7 @@
 version_stamp: @TIMESTAMP@
 source_subpath: 23.0-default/stage3-cell-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
-repos: @REPOS@
+repos: @REPOS@ # TODO: Test and delete if not working
 
 # Architecture and profile
 subarch: cell

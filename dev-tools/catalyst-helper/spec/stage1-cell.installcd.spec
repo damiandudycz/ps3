@@ -81,7 +81,7 @@ livecd/packages:
 	sys-apps/merge-usr
 #	sys-apps/nvme-cli
 	sys-apps/opal-utils
-	sys-apps/pciutils
+#	sys-apps/pciutils
 	sys-apps/ppc64-diag
 	sys-apps/sdparm
 	sys-apps/usbutils

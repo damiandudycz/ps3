@@ -16,7 +16,7 @@ else
 fi
 
 # Make sure overlay directory is ready to work
-if [ ! -f "$path_overlay/metadata" ]; then
+if [ ! -d "$path_overlay/metadata" ]; then
     echo "Ebuild repository not ready. Run ./update-submodules.sh to prepare it in the root of repository tree."
     exit 1
 fi

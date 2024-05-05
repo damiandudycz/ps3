@@ -2,11 +2,11 @@ ARCHITECTURE=$(uname -m)
 timestamp=$(date +"%Y.%m.%d")
 path_download_stage3="/var/tmp/catalyst/builds/23.0-default/stage3-ppc64-openrc-$timestamp.tar.xz"
 path_start="$(pwd)"
-spec_dir=$(realpath -m "$path_start/../../local/catalyst")
-path_stage1="$spec_dir/stage1-cell.$timestamp.spec"
-path_stage3="$spec_dir/stage3-cell.$timestamp.spec"
-path_stage1_installcd="$spec_dir/stage1-cell.installcd.$timestamp.spec"
-path_stage2_installcd="$spec_dir/stage2-cell.installcd.$timestamp.spec"
+path_spec=$(realpath -m "$path_start/../../local/catalyst")
+path_stage1="$path_spec/stage1-cell.$timestamp.spec"
+path_stage3="$path_spec/stage3-cell.$timestamp.spec"
+path_stage1_installcd="$path_spec/stage1-cell.installcd.$timestamp.spec"
+path_stage2_installcd="$path_spec/stage2-cell.installcd.$timestamp.spec"
 
 if [ "$ARCHITECTURE" != "ppc64" ]; then
     use_qemu=true
@@ -83,10 +83,10 @@ if [ ! -f "${path_download_stage3}" ]; then
 fi
 
 # Fetch snapshot
-if [ ! -d "$spec_dir" ]; then
-    mkdir -p "$spec_dir"
+if [ ! -d "$path_spec" ]; then
+    mkdir -p "$path_spec"
 fi
-cd "$spec_dir"
+cd "$path_spec"
 catalyst --snapshot stable | tee snapshot_log.txt
 squashfs_identifier=$(cat snapshot_log.txt | grep -oP 'Creating gentoo tree snapshot \K[0-9a-f]{40}')
 rm -f snapshot_log.txt

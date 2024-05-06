@@ -26,6 +26,9 @@ if [ ! -d "/usr/share/catalyst" ]; then
     echo "dev-util/catalyst ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
     echo "sys-fs/squashfs-tools-ng ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
     echo "sys-apps/util-linux python" >> /etc/portage/package.use/dev-util_catalyst
+    if [ "$use_qemu" = true ]; then
+        echo "GRUB_PLATFORMS=\"${GRUB_PLATFORMS} efi-32 efi-64\"" >> /etc/portage/make.conf
+    fi
     emerge dev-util/catalyst
 
     # Create working dirs

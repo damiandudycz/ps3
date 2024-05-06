@@ -20,6 +20,10 @@ livecd/fstype: squashfs
 livecd/gk_mainargs: --makeopts=-j12 --all-ramdisk-modules
 livecd/type: gentoo-release-minimal
 
+#RC Scripts
+livecd/rcadd:
+	ps3vram-swap|boot
+
 # Kernel
 #boot/kernel: 4K_PAGESZ 64K_PAGESZ
 #

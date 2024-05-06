@@ -21,17 +21,24 @@ livecd/gk_mainargs: --makeopts=-j12 --all-ramdisk-modules
 livecd/type: gentoo-release-minimal
 
 # Kernel
-boot/kernel: 4K_PAGESZ 64K_PAGESZ
+#boot/kernel: 4K_PAGESZ 64K_PAGESZ
+#
+#boot/kernel/4K_PAGESZ/sources: sys-kernel/gentoo-sources
+#boot/kernel/4K_PAGESZ/config: /var/tmp/catalyst/releng/releases/kconfig/powerpc/installcd-ppc64le-4K-5.10.config
+#boot/kernel/4K_PAGESZ/extraversion: 4K_PAGESZ
+#boot/kernel/4K_PAGESZ/packages: --usepkg n zfs zfs-kmod
+#
+#boot/kernel/64K_PAGESZ/sources: sys-kernel/gentoo-sources
+#boot/kernel/64K_PAGESZ/config: /var/tmp/catalyst/releng/releases/kconfig/powerpc/installcd-ppc64le-64K-5.10.config
+#boot/kernel/64K_PAGESZ/extraversion: 64K_PAGESZ
+#boot/kernel/64K_PAGESZ/packages: --usepkg n zfs zfs-kmod
 
-boot/kernel/4K_PAGESZ/sources: sys-kernel/gentoo-sources
-boot/kernel/4K_PAGESZ/config: /var/tmp/catalyst/releng/releases/kconfig/powerpc/installcd-ppc64le-4K-5.10.config
-boot/kernel/4K_PAGESZ/extraversion: 4K_PAGESZ
-boot/kernel/4K_PAGESZ/packages: --usepkg n zfs zfs-kmod
+boot/kernel: PS3
 
-boot/kernel/64K_PAGESZ/sources: sys-kernel/gentoo-sources
-boot/kernel/64K_PAGESZ/config: /var/tmp/catalyst/releng/releases/kconfig/powerpc/installcd-ppc64le-64K-5.10.config
-boot/kernel/64K_PAGESZ/extraversion: 64K_PAGESZ
-boot/kernel/64K_PAGESZ/packages: --usepkg n zfs zfs-kmod
+boot/kernel/PS3/sources: sys-kernel/gentoo-kernel-ps3
+boot/kernel/PS3/config: /root/ps3/local/catalyst/gentoo-kernel-ps3.config
+boot/kernel/PS3/extraversion: PS3
+boot/kernel/PS3/packages: --usepkg n zfs zfs-kmod
 
 # Cleanup
 livecd/unmerge:

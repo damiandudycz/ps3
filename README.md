@@ -20,7 +20,7 @@ I value your feedback and encourage you to share your comments or suggestions us
 Your input is invaluable, and all comments are greatly appreciated! :)
 
 For development puropses clone with: `git clone --recurse-submodules git@github.com:damiandudycz/ps3.git`
-To download installer use: `wget https://raw.githubusercontent.com/damiandudycz/ps3/main/installer/installer.sh`
+To download installer use: `wget https://raw.githubusercontent.com/damiandudycz/ps3/main/installer/ps3-gentoo-installer`
 
 # Installer
 
@@ -66,23 +66,23 @@ To install on the PS3, boot into any recent linux distribution, setup the date a
 
 To install on the whole drive:
 
-`./installer.sh --device /dev/ps3dd --config PS3 --verbose`
+`./ps3-gentoo-installer --device /dev/ps3dd --config PS3 --verbose`
 
 this will format selected harddrive!
 
 To install into selected directory without formatting the drive:
 
-`./installer.sh --directory /mnt/gentoo --config PS3 --verbose`
+`./ps3-gentoo-installer --directory /mnt/gentoo --config PS3 --verbose`
 
 and after installer finished, add fstab configuration and kboot entry.
 
 If you want to customize configuration, you can download file config/ps3, edit it and use as
 
-`./installer.sh --device /dev/ps3dd --custom-config ps3_file_path --verbose`
+`./ps3-gentoo-installer --device /dev/ps3dd --custom-config ps3_file_path --verbose`
 
 To use distcc during installation, use --distcc flag:
 
-`./installer.sh --device /dev/ps3dd --config PS3 --distcc "192.168.0.50"`
+`./ps3-gentoo-installer --device /dev/ps3dd --config PS3 --distcc "192.168.0.50"`
 
 # Acknowledgement
 

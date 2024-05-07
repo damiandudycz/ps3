@@ -2,7 +2,7 @@
 version_stamp: openrc-@TIMESTAMP@
 source_subpath: 23.0-default/livecd-stage1-cell-@TIMESTAMP@
 livecd/iso: install-cell-minimal-@TIMESTAMP@.iso
-livecd/volid: Gentoo CELL @TIMESTAMP@
+livecd/volid: Gentoo PS3 @TIMESTAMP@
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
 

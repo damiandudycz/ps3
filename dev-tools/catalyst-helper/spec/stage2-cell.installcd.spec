@@ -31,11 +31,7 @@ boot/kernel/PS3/distkernel: yes
 boot/kernel/PS3/sources: sys-kernel/gentoo-kernel-ps3
 #boot/kernel/PS3/config: /root/ps3/local/catalyst/gentoo-kernel-ps3.config
 boot/kernel/PS3/extraversion: PS3
-#boot/kernel/PS3/packages: --usepkg n zfs zfs-kmod
-#boot/kernel/PS3/packages:
-#       net-firewall/xtables-addons
-#       sys-fs/zfs
-boot/kernel/PS3/dracut_args: --xz --no-hostonly -a dmsquash-live -a mdraid -o btrfs -o cry3pt -o i18n -o usrmount ->
+boot/kernel/gentoo/dracut_args: --xz --no-hostonly -a dmsquash-live -a mdraid -o btrfs -o crypt -o i18n -o usrmount -o lunmask -o qemu -o qemu-net -o nvdimm -o multipath -o resume
 
 #RC Scripts
 livecd/rcadd:

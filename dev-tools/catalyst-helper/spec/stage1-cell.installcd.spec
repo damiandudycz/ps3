@@ -17,11 +17,11 @@ binrepo_path: base
 # USE flags
 livecd/use:
  	ps3
-#	alsa
+	alsa
 	compile-locales
 	fbcon
 	livecd
-#	portaudio
+	portaudio
 	socks5
 	unicode
 	xml
@@ -87,7 +87,7 @@ livecd/packages:
 	sys-apps/usbutils
 	sys-auth/ssh-import-id
 	sys-block/parted
-#	sys-boot/grub
+	sys-boot/grub
 	sys-fs/bcache-tools
 	sys-fs/btrfs-progs
 	sys-fs/cryptsetup

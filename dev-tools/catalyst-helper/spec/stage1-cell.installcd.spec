@@ -17,8 +17,6 @@ binrepo_path: base
 # USE flags
 livecd/use:
  	ps3
-  	dist-kernel
-   	dracut
 #	alsa
 	compile-locales
 	fbcon
@@ -31,8 +29,6 @@ livecd/use:
 # Packages
 livecd/packages:
 	sys-apps/ps3vram-swap # TODO: Add ps3-gentoo-overlay to use this
-        sys-kernel/gentoo-kernel-ps3
-	
 	app-accessibility/brltty
 	app-admin/pwgen
 	app-admin/syslog-ng

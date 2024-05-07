@@ -28,7 +28,7 @@ livecd/use:
 
 # Packages
 livecd/packages:
-	sys-apps/ps3vram-swap # TODO: Add ps3-gentoo-overlay to use this
+	sys-apps/ps3vram-swap
 	app-accessibility/brltty
 	app-admin/pwgen
 	app-admin/syslog-ng
@@ -108,7 +108,7 @@ livecd/packages:
 	sys-fs/sysfsutils
 	sys-fs/xfsdump
 	sys-fs/xfsprogs
-	sys-kernel/linux-firmware
+#	sys-kernel/linux-firmware
 	sys-libs/gpm
 	sys-process/htop
 	sys-process/lsof

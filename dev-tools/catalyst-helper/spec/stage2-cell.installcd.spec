@@ -19,30 +19,26 @@ livecd/bootargs: dokeymap
 livecd/fstype: squashfs
 livecd/gk_mainargs: --makeopts=-j12 --all-ramdisk-modules
 livecd/type: gentoo-release-minimal
+#livecd/depclean: yes
+livecd/iso: install-cell-minimal-2024.05.04.iso
+livecd/volid: Gentoo CELL 2024.05.04
+
+# Kernel
+boot/kernel: PS3
+
+boot/kernel/PS3/distkernel: yes
+boot/kernel/PS3/sources: sys-kernel/gentoo-kernel-ps3
+#boot/kernel/PS3/config: /root/ps3/local/catalyst/gentoo-kernel-ps3.config
+boot/kernel/PS3/extraversion: PS3
+#boot/kernel/PS3/packages: --usepkg n zfs zfs-kmod
+#boot/kernel/PS3/packages:
+#       net-firewall/xtables-addons
+#       sys-fs/zfs
+boot/kernel/PS3/dracut_args: --xz --no-hostonly -a dmsquash-live -a mdraid -o btrfs -o cry3pt -o i18n -o usrmount ->
 
 #RC Scripts
 livecd/rcadd:
 	ps3vram-swap|boot
-
-# Kernel
-#boot/kernel: 4K_PAGESZ 64K_PAGESZ
-#
-#boot/kernel/4K_PAGESZ/sources: sys-kernel/gentoo-sources
-#boot/kernel/4K_PAGESZ/config: /var/tmp/catalyst/releng/releases/kconfig/powerpc/installcd-ppc64le-4K-5.10.config
-#boot/kernel/4K_PAGESZ/extraversion: 4K_PAGESZ
-#boot/kernel/4K_PAGESZ/packages: --usepkg n zfs zfs-kmod
-#
-#boot/kernel/64K_PAGESZ/sources: sys-kernel/gentoo-sources
-#boot/kernel/64K_PAGESZ/config: /var/tmp/catalyst/releng/releases/kconfig/powerpc/installcd-ppc64le-64K-5.10.config
-#boot/kernel/64K_PAGESZ/extraversion: 64K_PAGESZ
-#boot/kernel/64K_PAGESZ/packages: --usepkg n zfs zfs-kmod
-
-boot/kernel: PS3
-
-boot/kernel/PS3/sources: sys-kernel/gentoo-kernel-ps3
-boot/kernel/PS3/config: /root/ps3/local/catalyst/gentoo-kernel-ps3.config
-boot/kernel/PS3/extraversion: PS3
-boot/kernel/PS3/packages: --usepkg n zfs zfs-kmod
 
 # Cleanup
 livecd/unmerge:

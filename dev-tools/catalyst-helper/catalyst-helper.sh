@@ -1,5 +1,5 @@
 ARCHITECTURE=$(uname -m)
-timestamp=$(date +"%Y.%m.%d")
+timestamp=$(date -u +"%Y%m%dT%H%M%SZ")
 path_download_stage3="/var/tmp/catalyst/builds/23.0-default/stage3-ppc64-openrc-$timestamp.tar.xz"
 path_start="$(pwd)"
 path_spec=$(realpath -m "$path_start/../../local/catalyst")
@@ -51,11 +51,32 @@ if [ ! -d "/usr/share/catalyst" ]; then
 
     # Configure CELL settings for catalyst
     # TODO: Find better way to apply custom flags, editing files in /usr/share/catalyst, doesn't seem right.
-    echo '' > /usr/share/catalyst/arch/ppc.toml # Clear all to overwrite default cell settings
-    echo '[ppc64.cell]' >> /usr/share/catalyst/arch/ppc.toml
-    echo 'COMMON_FLAGS = "-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple"' >> /usr/share/catalyst/arch/ppc.toml
-    echo 'CHOST = "powerpc64-unknown-linux-gnu"' >> /usr/share/catalyst/arch/ppc.toml
-    echo 'USE = [ "altivec", "ibm", "ps3",]' >> /usr/share/catalyst/arch/ppc.toml
+    config_file="/usr/share/catalyst/arch/ppc.toml"
+    temp_file=$(mktemp)
+    awk '
+    BEGIN { inside_section = 0 }
+    {
+        if ($0 ~ /^\[ppc64\.cell\]$/) {
+            inside_section = 1
+        } else if ($0 ~ /^\[.*\]/) {
+            if (inside_section == 1) {
+                inside_section = 0
+            }
+        }
+        if (inside_section == 1) {
+            if ($0 ~ /^COMMON_FLAGS/) {
+                print "COMMON_FLAGS = \"-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple\""
+            } else if ($0 ~ /^USE/) {
+                print "USE = [ \"altivec\", \"ibm\", \"ps3\", ]"
+            } else {
+                print  # Retain any other lines within the section
+            }
+        } else {
+            print  # Outside the target section, retain the original lines
+        }
+    }
+    ' "$config_file" > "$temp_file"
+    mv "$temp_file" "$config_file"
 fi
 
 # For crosscompile environment
@@ -128,10 +149,10 @@ sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage1_installcd"
 sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage2_installcd"
 
 # Run catalyst
-#catalyst -f "${path_stage1}"
-#catalyst -f "${path_stage3}"
-#catalyst -f "${path_stage1_installcd}"
-#catalyst -f "${path_stage2_installcd}"
+catalyst -f "${path_stage1}"
+catalyst -f "${path_stage3}"
+catalyst -f "${path_stage1_installcd}"
+catalyst -f "${path_stage2_installcd}"
 
 # TODO: Rempve interpreter if running on PS3
 # TODO: Use spec versions without -qemu when running on PS3

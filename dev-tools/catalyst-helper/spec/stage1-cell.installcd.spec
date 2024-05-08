@@ -87,7 +87,7 @@ livecd/packages:
 	sys-apps/usbutils
 	sys-auth/ssh-import-id
 	sys-block/parted
-	sys-boot/grub
+#	sys-boot/grub
 	sys-fs/bcache-tools
 	sys-fs/btrfs-progs
 	sys-fs/cryptsetup

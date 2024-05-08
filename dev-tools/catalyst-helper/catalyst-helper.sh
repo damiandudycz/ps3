@@ -1,4 +1,3 @@
-ARCHITECTURE=$(uname -m)
 timestamp=$(date -u +"%Y%m%dT%H%M%SZ")
 path_download_stage3="/var/tmp/catalyst/builds/23.0-default/stage3-ppc64-openrc-$timestamp.tar.xz"
 path_start="$(pwd)"
@@ -9,14 +8,11 @@ path_stage1_installcd="$path_spec/stage1-cell.installcd.$timestamp.spec"
 path_stage2_installcd="$path_spec/stage2-cell.installcd.$timestamp.spec"
 path_overlay=$(realpath -m "$path_start/../../overlays/ps3-gentoo-overlay")
 
-if [ "$ARCHITECTURE" != "ppc64" ]; then
+# Determine if host is PS3 or another architecture
+if [ "$(uname -m)" != "ppc64" ]; then
     use_qemu=true
     confdir_postfix="-qemu"
     interpreter="interpreter: /usr/bin/qemu-ppc64"
-else
-    use_qemu=false
-    confdir_postfix=""
-    interpreter=""
 fi
 
 # Make sure overlay directory is ready to work
@@ -36,9 +32,6 @@ if [ ! -d "/usr/share/catalyst" ]; then
     echo "dev-util/catalyst ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
     echo "sys-fs/squashfs-tools-ng ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
     echo "sys-apps/util-linux python" >> /etc/portage/package.use/dev-util_catalyst
-    if [ "$use_qemu" = true ]; then # TODO: Check if this can be removed
-        echo "GRUB_PLATFORMS=\"\${GRUB_PLATFORMS} efi-32 efi-64\"" >> /etc/portage/make.conf
-    fi
     emerge dev-util/catalyst
 
     # Create working dirs
@@ -50,11 +43,8 @@ if [ ! -d "/usr/share/catalyst" ]; then
     echo "jobs = 8" >> /etc/catalyst/catalyst.conf
     echo "load-average = 12.0" >> /etc/catalyst/catalyst.conf
     echo 'binhost = "https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/"' >> /etc/catalyst/catalyst.conf
-    #sed -i 's/\(\s*\)# "distcc",/\1"distcc",/' /etc/catalyst/catalyst.conf
-    #echo 'distcc_hosts = "192.168.86.114"' >> /etc/catalyst/catalyst.conf
 
     # Configure CELL settings for catalyst
-    # TODO: Find better way to apply custom flags, editing files in /usr/share/catalyst, doesn't seem right.
     config_file="/usr/share/catalyst/arch/ppc.toml"
     temp_file=$(mktemp)
     awk '
@@ -85,9 +75,13 @@ fi
 
 # For crosscompile environment
 if [ "$use_qemu" = true ] && [ ! -f "/usr/bin/qemu-ppc64" ]; then
-    # Emerge QEmu
+    # Emerge Qemu
+    echo "" >> /etc/portage/make.conf
+    echo "# Catalyst requirements" >> /etc/portage/make.conf
     echo "QEMU_SOFTMMU_TARGETS=\"aarch64 ppc64\"" >> /etc/portage/make.conf
     echo "QEMU_USER_TARGETS=\"ppc64\"" >> /etc/portage/make.conf
+    echo "# ---" >> /etc/portage/make.conf
+    echo "# Catalyst requirements" >> /etc/portage/package.use/qemu
     echo "app-emulation/qemu static-user" >> /etc/portage/package.use/qemu
     echo "dev-libs/glib static-libs" >> /etc/portage/package.use/qemu
     echo "sys-libs/zlib static-libs" >> /etc/portage/package.use/qemu
@@ -95,11 +89,13 @@ if [ "$use_qemu" = true ] && [ ! -f "/usr/bin/qemu-ppc64" ]; then
     echo "dev-libs/libpcre2 static-libs" >> /etc/portage/package.use/qemu
     emerge qemu
 
+    # Setup Qemu autostart and run it
     rc-update add qemu-binfmt default
     rc-config start qemu-binfmt
-
     [ -d /proc/sys/fs/binfmt_misc ] || modprobe binfmt_misc
     [ -f /proc/sys/fs/binfmt_misc/register ] || mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
+
+    # Setup Qemu for PPC64
     echo ':ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:/usr/bin/qemu-ppc64:' > /proc/sys/fs/binfmt_misc/register
 fi
 
@@ -109,7 +105,7 @@ if [ ! -d /var/tmp/catalyst/releng ]; then
     git clone -o upstream https://github.com/gentoo/releng.git
 fi
 
-# Fetch Stage3 seed
+# Download Stage3 seed
 if [ ! -f "${path_download_stage3}" ]; then
     stageinfo_url="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc/latest-stage3-ppc64-openrc.txt"
     latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
@@ -124,7 +120,7 @@ if [ ! -f "${path_download_stage3}" ]; then
     wget "$url_gentoo_tarball" -O "$path_download_stage3"
 fi
 
-# Fetch snapshot
+# Download current snapshot
 if [ ! -d "$path_spec" ]; then
     mkdir -p "$path_spec"
 fi
@@ -139,7 +135,6 @@ cp "$path_start/spec/stage3-cell.spec" "$path_stage3"
 cp "$path_start/spec/stage1-cell.installcd.spec" "$path_stage1_installcd"
 cp "$path_start/spec/stage2-cell.installcd.spec" "$path_stage2_installcd"
 
-# Modify spec files
 sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage1"
 sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage3"
 sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage1_installcd"

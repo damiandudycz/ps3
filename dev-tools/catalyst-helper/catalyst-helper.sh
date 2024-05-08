@@ -22,6 +22,12 @@ if [ ! -d "$path_overlay/metadata" ]; then
 fi
 
 if [ ! -d "/usr/share/catalyst" ]; then
+    # Apply patch file that fixes catalyst scripts, when using some of subarch values, such as cell
+    # Remove this patch when catalyst is updated with it
+    local catalyst_patch_path="/etc/portage/patches/dev-util/catalyst-4.0_rc1"
+    mkdir -p "$catalyst_patch_path"
+    wget https://911536.bugs.gentoo.org/attachment.cgi?id=866757 -O "$catalyst_patch_path/01-basearch.patch"
+
     # Emerge catalyst
     echo "dev-util/catalyst ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
     echo "sys-fs/squashfs-tools-ng ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
@@ -44,6 +50,7 @@ if [ ! -d "/usr/share/catalyst" ]; then
     #echo 'distcc_hosts = "192.168.86.114"' >> /etc/catalyst/catalyst.conf
 
     # Configure CELL settings for catalyst
+    # TODO: Find better way to apply custom flags, editing files in /usr/share/catalyst, doesn't seem right.
     echo '' > /usr/share/catalyst/arch/ppc.toml # Clear all to overwrite default cell settings
     echo '[ppc64.cell]' >> /usr/share/catalyst/arch/ppc.toml
     echo 'COMMON_FLAGS = "-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple"' >> /usr/share/catalyst/arch/ppc.toml

@@ -28,7 +28,7 @@ fi
 if [ ! -d "/usr/share/catalyst" ]; then
     # Apply patch file that fixes catalyst scripts, when using some of subarch values, such as cell
     # Remove this patch when catalyst is updated with it
-    local catalyst_patch_path="/etc/portage/patches/dev-util/catalyst-4.0_rc1"
+    catalyst_patch_path="/etc/portage/patches/dev-util/catalyst-4.0_rc1"
     mkdir -p "$catalyst_patch_path"
     wget https://911536.bugs.gentoo.org/attachment.cgi?id=866757 -O "$catalyst_patch_path/01-basearch.patch"
 

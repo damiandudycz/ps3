@@ -11,8 +11,12 @@ path_overlay=$(realpath -m "$path_start/../../overlays/ps3-gentoo-overlay")
 
 if [ "$ARCHITECTURE" != "ppc64" ]; then
     use_qemu=true
+    confdir_postfix="-qemu"
+    interpreter="interpreter: /usr/bin/qemu-ppc64"
 else
     use_qemu=false
+    confdir_postfix=""
+    interpreter=""
 fi
 
 # Make sure overlay directory is ready to work
@@ -144,6 +148,14 @@ sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage3"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1_installcd"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage2_installcd"
+sed -i "s/@CONFDIR_POSTFIX@/${confdir_postfix}/g" "$path_stage1"
+sed -i "s/@CONFDIR_POSTFIX@/${confdir_postfix}/g" "$path_stage3"
+sed -i "s/@CONFDIR_POSTFIX@/${confdir_postfix}/g" "$path_stage1_installcd"
+sed -i "s/@CONFDIR_POSTFIX@/${confdir_postfix}/g" "$path_stage2_installcd"
+sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage1"
+sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage3"
+sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage1_installcd"
+sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage2_installcd"
 sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage1_installcd"
 sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage2_installcd"
 

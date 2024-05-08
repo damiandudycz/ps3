@@ -10,7 +10,7 @@ rel_type: 23.0-default
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
 update_seed: yes
-portage_confdir: /var/tmp/catalyst/releng/releases/portage/stages-qemu
+portage_confdir: /var/tmp/catalyst/releng/releases/portage/stages@CONFDIR_POSTFIX@
 portage_prefix: releng
 interpreter: /usr/bin/qemu-ppc64
 binrepo_path: base

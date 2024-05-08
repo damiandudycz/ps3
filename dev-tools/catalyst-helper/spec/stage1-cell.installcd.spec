@@ -10,7 +10,7 @@ target: livecd-stage1
 rel_type: 23.0-default
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
-portage_confdir: /var/tmp/catalyst/releng/releases/portage/isos-qemu
+portage_confdir: /var/tmp/catalyst/releng/releases/portage/isos@CONFDIR_POSTFIX@
 interpreter: /usr/bin/qemu-ppc64
 binrepo_path: base
 

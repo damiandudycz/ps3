@@ -12,8 +12,8 @@ target: livecd-stage2
 rel_type: 23.0-default
 profile: default/linux/ppc64/23.0
 portage_confdir: /var/tmp/catalyst/releng/releases/portage/isos@CONFDIR_POSTFIX@
-interpreter: /usr/bin/qemu-ppc64
 binrepo_path: base
+@INTERPRETER@
 
 # LiveCD config
 livecd/bootargs: dokeymap

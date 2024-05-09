@@ -63,7 +63,7 @@ if [ ! -d "/usr/share/catalyst" ]; then
             if ($0 ~ /^COMMON_FLAGS/) {
                 print "COMMON_FLAGS = \"-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple\""
             } else if ($0 ~ /^USE/) {
-                print "USE = [ \"altivec\", \"ibm\", \"ps3\", ]"
+                print "USE = [ \"altivec\", \"ibm\", \"ps3\", \"-cpudetection\" ]"
             } else {
                 print  # Retain any other lines within the section
             }
@@ -107,7 +107,7 @@ if [ ! -d /var/tmp/catalyst/releng ]; then
     git clone -o upstream https://github.com/gentoo/releng.git
     # Tweak releng configs
     echo '*/* CPU_FLAGS_PPC: altivec' > "releng/releases/portage/stages${confdir_postfix}/package.use/00cpu-flags"
-    echo 'dev-libs/gmp -cpudetection' > "releng/releases/portage/stages${confdir_postfix}/package.use/10gmp"
+    #echo 'dev-libs/gmp -cpudetection' > "releng/releases/portage/stages${confdir_postfix}/package.use/10gmp"
 fi
 
 # Download Stage3 seed

@@ -1,13 +1,13 @@
 # Release version details
 version_stamp: @TIMESTAMP@
-source_subpath: 23.0-default/stage3-cell-openrc-@TIMESTAMP@
+source_subpath: default/stage3-cell-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
 
 # Architecture and profile
 subarch: ppc64
 target: livecd-stage1
-rel_type: 23.0-default
+rel_type: default
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
 portage_confdir: /var/tmp/catalyst/releng/releases/portage/isos@CONFDIR_POSTFIX@

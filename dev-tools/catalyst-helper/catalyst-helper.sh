@@ -2,6 +2,8 @@ timestamp=$(date -u +"%Y%m%dT%H%M%SZ")
 path_start=$(dirname "$(realpath "$0")")
 path_local_tmp=$(realpath -m "$path_start/../../local/catalyst")
 path_releng="$path_local_tmp/releng"
+path_portage_confdir_stages="$path_releng/releases/portage/stages"
+path_portage_confdir_isos="$path_releng/releases/portage/isos"
 path_catalyst_usr="/usr/share/catalyst"
 path_catalyst_tmp="/var/tmp/catalyst"
 path_catalyst_configs="/etc/catalyst"
@@ -25,7 +27,8 @@ conf_load="12.0"
 # Determine if host is PS3 or another architecture
 if [ "$(uname -m)" != "ppc64" ]; then
     use_qemu=true
-    confdir_postfix="-qemu"
+    path_portage_confdir_stages="$path_portage_confdir_stages-qemu"
+    path_portage_confdir_isos="$path_portage_confdir_isos-qemu"
     interpreter="interpreter: $path_interpreter"
 fi
 
@@ -121,7 +124,9 @@ fi
 # Download and setup releng
 if [ ! -d $path_releng ]; then
     git clone -o upstream https://github.com/gentoo/releng.git $path_releng
-    echo '*/* CPU_FLAGS_PPC: altivec' > "$path_releng/releases/portage/stages${confdir_postfix}/package.use/00cpu-flags"
+    # TODO: Only for stages different than stage1
+    echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_stages/package.use/00cpu-flags"
+    echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_isos/package.use/00cpu-flags"
 fi
 
 # Download current snapshot
@@ -166,10 +171,10 @@ sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage3"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1_installcd"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage2_installcd"
-sed -i "s/@CONFDIR_POSTFIX@/${confdir_postfix}/g" "$path_stage1"
-sed -i "s/@CONFDIR_POSTFIX@/${confdir_postfix}/g" "$path_stage3"
-sed -i "s/@CONFDIR_POSTFIX@/${confdir_postfix}/g" "$path_stage1_installcd"
-sed -i "s/@CONFDIR_POSTFIX@/${confdir_postfix}/g" "$path_stage2_installcd"
+sed -i "s/@PORTAGE_CONFDIR@/${path_portage_confdir_stages}/g" "$path_stage1"
+sed -i "s/@PORTAGE_CONFDIR@/${path_portage_confdir_stages}/g" "$path_stage3"
+sed -i "s/@PORTAGE_CONFDIR@/${path_portage_confdir_isos}/g" "$path_stage1_installcd"
+sed -i "s/@PORTAGE_CONFDIR@/${path_portage_confdir_isos}/g" "$path_stage2_installcd"
 sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage1"
 sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage3"
 sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage1_installcd"

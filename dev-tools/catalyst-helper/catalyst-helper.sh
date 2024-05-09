@@ -30,9 +30,7 @@ if [ "$(uname -m)" != "ppc64" ]; then
 fi
 
 # Create local tmp path
-if [ ! -d "$path_local_tmp" ]; then
-    mkdir -p "$path_local_tmp"
-fi
+mkdir -p "$path_local_tmp"
 
 # Download and setup catalyst
 if [ ! -d "$path_catalyst" ]; then

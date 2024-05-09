@@ -29,6 +29,11 @@ if [ "$(uname -m)" != "ppc64" ]; then
     interpreter="interpreter: $path_interpreter"
 fi
 
+# Create local tmp path
+if [ ! -d "$path_local_tmp" ]; then
+    mkdir -p "$path_local_tmp"
+fi
+
 # Download and setup catalyst
 if [ ! -d "$path_catalyst" ]; then
     # Apply patch file that fixes catalyst scripts, when using some of subarch values, such as cell
@@ -114,7 +119,12 @@ if [ ! -d $path_releng ]; then
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_releng/releases/portage/stages${confdir_postfix}/package.use/00cpu-flags"
 fi
 
-# Download Stage3 seed
+# Download current snapshot
+catalyst --snapshot stable | tee "$path_local_tmp/snapshot_log.txt"
+squashfs_identifier=$(cat "$path_local_tmp/snapshot_log.txt" | grep -oP 'Creating gentoo tree snapshot \K[0-9a-f]{40}')
+rm -f "$path_local_tmp/snapshot_log.txt"
+
+# Download stage3 seed
 if [ ! -f "${path_stage3_seed}" ]; then
     stageinfo_url="$url_release_gentoo/latest-stage3-ppc64-openrc.txt"
     latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
@@ -129,16 +139,7 @@ if [ ! -f "${path_stage3_seed}" ]; then
     wget "$url_gentoo_tarball" -O "$path_stage3_seed"
 fi
 
-# Download current snapshot
-if [ ! -d "$path_local_tmp" ]; then
-    mkdir -p "$path_local_tmp"
-fi
-cd "$path_local_tmp"
-catalyst --snapshot stable | tee snapshot_log.txt
-squashfs_identifier=$(cat snapshot_log.txt | grep -oP 'Creating gentoo tree snapshot \K[0-9a-f]{40}')
-rm -f snapshot_log.txt
-
-# Clone or pull current copy of overlay
+# Clone or pull current copy of custom overlay
 if [ ! -d "$path_overlay" ]; then
     git clone "$url_overlay" "$path_overlay"
 else

@@ -77,7 +77,7 @@ if [ ! -d "$path_catalyst" ]; then
             if ($0 ~ /^COMMON_FLAGS/) {
                 print "COMMON_FLAGS = \"-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple\""
             } else if ($0 ~ /^USE/) {
-                print "USE = [ \"altivec\", \"ibm\", \"ps3\", \"-cpudetection\" ]"
+                print "USE = [ \"altivec\", \"ibm\", \"ps3\",]"
             } else {
                 print  # Retain any other lines within the section
             }

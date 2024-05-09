@@ -155,7 +155,7 @@ sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage1_installcd"
 sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage2_installcd"
 
 # Run catalyst
-catalyst -f "${path_stage1}"
-catalyst -f "${path_stage3}"
-catalyst -f "${path_stage1_installcd}"
-catalyst -f "${path_stage2_installcd}"
+#catalyst -f "${path_stage1}"
+#catalyst -f "${path_stage3}"
+#catalyst -f "${path_stage1_installcd}"
+#catalyst -f "${path_stage2_installcd}"

@@ -6,7 +6,8 @@ path_stage1="$path_spec/stage1-cell.$timestamp.spec"
 path_stage3="$path_spec/stage3-cell.$timestamp.spec"
 path_stage1_installcd="$path_spec/stage1-cell.installcd.$timestamp.spec"
 path_stage2_installcd="$path_spec/stage2-cell.installcd.$timestamp.spec"
-path_overlay=$(realpath -m "$path_start/../../overlays/ps3-gentoo-overlay")
+path_overlay=$(realpath -m "$path_start/../../local/catalyst/ps3-gentoo-overlay")
+url_overlay="https://github.com/damiandudycz/ps3-gentoo-overlay"
 
 # Determine if host is PS3 or another architecture
 if [ "$(uname -m)" != "ppc64" ]; then
@@ -15,10 +16,11 @@ if [ "$(uname -m)" != "ppc64" ]; then
     interpreter="interpreter: /usr/bin/qemu-ppc64"
 fi
 
-# Make sure overlay directory is ready to work
-if [ ! -d "$path_overlay/metadata" ]; then
-    echo "Ebuild repository not ready. Run ./update-submodules.sh to prepare it in the root of repository tree."
-    exit 1
+# Clone or pull current copy of overlay
+if [ ! -d "$path_overlay" ]; then
+    git clone "$url_overlay" "$path_overlay"
+else
+    git -C "$path_overlay" pull
 fi
 
 if [ ! -d "/usr/share/catalyst" ]; then

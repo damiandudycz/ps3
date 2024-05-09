@@ -11,7 +11,7 @@ subarch: cell
 target: livecd-stage2
 rel_type: default
 profile: default/linux/ppc64/23.0
-portage_confdir: /var/tmp/catalyst/releng/releases/portage/isos@CONFDIR_POSTFIX@
+portage_confdir: @PORTAGE_CONFDIR@
 binrepo_path: base
 @INTERPRETER@
 

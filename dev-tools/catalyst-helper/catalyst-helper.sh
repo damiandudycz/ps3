@@ -124,8 +124,8 @@ fi
 # Download and setup releng
 if [ ! -d $path_releng ]; then
     git clone -o upstream https://github.com/gentoo/releng.git $path_releng
-    cp -rf "$path_portage_confdir_stages" "path_portage_confdir_stages-cell"
-    cp -rf "$path_portage_confdir_isos" "path_portage_confdir_isos-cell"
+    cp -rf "$path_portage_confdir_stages" "$path_portage_confdir_stages-cell"
+    cp -rf "$path_portage_confdir_isos" "$path_portage_confdir_isos-cell"
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_stages-cell/package.use/00cpu-flags"
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_isos-cell/package.use/00cpu-flags"
 fi

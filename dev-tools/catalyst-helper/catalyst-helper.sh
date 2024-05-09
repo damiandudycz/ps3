@@ -36,14 +36,18 @@ mkdir -p "$path_local_tmp"
 if [ ! -d "$path_catalyst" ]; then
     # Apply patch file that fixes catalyst scripts, when using some of subarch values, such as cell
     # Remove this patch when catalyst is updated with it
-    mkdir -p "$path_catalyst_patch_dir"
-    wget "$url_catalyst_patch" -O "$path_catalyst_patch_dir/01-basearch.patch"
+    if [ ! -f "$path_catalyst_patch_dir/01-basearch.patch" ]; then
+        mkdir -p "$path_catalyst_patch_dir"
+        wget "$url_catalyst_patch" -O "$path_catalyst_patch_dir/01-basearch.patch"
+    fi
 
     # Emerge catalyst
-    echo "# Catalyst requirements" >> /etc/portage/package.accept_keywords/dev-util_catalyst
-    echo "dev-util/catalyst ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
-    echo "sys-fs/squashfs-tools-ng ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
-    echo "sys-apps/util-linux python" >> /etc/portage/package.use/dev-util_catalyst
+    if [ ! -f "/etc/portage/package.accept_keywords/dev-util_catalyst" ]; then
+        echo "# Catalyst requirements" >> /etc/portage/package.accept_keywords/dev-util_catalyst
+        echo "dev-util/catalyst ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
+        echo "sys-fs/squashfs-tools-ng ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
+        echo "sys-apps/util-linux python" >> /etc/portage/package.use/dev-util_catalyst
+    fi
     emerge dev-util/catalyst
 
     # Create working dirs
@@ -93,12 +97,15 @@ if [ "$use_qemu" = true ] && [ ! -f "$path_interpreter" ]; then
     echo "QEMU_SOFTMMU_TARGETS=\"aarch64 ppc64\"" >> /etc/portage/make.conf
     echo "QEMU_USER_TARGETS=\"ppc64\"" >> /etc/portage/make.conf
     echo "# ---" >> /etc/portage/make.conf
-    echo "# Catalyst requirements" >> /etc/portage/package.use/qemu
-    echo "app-emulation/qemu static-user" >> /etc/portage/package.use/qemu
-    echo "dev-libs/glib static-libs" >> /etc/portage/package.use/qemu
-    echo "sys-libs/zlib static-libs" >> /etc/portage/package.use/qemu
-    echo "sys-apps/attr static-libs" >> /etc/portage/package.use/qemu
-    echo "dev-libs/libpcre2 static-libs" >> /etc/portage/package.use/qemu
+    if [ ! -f "/etc/portage/package.use/qemu" ]; then
+        echo "# Catalyst requirements" >> /etc/portage/package.use/qemu
+        echo "app-emulation/qemu static-user" >> /etc/portage/package.use/qemu
+        echo "dev-libs/glib static-libs" >> /etc/portage/package.use/qemu
+        echo "sys-libs/zlib static-libs" >> /etc/portage/package.use/qemu
+        echo "sys-apps/attr static-libs" >> /etc/portage/package.use/qemu
+        echo "dev-libs/libpcre2 static-libs" >> /etc/portage/package.use/qemu
+        echo "# ---" >> /etc/portage/package.use/qemu
+    fi
     emerge qemu
 
     # Setup Qemu autostart and run it
@@ -118,9 +125,11 @@ if [ ! -d $path_releng ]; then
 fi
 
 # Download current snapshot
+if [ -f "$path_local_tmp/snapshot_log.txt" ]; then
+    rm -f "$path_local_tmp/snapshot_log.txt"
+fi
 catalyst --snapshot stable | tee "$path_local_tmp/snapshot_log.txt"
 squashfs_identifier=$(cat "$path_local_tmp/snapshot_log.txt" | grep -oP 'Creating gentoo tree snapshot \K[0-9a-f]{40}')
-rm -f "$path_local_tmp/snapshot_log.txt"
 
 # Download stage3 seed
 if [ ! -f "${path_stage3_seed}" ]; then
@@ -149,7 +158,6 @@ cp "$path_start/spec/stage1-cell.spec" "$path_stage1"
 cp "$path_start/spec/stage3-cell.spec" "$path_stage3"
 cp "$path_start/spec/stage1-cell.installcd.spec" "$path_stage1_installcd"
 cp "$path_start/spec/stage2-cell.installcd.spec" "$path_stage2_installcd"
-
 sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage1"
 sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage3"
 sed -i "s/@TREEISH@/${squashfs_identifier}/g" "$path_stage1_installcd"

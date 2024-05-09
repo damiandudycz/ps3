@@ -29,13 +29,7 @@ if [ "$(uname -m)" != "ppc64" ]; then
     interpreter="interpreter: $path_interpreter"
 fi
 
-# Clone or pull current copy of overlay
-if [ ! -d "$path_overlay" ]; then
-    git clone "$url_overlay" "$path_overlay"
-else
-    git -C "$path_overlay" pull
-fi
-
+# Download and setup catalyst
 if [ ! -d "$path_catalyst" ]; then
     # Apply patch file that fixes catalyst scripts, when using some of subarch values, such as cell
     # Remove this patch when catalyst is updated with it
@@ -88,7 +82,7 @@ if [ ! -d "$path_catalyst" ]; then
     mv "$temp_file" "$config_file"
 fi
 
-# For crosscompile environment
+# Download and setup Qemu
 if [ "$use_qemu" = true ] && [ ! -f "$path_interpreter" ]; then
     # Emerge Qemu
     echo "" >> /etc/portage/make.conf
@@ -143,6 +137,13 @@ cd "$path_local_tmp"
 catalyst --snapshot stable | tee snapshot_log.txt
 squashfs_identifier=$(cat snapshot_log.txt | grep -oP 'Creating gentoo tree snapshot \K[0-9a-f]{40}')
 rm -f snapshot_log.txt
+
+# Clone or pull current copy of overlay
+if [ ! -d "$path_overlay" ]; then
+    git clone "$url_overlay" "$path_overlay"
+else
+    git -C "$path_overlay" pull
+fi
 
 # Prepare spec files
 cp "$path_start/spec/stage1-cell.spec" "$path_stage1"

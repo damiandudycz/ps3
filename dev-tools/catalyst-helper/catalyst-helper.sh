@@ -124,9 +124,10 @@ fi
 # Download and setup releng
 if [ ! -d $path_releng ]; then
     git clone -o upstream https://github.com/gentoo/releng.git $path_releng
-    # TODO: Only for stages different than stage1
-    echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_stages/package.use/00cpu-flags"
-    echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_isos/package.use/00cpu-flags"
+    cp -rf "$path_portage_confdir_stages" "path_portage_confdir_stages-cell"
+    cp -rf "$path_portage_confdir_isos" "path_portage_confdir_isos-cell"
+    echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_stages-cell/package.use/00cpu-flags"
+    echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_isos-cell/package.use/00cpu-flags"
 fi
 
 # Download current snapshot
@@ -172,9 +173,9 @@ sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage3"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage1_installcd"
 sed -i "s/@TIMESTAMP@/${timestamp}/g" "$path_stage2_installcd"
 sed -i "s/@PORTAGE_CONFDIR@/${path_portage_confdir_stages}/g" "$path_stage1"
-sed -i "s/@PORTAGE_CONFDIR@/${path_portage_confdir_stages}/g" "$path_stage3"
+sed -i "s/@PORTAGE_CONFDIR@/${path_portage_confdir_stages}-cell/g" "$path_stage3"
 sed -i "s/@PORTAGE_CONFDIR@/${path_portage_confdir_isos}/g" "$path_stage1_installcd"
-sed -i "s/@PORTAGE_CONFDIR@/${path_portage_confdir_isos}/g" "$path_stage2_installcd"
+sed -i "s/@PORTAGE_CONFDIR@/${path_portage_confdir_isos}-cell/g" "$path_stage2_installcd"
 sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage1"
 sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage3"
 sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage1_installcd"

@@ -10,7 +10,7 @@ target: livecd-stage1
 rel_type: default
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
-portage_confdir: /var/tmp/catalyst/releng/releases/portage/isos@CONFDIR_POSTFIX@
+portage_confdir: @PORTAGE_CONFDIR@
 binrepo_path: base
 @INTERPRETER@
 

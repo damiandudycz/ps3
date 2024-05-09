@@ -103,6 +103,8 @@ fi
 if [ ! -d /var/tmp/catalyst/releng ]; then
     cd /var/tmp/catalyst
     git clone -o upstream https://github.com/gentoo/releng.git
+    # Tweak releng configs
+    echo '*/* CPU_FLAGS_PPC: altivec' > "releng/releases/portage/stages${confdir_postfix}/package.use/00cpu-flags"
 fi
 
 # Download Stage3 seed

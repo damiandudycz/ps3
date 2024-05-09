@@ -10,7 +10,7 @@ rel_type: default
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
 update_seed: yes
-portage_confdir: /var/tmp/catalyst/releng/releases/portage/stages@CONFDIR_POSTFIX@
+portage_confdir: @PORTAGE_CONFDIR@
 portage_prefix: releng
 binrepo_path: base
 @INTERPRETER@

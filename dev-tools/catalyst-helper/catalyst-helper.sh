@@ -1,14 +1,14 @@
 timestamp=$(date -u +"%Y%m%dT%H%M%SZ")
 path_start=$(dirname "$(realpath "$0")")
-path_catalyst="/usr/share/catalyst"
+path_local_tmp=$(realpath -m "$path_start/../../local/catalyst")
+path_releng="$path_local_tmp/releng"
+path_catalyst_usr="/usr/share/catalyst"
 path_catalyst_tmp="/var/tmp/catalyst"
 path_catalyst_configs="/etc/catalyst"
 path_catalyst_builds="$path_catalyst_tmp/builds/23.0-default"
 path_catalyst_stages="$path_catalyst_tmp/config/stages"
 path_catalyst_patch_dir="/etc/portage/patches/dev-util/catalyst-4.0_rc1"
-path_releng="$path_catalyst_tmp/releng"
 path_stage3_seed="$path_catalyst_builds/stage3-ppc64-openrc-$timestamp.tar.xz"
-path_local_tmp=$(realpath -m "$path_start/../../local/catalyst")
 path_overlay="$path_local_tmp/ps3-gentoo-overlay"
 path_stage1="$path_local_tmp/stage1-cell.$timestamp.spec"
 path_stage3="$path_local_tmp/stage3-cell.$timestamp.spec"
@@ -33,7 +33,7 @@ fi
 mkdir -p "$path_local_tmp"
 
 # Download and setup catalyst
-if [ ! -d "$path_catalyst" ]; then
+if [ ! -d "$path_catalyst_usr" ]; then
     # Apply patch file that fixes catalyst scripts, when using some of subarch values, such as cell
     # Remove this patch when catalyst is updated with it
     if [ ! -f "$path_catalyst_patch_dir/01-basearch.patch" ]; then
@@ -61,7 +61,7 @@ if [ ! -d "$path_catalyst" ]; then
     echo "binhost = \"$url_binhost/\"" >> $path_catalyst_configs/catalyst.conf
 
     # Configure CELL settings for catalyst
-    config_file="$path_catalyst/arch/ppc.toml"
+    config_file="$path_catalyst_usr/arch/ppc.toml"
     temp_file=$(mktemp)
     awk '
     BEGIN { inside_section = 0 }

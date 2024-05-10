@@ -28,6 +28,7 @@ livecd/use:
 # Packages
 livecd/packages:
 	sys-apps/ps3vram-swap
+ 	net-misc/ntp
 	app-accessibility/brltty
 	app-admin/pwgen
 	app-admin/syslog-ng

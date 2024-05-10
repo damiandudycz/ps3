@@ -3,6 +3,8 @@ version_stamp: @TIMESTAMP@
 source_subpath: default/stage3-cell-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
+portage_confdir: @PORTAGE_CONFDIR@
+@INTERPRETER@
 
 # Architecture and profile
 subarch: cell
@@ -10,9 +12,6 @@ target: livecd-stage1
 rel_type: default
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
-portage_confdir: @PORTAGE_CONFDIR@
-#binrepo_path: base
-@INTERPRETER@
 
 # USE flags
 livecd/use:
@@ -79,37 +78,37 @@ livecd/packages:
 	sys-apps/lsvpd
 	sys-apps/memtester
 	sys-apps/merge-usr
-#	sys-apps/nvme-cli
 	sys-apps/opal-utils
-#	sys-apps/pciutils
 	sys-apps/ppc64-diag
 	sys-apps/sdparm
 	sys-apps/usbutils
 	sys-auth/ssh-import-id
 	sys-block/parted
-#	sys-boot/grub
 	sys-fs/bcache-tools
 	sys-fs/btrfs-progs
 	sys-fs/cryptsetup
 	sys-fs/dosfstools
 	sys-fs/e2fsprogs
 	sys-fs/f2fs-tools
-	sys-fs/hfsplusutils
-	sys-fs/hfsutils
 	sys-fs/iprutils
 	sys-fs/jfsutils
 	sys-fs/lsscsi
 	sys-fs/lvm2
 	sys-fs/mdadm
 	sys-fs/mtd-utils
-	sys-fs/ntfs3g
 	sys-fs/reiserfsprogs
 	sys-fs/squashfs-tools
 	sys-fs/sysfsutils
 	sys-fs/xfsdump
 	sys-fs/xfsprogs
-#	sys-kernel/linux-firmware
 	sys-libs/gpm
 	sys-process/htop
 	sys-process/lsof
 	www-client/links
+#	sys-apps/nvme-cli
+#	sys-apps/pciutils
+#	sys-boot/grub
+#	sys-fs/hfsplusutils
+#	sys-fs/hfsutils
+#	sys-fs/ntfs3g
+#	sys-kernel/linux-firmware

@@ -1,6 +1,6 @@
 # Release version details
 version_stamp: openrc-@TIMESTAMP@
-source_subpath: default/stage1-ppc64-openrc-@TIMESTAMP@
+source_subpath: default/stage1-cell-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
 
 # Architecture and profile

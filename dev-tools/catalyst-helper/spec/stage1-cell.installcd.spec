@@ -5,7 +5,7 @@ snapshot_treeish: @TREEISH@
 repos: @REPOS@
 
 # Architecture and profile
-subarch: ppc64
+subarch: cell
 target: livecd-stage1
 rel_type: default
 profile: default/linux/ppc64/23.0

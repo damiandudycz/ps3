@@ -12,5 +12,5 @@ compression_mode: pixz
 update_seed: yes
 portage_confdir: @PORTAGE_CONFDIR@
 portage_prefix: releng
-binrepo_path: base
+#binrepo_path: base
 @INTERPRETER@

@@ -1,6 +1,6 @@
 # Release version details
 version_stamp: openrc-@TIMESTAMP@
-source_subpath: default/livecd-stage1-cell-@TIMESTAMP@
+source_subpath: default/livecd-stage1-ppc64-@TIMESTAMP@
 livecd/iso: install-cell-minimal-@TIMESTAMP@.iso
 livecd/volid: Gentoo PS3 @TIMESTAMP@
 snapshot_treeish: @TREEISH@

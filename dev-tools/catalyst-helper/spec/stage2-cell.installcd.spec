@@ -16,20 +16,17 @@ profile: default/linux/ppc64/23.0
 binrepo_path: base
 
 # LiveCD config
-livecd/bootargs: dokeymap
+#livecd/bootargs: dokeymap
 livecd/fstype: squashfs
 livecd/gk_mainargs: --makeopts=-j12 --all-ramdisk-modules
 livecd/type: gentoo-release-minimal
-livecd/iso: install-cell-minimal-@TIMESTAMP@.iso
-livecd/volid: Gentoo CELL @TIMESTAMP@
 
 # Kernel
 boot/kernel: PS3
-
 boot/kernel/PS3/distkernel: yes
 boot/kernel/PS3/sources: sys-kernel/gentoo-kernel-ps3
-boot/kernel/PS3/extraversion: PS3
 boot/kernel/PS3/dracut_args: --xz --no-hostonly -a dmsquash-live -a mdraid -o btrfs -o crypt -o i18n -o usrmount -o lunmask -o qemu -o qemu-net -o nvdimm -o multipath -o resume
+#boot/kernel/PS3/extraversion: PS3
 
 # RC Scripts
 livecd/rcadd:

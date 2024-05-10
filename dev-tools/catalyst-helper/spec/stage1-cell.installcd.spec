@@ -11,7 +11,7 @@ rel_type: default
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
 portage_confdir: @PORTAGE_CONFDIR@
-binrepo_path: base
+#binrepo_path: base
 @INTERPRETER@
 
 # USE flags

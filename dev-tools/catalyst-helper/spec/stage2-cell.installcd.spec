@@ -31,6 +31,8 @@ boot/kernel/PS3/dracut_args: --xz --no-hostonly -a dmsquash-live -a mdraid -o bt
 # RC Scripts
 livecd/rcadd:
 	ps3vram-swap|boot
+ 	ntpd|default
+  	ntp-client|default
 
 # Cleanup
 livecd/unmerge:

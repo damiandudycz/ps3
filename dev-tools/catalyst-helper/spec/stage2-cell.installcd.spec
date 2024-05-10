@@ -13,7 +13,7 @@ subarch: cell
 target: livecd-stage2
 rel_type: default
 profile: default/linux/ppc64/23.0
-binrepo_path: base
+#binrepo_path: base
 
 # LiveCD config
 #livecd/bootargs: dokeymap

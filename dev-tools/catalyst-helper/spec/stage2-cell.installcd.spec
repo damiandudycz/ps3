@@ -5,15 +5,15 @@ livecd/iso: install-cell-minimal-@TIMESTAMP@.iso
 livecd/volid: Gentoo PS3 @TIMESTAMP@
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
+portage_confdir: @PORTAGE_CONFDIR@
+@INTERPRETER@
 
 # Architecture and profile
 subarch: cell
 target: livecd-stage2
 rel_type: default
 profile: default/linux/ppc64/23.0
-portage_confdir: @PORTAGE_CONFDIR@
 binrepo_path: base
-@INTERPRETER@
 
 # LiveCD config
 livecd/bootargs: dokeymap

@@ -18,7 +18,7 @@ profile: default/linux/ppc64/23.0
 # LiveCD config
 #livecd/bootargs: dokeymap
 livecd/fstype: squashfs
-livecd/gk_mainargs: --makeopts=-j12 --all-ramdisk-modules
+livecd/gk_mainargs: --all-ramdisk-modules
 livecd/type: gentoo-release-minimal
 
 # Kernel

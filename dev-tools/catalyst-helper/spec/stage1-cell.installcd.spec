@@ -28,6 +28,7 @@ livecd/use:
 # Packages
 livecd/packages:
 	sys-apps/ps3vram-swap
+ 	app-portage/gentoolkit
  	net-misc/ntp
 	app-accessibility/brltty
 	app-admin/pwgen

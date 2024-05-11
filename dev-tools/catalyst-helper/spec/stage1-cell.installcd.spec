@@ -79,7 +79,6 @@ livecd/packages:
 	sys-apps/lsvpd
 	sys-apps/memtester
 	sys-apps/merge-usr
-	sys-apps/opal-utils
 	sys-apps/ppc64-diag
 	sys-apps/sdparm
 	sys-apps/usbutils
@@ -113,3 +112,4 @@ livecd/packages:
 #	sys-fs/hfsutils
 #	sys-fs/ntfs3g
 #	sys-kernel/linux-firmware
+#	sys-apps/opal-utils

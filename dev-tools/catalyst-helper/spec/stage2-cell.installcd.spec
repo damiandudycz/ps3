@@ -36,6 +36,7 @@ livecd/rcadd:
 
 # Cleanup
 livecd/unmerge:
+	app-portage/gentoolkit
 	app-admin/eselect
 	app-admin/eselect-ctags
 	app-admin/eselect-vi

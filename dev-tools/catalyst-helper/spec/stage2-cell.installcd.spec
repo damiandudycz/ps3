@@ -18,6 +18,7 @@ profile: default/linux/ppc64/23.0
 livecd/fstype: squashfs
 livecd/gk_mainargs: --all-ramdisk-modules
 livecd/type: gentoo-release-minimal
+livecd/overlay: @LIVECD_OVERLAY@
 
 # Kernel
 boot/kernel: PS3

@@ -16,6 +16,7 @@ path_stage1="$path_local_tmp/stage1-cell.$timestamp.spec"
 path_stage3="$path_local_tmp/stage3-cell.$timestamp.spec"
 path_stage1_installcd="$path_local_tmp/stage1-cell.installcd.$timestamp.spec"
 path_stage2_installcd="$path_local_tmp/stage2-cell.installcd.$timestamp.spec"
+path_livecd_overlay=$(realpath -m "$path_start/iso_overlay")
 path_interpreter="/usr/bin/qemu-ppc64"
 url_release_gentoo="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc"
 url_binhost="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main"
@@ -184,6 +185,7 @@ sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage1_installcd"
 sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage2_installcd"
 sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage1_installcd"
 sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage2_installcd"
+sed -i "s|@LIVECD_OVERLAY@|${path_livecd_overlay}|g" "$path_stage2_installcd"
 
 # Run catalyst
 catalyst -f "${path_stage1}"

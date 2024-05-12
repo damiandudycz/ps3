@@ -20,7 +20,8 @@ path_interpreter="/usr/bin/qemu-ppc64"
 url_release_gentoo="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc"
 url_binhost="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main"
 url_overlay="https://github.com/damiandudycz/ps3-gentoo-overlay"
-url_catalyst_patch="https://911536.bugs.gentoo.org/attachment.cgi?id=866757"
+url_catalyst_patch1="https://github.com/damiandudycz/ps3/raw/main/dev-tools/catalyst-helper/patches/0001-Introduce-basearch-settings.patch"
+url_catalyst_patch2="https://github.com/damiandudycz/ps3/raw/main/dev-tools/catalyst-helper/patches/0002-Fix-missing-vmlinux-filename-support.patch"
 conf_jobs="8"
 conf_load="12.0"
 
@@ -39,9 +40,10 @@ mkdir -p "$path_local_tmp"
 if [ ! -d "$path_catalyst_usr" ]; then
     # Apply patch file that fixes catalyst scripts, when using some of subarch values, such as cell
     # Remove this patch when catalyst is updated with it
-    if [ ! -f "$path_catalyst_patch_dir/01-basearch.patch" ]; then
+    if [ ! -f "$path_catalyst_patch_dir/0001.patch" ] || [ ! -f "$path_catalyst_patch_dir/0002.patch" ]; then
         mkdir -p "$path_catalyst_patch_dir"
-        wget "$url_catalyst_patch" -O "$path_catalyst_patch_dir/01-basearch.patch"
+        wget "$url_catalyst_patch1" -O "$path_catalyst_patch_dir/0001.patch"
+        wget "$url_catalyst_patch2" -O "$path_catalyst_patch_dir/0002.patch"
     fi
 
     # Emerge catalyst

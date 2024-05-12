@@ -11,7 +11,7 @@ subarch: cell
 target: livecd-stage1
 rel_type: default
 profile: default/linux/ppc64/23.0
-# compression_mode: pixz # Test disabling, remove if works
+compression_mode: pixz
 
 # USE flags
 livecd/use:

@@ -17,6 +17,7 @@ config_clear=false      # Clear sources and emerge them again.
 config_menuconfig=false # Run make menuconfig to adjust kernel configuration.
 config_overwrite=false  # Allow owerwriting already existing ebuild. Also if set, new generated config diff file is set as the new default.
 config_test_build=false # Try to compile locally to see if it works.
+config_unmask=false	# Unmask PPC64 keyword in this ebuild
 
 # CONSTANT NAMES ================================================================================
 fname_overlay="ps3-gentoo-overlay"                  # Name of ebuild overlay repository.
@@ -157,6 +158,7 @@ print_usage() {
     echo "  --save        Store new ebuild and distfiles in overlay repositories."
     echo "  --overwrite   Allow overwriting already existing ebuilds. Also if set, overwrites default config diff file."
     echo "  --test        Build locally to test if it works."
+    echo "  --unmask      Unmask this build for PPC64."
     echo ""
     exit 1
 }
@@ -183,6 +185,9 @@ read_variables() {
         --clear)
             config_clear=true
             ;;
+	--unmask)
+	    config_unmask=true
+	    ;;
         --menuconfig)
             config_menuconfig=true
             ;;
@@ -296,6 +301,9 @@ create_ebuild() {
 	# Create ebuild in work_files.
         try cp "${path_repos_gentoo_kernel_ebuild}" "${path_work_files_entry_ebuild}"
         try patch -u "${path_work_files_entry_ebuild}" -i "${path_data_ebuild_patch}"
+	if [ ${config_unmask} = true ]; then
+		sed -i "/^KEYWORDS=/ s/~ppc64/ppc64/g" "${path_work_files_entry_ebuild}"
+	fi
         # NOTE: To change generated ebuild, its required to generate new patch in data/fname_ebuild.ebuild.patch.
         # use: diff -u $ebuild_original_path $ebuild_path to create one. Before this, edit $ebuild_path file.
 }

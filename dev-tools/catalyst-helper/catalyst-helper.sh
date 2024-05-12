@@ -16,7 +16,8 @@ path_stage1="$path_local_tmp/stage1-cell.$timestamp.spec"
 path_stage3="$path_local_tmp/stage3-cell.$timestamp.spec"
 path_stage1_installcd="$path_local_tmp/stage1-cell.installcd.$timestamp.spec"
 path_stage2_installcd="$path_local_tmp/stage2-cell.installcd.$timestamp.spec"
-path_livecd_overlay=$(realpath -m "$path_start/iso_overlay")
+path_livecd_overlay_original=$(realpath -m "$path_start/iso_overlay")
+path_livecd_overlay="$path_local_tmp/iso_overlay"
 path_interpreter="/usr/bin/qemu-ppc64"
 url_release_gentoo="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc"
 url_binhost="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main"
@@ -36,6 +37,11 @@ fi
 
 # Create local tmp path
 mkdir -p "$path_local_tmp"
+
+# Copy iso overlay
+if [ ! -d "$path_livecd_overlay" ]; then
+    cp -rf "$path_livecd_overlay_original" "$path_livecd_overlay"
+fi
 
 # Download and setup catalyst
 if [ ! -d "$path_catalyst_usr" ]; then

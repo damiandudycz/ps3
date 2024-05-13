@@ -27,6 +27,7 @@ livecd/use:
 
 # Packages
 livecd/packages:
+	sys-apps/ps3-gentoo-installer
 	sys-apps/ps3vram-swap
  	app-portage/gentoolkit
  	net-misc/ntp

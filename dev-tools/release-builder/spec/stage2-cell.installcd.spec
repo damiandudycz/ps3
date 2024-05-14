@@ -2,7 +2,7 @@
 version_stamp: openrc-@TIMESTAMP@
 source_subpath: default/livecd-stage1-cell-@TIMESTAMP@
 livecd/iso: install-cell-minimal-@TIMESTAMP@.iso
-livecd/volid: Gentoo PS3 @TIMESTAMP@
+livecd/volid: Gentoo-PS3
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
 portage_confdir: @PORTAGE_CONFDIR@
@@ -27,9 +27,13 @@ boot/kernel/PS3/sources: sys-kernel/gentoo-kernel-ps3
 boot/kernel/PS3/dracut_args: --xz --no-hostonly -a dmsquash-live -a mdraid -o btrfs -o crypt -o i18n -o usrmount -o lunmask -o qemu -o qemu-net -o nvdimm -o multipath -o resume
 boot/kernel/PS3/extraversion: PS3
 
+# Custom script
+livecd/fsscript: @LIVECD_FSSCRIPT@
+
 # RC Scripts
 livecd/rcadd:
 	ps3vram-swap|boot
+	net.eth0|default
  	ntpd|default
   	ntp-client|default
 

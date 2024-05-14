@@ -9,7 +9,8 @@ path_chroot="/mnt/gentoo-setup-${iid}"                     # Gentoo chroot envir
 config='PS3'                                               # Default configuration.
 edit_config=false                                          # Modify configuration file.
 quiet_flag='--quiet'                                       # Flag used to silence the output.
-url_installer='https://raw.githubusercontent.com/damiandudycz/ps3/main/installer'
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)" # Name of current branch if running from git repository
+url_installer="https://raw.githubusercontent.com/damiandudycz/ps3/${branch}/dev-tools/ps3-gentoo-installer"
 
 # MAIN PROGRAM ==================================================================================
 
@@ -154,6 +155,11 @@ print_usage() {
 
 chroot_call() {
     try chroot "$path_chroot" '/bin/bash' -c "$@"
+}
+
+# Moves used memory to swap, to free some RAM
+free_memory() {
+    sync && echo 3 > /proc/sys/vm/drop_caches
 }
 
 ## Main functions -------------------------------------------------------------------------------
@@ -438,6 +444,7 @@ disk_mount_partitions() {
 # Downloading files =============================================================================
 
 gentoo_download() {
+    free_memory
     local url_gentoo_tarball
     local path_download="$path_chroot/gentoo.tar.xz"
     local stageinfo_url="$base_url_autobuilds/latest-stage3.txt"
@@ -453,8 +460,9 @@ gentoo_download() {
 }
 
 gentoo_extract() {
+    free_memory
     local path_stage3or4="$path_chroot/gentoo.tar.xz"
-    try tar -xvpf "$path_stage3or4" --xattrs-include="*/*" --numeric-owner -C "$path_chroot/"
+    try tar -I 'xz -T1' -xvpf "$path_stage3or4" --xattrs-include="*/*" --numeric-owner --blocking-factor=1 -C "$path_chroot/"
     try rm "$path_stage3or4"
 }
 
@@ -620,7 +628,7 @@ setup_portage_repository() {
     try mkdir -p "$path_chroot/etc/portage/repos.conf"
     try cp "$path_chroot/usr/share/portage/config/repos.conf" "$path_chroot/etc/portage/repos.conf/gentoo.conf"
     # Synchronize portage tree.
-    chroot_call "emerge --sync $quiet_flag"
+    chroot_call "emerge-webrsync $quiet_flag"
     # Create keys.
     chroot_call "getuto"
     chroot_call "killall dirmngr"
@@ -633,18 +641,21 @@ setup_profile() {
 
 install_updates() {
     if [ $update_system = true ]; then
+        free_memory
         chroot_call "emerge --newuse --deep --update --with-bdeps=y @world $quiet_flag"
     fi
 }
 
 install_base_tools() {
     for package in "${guest_base_tools[@]}"; do
+        free_memory
         chroot_call "FEATURES='-distcc' emerge --update --newuse $package $quiet_flag"
     done
 }
 
 install_other_tools() {
     for package in "${guest_tools[@]}"; do
+        free_memory
         chroot_call "emerge --update --newuse $package $quiet_flag"
     done
 }
@@ -657,6 +668,7 @@ setup_overlays() {
 }
 
 revdep_rebuild() {
+    free_memory
     chroot_call "revdep-rebuild $quiet_flag"
 }
 

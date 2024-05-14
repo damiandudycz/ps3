@@ -1,6 +1,8 @@
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)" # Name of current branch if running from git repository
 timestamp=$(date -u +"%Y%m%dT%H%M%SZ")
 path_start=$(dirname "$(realpath "$0")")
-path_local_tmp=$(realpath -m "$path_start/../../local/catalyst")
+path_root=$(realpath -m "$path_start/../..")
+path_local_tmp="$path_root/local/release"
 path_releng="$path_local_tmp/releng"
 path_portage_confdir_stages="$path_releng/releases/portage/stages"
 path_portage_confdir_isos="$path_releng/releases/portage/isos"
@@ -9,23 +11,31 @@ path_catalyst_tmp="/var/tmp/catalyst"
 path_catalyst_configs="/etc/catalyst"
 path_catalyst_builds="$path_catalyst_tmp/builds/default"
 path_catalyst_stages="$path_catalyst_tmp/config/stages"
-path_catalyst_patch_dir="/etc/portage/patches/dev-util/catalyst-4.0_rc1"
+path_catalyst_patch_dir="/etc/portage/patches/dev-util/catalyst"
+path_catalyst_binhost="/var/tmp/catalyst/packages/default"
+path_repo_binhost="$path_root/binhosts/ps3-gentoo-binhosts/default"
 path_stage3_seed="$path_catalyst_builds/stage3-ppc64-openrc-$timestamp.tar.xz"
-path_overlay="$path_local_tmp/ps3-gentoo-overlay"
+path_overlay="$path_root/overlays/ps3-gentoo-overlay"
 path_stage1="$path_local_tmp/stage1-cell.$timestamp.spec"
 path_stage3="$path_local_tmp/stage3-cell.$timestamp.spec"
 path_stage1_installcd="$path_local_tmp/stage1-cell.installcd.$timestamp.spec"
 path_stage2_installcd="$path_local_tmp/stage2-cell.installcd.$timestamp.spec"
-path_livecd_overlay_original=$(realpath -m "$path_start/iso_overlay")
+path_livecd_overlay_original="$path_start/iso_overlay"
 path_livecd_overlay="$path_local_tmp/iso_overlay"
+path_livecd_fsscript_original="$path_start/iso_fsscript.sh"
+path_livecd_fsscript="$path_local_tmp/iso_fsscript.sh"
 path_interpreter="/usr/bin/qemu-ppc64"
+path_installer_ebuild_draft="${path_start}/ps3-gentoo-installer.ebuild"
+path_installer_ebuild_repo="${path_overlay}/sys-apps/ps3-gentoo-installer"
 url_release_gentoo="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc"
 url_binhost="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main"
 url_overlay="https://github.com/damiandudycz/ps3-gentoo-overlay"
-url_catalyst_patch1="https://github.com/damiandudycz/ps3/raw/main/dev-tools/catalyst-helper/patches/0001-Introduce-basearch-settings.patch"
-url_catalyst_patch2="https://github.com/damiandudycz/ps3/raw/main/dev-tools/catalyst-helper/patches/0002-Fix-missing-vmlinux-filename-support.patch"
+url_catalyst_patch1="https://github.com/damiandudycz/ps3/raw/${branch}/dev-tools/release-builder/patches/0001-Introduce-basearch-settings.patch"
+url_catalyst_patch2="https://github.com/damiandudycz/ps3/raw/${branch}/dev-tools/release-builder/patches/0002-Fix-missing-vmlinux-filename-support.patch"
 conf_jobs="8"
 conf_load="12.0"
+
+die() { echo "$*" 1>&2 ; exit 1; }
 
 # Determine if host is PS3 or another architecture
 if [ "$(uname -m)" != "ppc64" ]; then
@@ -43,6 +53,11 @@ if [ ! -d "$path_livecd_overlay" ]; then
     cp -rf "$path_livecd_overlay_original" "$path_livecd_overlay"
 fi
 
+# Copy fsscript
+if [ ! -f "$path_livecd_fsscript" ]; then
+    cp "$path_livecd_fsscript_original" "$path_livecd_fsscript"
+fi
+
 # Download and setup catalyst
 if [ ! -d "$path_catalyst_usr" ]; then
     # Apply patch file that fixes catalyst scripts, when using some of subarch values, such as cell
@@ -56,8 +71,8 @@ if [ ! -d "$path_catalyst_usr" ]; then
     # Emerge catalyst
     if [ ! -f "/etc/portage/package.accept_keywords/dev-util_catalyst" ]; then
         echo "# Catalyst requirements" >> /etc/portage/package.accept_keywords/dev-util_catalyst
-        echo "dev-util/catalyst ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
-        echo "sys-fs/squashfs-tools-ng ~ppc64" >> /etc/portage/package.accept_keywords/dev-util_catalyst
+        echo "dev-util/catalyst **" >> /etc/portage/package.accept_keywords/dev-util_catalyst
+	echo "sys-fs/squashfs-tools-ng ~*" >> /etc/portage/package.accept_keywords/dev-util_catalyst
         echo "sys-apps/util-linux python" >> /etc/portage/package.use/dev-util_catalyst
     fi
     emerge dev-util/catalyst
@@ -65,6 +80,7 @@ if [ ! -d "$path_catalyst_usr" ]; then
     # Create working dirs
     mkdir -p $path_catalyst_builds
     mkdir -p $path_catalyst_stages
+    mkdir -p $path_catalyst_binhost
 
     # Configure catalyst
     sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' $path_catalyst_configs/catalyst.conf
@@ -137,6 +153,9 @@ if [ ! -d $path_releng ]; then
     cp -rf "$path_portage_confdir_isos" "$path_portage_confdir_isos-cell"
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_stages-cell/package.use/00cpu-flags"
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_isos-cell/package.use/00cpu-flags"
+    # Enable usage of the latest installer (9999)
+    echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "$path_portage_confdir_stages-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
+    echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "$path_portage_confdir_isos-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
 fi
 
 # Download current snapshot
@@ -162,11 +181,19 @@ if [ ! -f "${path_stage3_seed}" ]; then
 fi
 
 # Clone or pull current copy of custom overlay
-if [ ! -d "$path_overlay" ]; then
-    git clone "$url_overlay" "$path_overlay"
-else
-    git -C "$path_overlay" pull
+if [ ! -d "${path_overlay}" ]; then
+    echo "${path_overlay} is not ready. Please clone binhost repository."
+    exit 1
 fi
+
+# Check if binrepo is fetched
+if [ ! -d "${path_repo_binhost}" ]; then
+    echo "Binhost github repository is not prepared. Please clone first to ${path_repo_binhost}"
+    exit 1
+fi
+
+# Bind github_repo
+mount -o bind ${path_repo_binhost} ${path_catalyst_binhost} || die "Failed to bind binhost repo to ${path_catalyst_binhost}"
 
 # Prepare spec files
 cp "$path_start/spec/stage1-cell.spec" "$path_stage1"
@@ -192,9 +219,51 @@ sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage2_installcd"
 sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage1_installcd"
 sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage2_installcd"
 sed -i "s|@LIVECD_OVERLAY@|${path_livecd_overlay}|g" "$path_stage2_installcd"
+sed -i "s|@LIVECD_FSSCRIPT@|${path_livecd_fsscript}|g" "$path_stage2_installcd"
 
 # Run catalyst
-catalyst -f "${path_stage1}"
-catalyst -f "${path_stage3}"
-catalyst -f "${path_stage1_installcd}"
-catalyst -f "${path_stage2_installcd}"
+(
+  catalyst -f "${path_stage1}" &&
+  catalyst -f "${path_stage3}" &&
+  catalyst -f "${path_stage1_installcd}" &&
+  catalyst -f "${path_stage2_installcd}"
+) ||
+(
+  umount ${path_catalyst_binhost} &&
+  die "Catalyst build failed"
+)
+
+# Generate new release version tag
+latest_tag=$(git tag -l | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$" | sort -V | tail -n 1)
+new_tag=$(echo "$latest_tag" | awk -F. '{ printf "%d.%d.%d\n", $1, $2+1, $3 }')
+
+# Create and upload overlay for ps3-gentoo-installer changes
+new_ebuild_path="${path_installer_ebuild_repo}/ps3-gentoo-installer-${new_tag}.ebuild"
+cp "${path_installer_ebuild_draft}" "${new_ebuild_path}"
+pkgdev manifest
+cd "${path_overlay}"
+if [[ $(git status --porcelain) ]]; then
+    git add -A
+    git commit -m "Overlay automatic update (Catalyst release)"
+    git push
+fi
+# Upload binhost repo
+cd "${path_repo_binhost}"
+if [[ $(git status --porcelain) ]]; then
+    git add -A
+    git commit -m "Binrepo automatic update (Catalyst release)"
+    git push
+fi
+
+# Add new version tag to git and upload it
+cd "${path_root}"
+if [[ $(git status --porcelain) ]]; then
+    git add -A
+    git commit -m "Release ${new_tag}"
+    git push
+    git tag -a "${new_tag}"
+    git push origin "${new_tag}"
+fi
+
+# Umount binhost repo
+umount ${path_catalyst_binhost}

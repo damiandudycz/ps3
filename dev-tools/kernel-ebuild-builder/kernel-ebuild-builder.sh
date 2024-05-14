@@ -12,7 +12,7 @@ path_local=$(realpath -m "${path_initial}/../../local")
 flag_quiet='--quiet' # Quiet flag used to silence the output.
 
 # CONFIGURATION =================================================================================
-config_save=true       # Should generated ebuild be saved in overlay repository, and configuration diff file stored as default for future builds.
+config_save=false       # Should generated ebuild be saved in overlay repository, and configuration diff file stored as default for future builds.
 config_clear=false      # Clear sources and emerge them again.
 config_menuconfig=false # Run make menuconfig to adjust kernel configuration.
 config_overwrite=false  # Allow owerwriting already existing ebuild. Also if set, new generated config diff file is set as the new default.
@@ -195,9 +195,9 @@ read_variables() {
         --clear)
             config_clear=true
             ;;
-    --unmask)
-        config_unmask=true
-        ;;
+        --unmask)
+            config_unmask=true
+            ;;
         --menuconfig)
             config_menuconfig=true
             ;;
@@ -228,7 +228,7 @@ setup_work_path() {
     if [ -z ${kernel_version} ]; then
     kernel_version=$(equery m "${fname_ebuild_category}/${fname_ebuild_gentoo_kernel}" | grep " ppc64" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-r[0-9]+)?' | sort -V | tail -n 1)
     fi
-    path_work=$(realpath -m "${path_local}/kernel_ebuild/${kernel_version}")
+    path_work=$(realpath -m "${path_local}/kernel-ebuild-builder/${kernel_version}")
 }
 
 check_if_should_continue() {

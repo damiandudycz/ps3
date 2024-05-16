@@ -1,100 +1,64 @@
 # PlayStation 3 Gentoo Linux Toolset
 
-Welcome to the PlayStation 3 Gentoo Linux Toolset repository — a comprehensive collection of files and tools designed for seamless installation and maintenance of Gentoo Linux on the PlayStation 3. Here's an overview of the current features:
+Welcome to the PlayStation 3 Gentoo Linux Toolset repository—a comprehensive collection of files and tools designed to facilitate the seamless installation and maintenance of Gentoo Linux on the PlayStation 3.
 
-- Automatic Installer: Facilitates the effortless installation and configuration of Gentoo Linux on the PS3.
-- Prebuilt Kernel: Compatible with both OtherOS and OtherOS++, this kernel is equipped with various patches specifically tailored for the PS3.
-- Binhost Repository: Streamlines the installation process by enabling quicker access to diverse packages without the need for direct compilation.
-- Portage overlay: Overlay repository featuring additional tools specifically crafted for the PS3.
-- Developer Tools: Essential for building new kernel versions and managing different aspects of the repository.
-- LiveDVD/LiveUSB Image: An immersive option allowing you to run Gentoo directly from a USB device.
+## Repository Contents
 
-The repository undergoes constant updates, incorporating new features and addressing any issues. Future plans include:
+### Minimal Installation CD
+- **install-cell-minimal.iso**: This ISO file can be burned to a CD/DVD or a USB drive and launched on the PS3 via the Petitboot menu. It supports both automatic and manual Gentoo installations. For automatic installation, use the `ps3-gentoo-installer` program included on the CD. Note that Petitboot must be installed on your PS3 to boot from this ISO.
 
-- Customized Petitboot: Developing an enhanced and up-to-date version of Petitboot for an optimized user experience.
-- Installer Integration with Petitboot: Making adjustments to the installer to seamlessly integrate with Petitboot for user-friendly functionality.
-- Enhanced Prebuilt Kernel: Continuously improving the prebuilt kernel to ensure optimal performance.
-- Automatic Binrepo Update Tool: Implementing an automatic tool to keep the binhost repository up-to-date effortlessly.
+### PS3 Gentoo Installer
+- **ps3-gentoo-installer**: This tool facilitates the automatic installation and configuration of Gentoo Linux using the Minimal Installation CD. It performs the following tasks:
+    - Formats and partitions the hard drive for Gentoo.
+    - Downloads and extracts Stage3.
+    - Synchronizes the portage tree.
+    - Installs `gentoo-kernel-ps3`.
+    - Configures Petitboot.
+    - Installs additional tools.
+    - Sets up a default user with sudo access.
+    - And more…
+  
+    After execution, Gentoo can be booted on the PS3. Note that installation can take several hours, depending on the packages to be compiled. **Warning:** This tool will format your hard drive unless you choose the directory installation method. Please back up any sensitive data beforehand.
 
-I value your feedback and encourage you to share your comments or suggestions using the "Issues" tab or via email at damiandudycz@yahoo.com.
-Your input is invaluable, and all comments are greatly appreciated! :)
+    To install, run:
+        ps3-gentoo-installer --device /dev/ps3dd
 
-For development puropses clone with: `git clone --recurse-submodules git@github.com:damiandudycz/ps3.git`
-To download installer use: `wget https://raw.githubusercontent.com/damiandudycz/ps3/main/installer/ps3-gentoo-installer`
+    For more options, use:
+        ps3-gentoo-installer --help
 
-# Installer
+### Autobuilds
+- **Autobuilds directory**: Contains the following:
+    - Minimal install CD ISO files for booting on the PS3 using Petitboot.
+    - Stage3 files built for the CELL CPU, offering better compatibility with the PS3 compared to the default PPC64 Stage3 files.
 
-Installer is located at `insteller/installer.sh`. You can use it from another linux to install Gentoo on the PS3 hard drive or in selected directory.
-You can use it with default configuration or you can adjust the settings to match your needs.
-TODO: Add more information about the installer.
+### Binhosts
+- **Binhosts/ps3-gentoo-binhosts**: A collection of binhost repositories that can be added to your portage configuration. These repositories are generated during the release process of Autobuilds and contain pre-compiled packages optimized for the CELL CPU. If you use the `ps3-gentoo-installer`, these repositories will be added automatically. Recommended repository URLs:
+    - https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/default/stage3-cell
+    - https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/default/livecd-stage1-cell
+    - https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/default/livecd-stage2-cell
 
-### OLD description
+### Overlays
+- **Overlays/ps3-gentoo-overlay**: A portage overlay containing ebuilds for packages useful on the PS3 system, including:
+    - `gentoo-kernel-ps3`: A modified gentoo-kernel package with additional patches and configurations for the PS3, which also adds a Petitboot entry.
+    - `gentoo-sources-ps3`: A modified gentoo-sources package with additional patches and configurations for the PS3.
+    - `ps3vram-swap`: An RC script that utilizes PS3 VRAM as a swap device and configures system parameters for better memory management on the PS3.
+    - `ps3-gentoo-installer`: The automatic Gentoo installer for the PS3, available on the Minimal Installation CD.
 
-Im constantly working on making this project more reliable and eaisy to use. Recently I added a binhost repository which is automatically added to Gentoo during installation, to make the process faster. Currently testing it. 
-Please feel free to report any issues you have or some suggestions/questions using Issues tab in GitHub.
+    If you use `ps3-gentoo-installer`, this overlay will be added automatically. To manually add `ps3-gentoo-overlay` to your portage configuration, run:
+        eselect repository add ps3 git https://github.com/damiandudycz/ps3-gentoo-overlay
 
-If you want to try Gentoo using LiveUSB / LiveDVD, download files from https://www.dropbox.com/scl/fi/qrjzexfm1owd1r1aprkd8/LiveUSB.zip?rlkey=kd3isyeo5tkhqtbb1sy57hbh6&dl=1
-and extract them to USB formatted with MBR / FAT32
+### Development Tools
+- **dev-tools directory**: Contains tools used by the repository developer for maintenance and helper tasks. These include:
+    - `update-submodules.sh`: Initializes submodule repositories and githooks after cloning this repository.
+    - `distcc-docker`: Configuration for a Docker image to set up a DistCC server, aiding the PS3 in compiling code faster.
+    - `kernel-ebuild-builder`: Manages and updates `ps3-gentoo-overlay` ebuild files related to the kernel.
+    - `ps3-gentoo-installer`: The current version of the automatic Gentoo installer for the PS3, available on the Minimal Installation CD.
+    - `release-builder`: Creates and uploads new releases, including:
+        - Minimal Installation CD
+        - Stage3 files
+        - Binhost repositories
 
-# Kenrel building tools
+## Feedback and Contributions
+If you have any suggestions or encounter any issues, please feel free to contact me at [damiandudycz@yahoo.com](mailto:damiandudycz@yahoo.com) or find me on the Gentoo Discord @damiandudycz.
 
-These tools should be used on a host machine, running `Gentoo`. You can use `Virtual Machine` for that puropse.
-
-After cloning the repository, go to downloaded `ps3/tools` directory and edit hidden `.config` file
-Select the version of kernel you want to work on, and make sure the version you selected is available in portage. Also in this file you can select the `address of the PS3` in your local network.
-
-These tools will apply specific kernel patches from two seperate sources. If you want to modify the list of applied patches, edit the file `01-setup-patches.sh` and change `patches_t2sde` and `patches_ps3linux_patches`. 
-
-After that you can run the script: `01-setup-patches.sh`. It will download all selected patches, to be used for kernel later.
-
-Next run `02-setup-sources.sh`, this will download `gentoo-sources`, and apply previously prepared patches.
-
-Run `03-kernel-configure.sh`, and customize configuration to your needs. Please use the script instead of running menuconfig directly, as the scripts adds special crossdev layer.
-When you are sacisfied with your config, run `04-kernel-build.sh`.
-
-At this point kernel is ready, and you can find it in `/var/cache/ps3tools/linux`
-
-If you want you can upload it directly to the `PS3` using `05-kernel-upload-to-ps3.sh`. This required the `root access` for the SSH to be configured for the PS3. If you don't want to use `root`, you can edit `05-kernel-upload-to-ps3.sh` and change root to another user, but it needs the write access to `/boot`. Otherwise you can copy it manually from `/var/cache/ps3tools/linux`. Also make sure `/boot` is mounted on your PS3 before running it.
-
-Currently there is no tool for automatic creation of `kboot/yaboot` files, so if you changed the kernel version, you need to add these entries manually.
-
-# Gentoo-Installer
-
-Automatic installer and configurator of Gentoo linux for various platforms.
-
-To install on the PS3, boot into any recent linux distribution, setup the date and networking and:
-
-To install on the whole drive:
-
-`./ps3-gentoo-installer --device /dev/ps3dd --config PS3 --verbose`
-
-this will format selected harddrive!
-
-To install into selected directory without formatting the drive:
-
-`./ps3-gentoo-installer --directory /mnt/gentoo --config PS3 --verbose`
-
-and after installer finished, add fstab configuration and kboot entry.
-
-If you want to customize configuration, you can download file config/ps3, edit it and use as
-
-`./ps3-gentoo-installer --device /dev/ps3dd --custom-config ps3_file_path --verbose`
-
-To use distcc during installation, use --distcc flag:
-
-`./ps3-gentoo-installer --device /dev/ps3dd --config PS3 --distcc "192.168.0.50"`
-
-# Acknowledgement
-
-If you use my project as a base for other forks or projects, please add contribution with url to my repository.
-
-Special thanks to:
-- Model Citizen PS3 - for sharing knowledgle about Linux on PS3,
-- Rene Rebe - for updating and maintaining kernel patches for the PS3,
-- Immolo - for sharing knowledge about Gentoo,
-- OtherOS++ team - for making it all possible.
-
-
-
-
-
+If you use any of my tools in your project, please include a reference to this repository and a link back to it. Your acknowledgment helps support the development and maintenance of these tools.

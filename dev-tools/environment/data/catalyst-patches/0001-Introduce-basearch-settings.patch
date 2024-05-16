@@ -1,0 +1,129 @@
+From 51737fec652824dd7748cadf2aaa79cf07e4330e Mon Sep 17 00:00:00 2001
+From: "Azamat H. Hackimov" <azamat.hackimov@gmail.com>
+Date: Mon, 31 Jul 2023 22:28:37 +0300
+Subject: [PATCH 1/2] Introduce basearch settings
+
+When custom subarch is defined ("core2", for example), it will override hostarch, and all logic for creation bootloader entries and ISO image will be broken. Introduced basearch variable that may used for these cases.
+Added some die statement in some case switches for default values to prevent silent failure.
+
+Signed-off-by: Azamat H. Hackimov <azamat.hackimov@gmail.com>
+---
+ catalyst/base/stagebase.py          |  2 ++
+ targets/support/bootloader-setup.sh |  5 ++++-
+ targets/support/create-iso.sh       | 11 +++++++----
+ targets/support/netboot-final.sh    |  2 +-
+ targets/support/pre-kmerge.sh       |  2 +-
+ 5 files changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/catalyst/base/stagebase.py b/catalyst/base/stagebase.py
+index 74d197b5..057d9960 100644
+--- a/catalyst/base/stagebase.py
++++ b/catalyst/base/stagebase.py
+@@ -130,6 +130,8 @@ class StageBase(TargetBase, ClearBase, GenBase):
+                 for arch in [x for x in arch_config if x.startswith(name) and host in arch_config[x]]:
+                     self.settings.update(arch_config[arch][host])
+                     setarch = arch_config.get('setarch', {}).get(arch, {})
++                    # Save basearch for bootloader/livecd creation
++                    self.settings["basearch"] = arch
+                     break
+                 else:
+                     # Didn't find a matching subarchitecture, keep searching
+diff --git a/targets/support/bootloader-setup.sh b/targets/support/bootloader-setup.sh
+index d6d5f96e..7fa3133f 100755
+--- a/targets/support/bootloader-setup.sh
++++ b/targets/support/bootloader-setup.sh
+@@ -55,7 +55,7 @@ memtest_grub() {
+ 
+ default_append_line=(${cmdline_opts[@]} cdroot)
+ 
+-case ${clst_hostarch} in
++case ${clst_basearch} in
+ 	alpha)
+ 		# NO SOFTLEVEL SUPPORT YET
+ 		acfg=$1/etc/aboot.conf
+@@ -202,5 +202,8 @@ case ${clst_hostarch} in
+ 		[ -e "${1}/sash64" ] && mv ${1}/sash64 ${scratch}/arcload
+ 		[ -e "${1}/arc.cf" ] && mv ${1}/arc.cf ${scratch}/arcload
+ 		;;
++	*)
++		die "Cannot create ISO image: unsupported ARCH=${clst_basearch}"
++		;;
+ esac
+ exit $?
+diff --git a/targets/support/create-iso.sh b/targets/support/create-iso.sh
+index 74c24a1d..2dbd8c66 100755
+--- a/targets/support/create-iso.sh
++++ b/targets/support/create-iso.sh
+@@ -5,7 +5,7 @@ source ${clst_shdir}/support/functions.sh
+ ## START RUNSCRIPT
+ 
+ # Check for our CD ISO creation tools
+-case ${clst_hostarch} in
++case ${clst_basearch} in
+ 	alpha)
+ 		cdmaker="xorriso"
+ 		cdmakerpkg="dev-libs/libisoburn"
+@@ -42,7 +42,7 @@ if [ -z "${clst_iso_volume_id}" ]
+ then
+ 	case ${clst_livecd_type} in
+ 		gentoo-*)
+-			case ${clst_hostarch} in
++			case ${clst_basearch} in
+ 				alpha)
+ 					clst_iso_volume_id="Gentoo Linux - Alpha"
+ 				;;
+@@ -119,7 +119,7 @@ run_mkisofs() {
+ }
+ 
+ # Here we actually create the ISO images for each architecture
+-case ${clst_hostarch} in
++case ${clst_basearch} in
+ 	alpha)
+ 		isoroot_checksum
+ 
+@@ -195,12 +195,15 @@ case ${clst_hostarch} in
+ 		isoroot_checksum
+ 
+ 		extra_opts=("-joliet" "-iso-level" "3")
+-		case ${clst_hostarch} in
++		case ${clst_basearch} in
+ 		sparc*) extra_opts+=("--sparc-boot") ;;
+ 		esac
+ 
+ 		echo ">> Running grub-mkrescue to create iso image...."
+		grub-mkrescue -volid "${clst_iso_volume_id}" "${extra_opts[@]}" -o "${1}" "${clst_target_path}"
+ 	;;
++	*)
++		die "Cannot create ISO image: unsupported ARCH=${clst_basearch}"
++	;;
+ esac
+ exit  $?
+diff --git a/targets/support/netboot-final.sh b/targets/support/netboot-final.sh
+index fc0de880..a2d83008 100755
+--- a/targets/support/netboot-final.sh
++++ b/targets/support/netboot-final.sh
+@@ -19,7 +19,7 @@ rmdir ${clst_target_path}/boot
+ 
+ # Any post-processing necessary for each architecture can be done here.  This
+ # may include things like sparc's elftoaout, x86's PXE boot, etc.
+-case ${clst_hostarch} in
++case ${clst_basearch} in
+ 	hppa)
+ 		# Only one kernel should be there
+ 		kname=${clst_boot_kernel[0]}
+diff --git a/targets/support/pre-kmerge.sh b/targets/support/pre-kmerge.sh
+index ed825f5f..560590a2 100755
+--- a/targets/support/pre-kmerge.sh
++++ b/targets/support/pre-kmerge.sh
+@@ -4,7 +4,7 @@ RUN_DEFAULT_FUNCS="yes"
+ 
+ source /tmp/chroot-functions.sh
+ 
+-if [[ ${clst_hostarch} == hppa ]]; then
++if [[ ${clst_basearch} == hppa ]]; then
+ 	for i in ${clst_boot_kernel}; do
+ 		case ${i} in
+ 			*32)
+-- 
+2.41.0
+

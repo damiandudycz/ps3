@@ -1,0 +1,177 @@
+--- gentoo-kernel-6.6.13.ebuild	2024-02-01 16:21:52.560284000 -0000
++++ gentoo-kernel-ps3-6.6.13.ebuild	2024-02-01 16:23:34.975043006 -0000
+@@ -17,3 +17,3 @@
+ 
+-DESCRIPTION="Linux kernel built with Gentoo patches"
++DESCRIPTION="Linux kernel built with Gentoo patches and PS3 patches"
+ HOMEPAGE="
+@@ -28,18 +28,3 @@
+ 		-> gentoo-kernel-config-${GENTOO_CONFIG_VER}.tar.gz
+-	amd64? (
+-		https://raw.githubusercontent.com/projg2/fedora-kernel-config-for-gentoo/${CONFIG_VER}/kernel-x86_64-fedora.config
+-			-> kernel-x86_64-fedora.config.${CONFIG_VER}
+-	)
+-	arm64? (
+-		https://raw.githubusercontent.com/projg2/fedora-kernel-config-for-gentoo/${CONFIG_VER}/kernel-aarch64-fedora.config
+-			-> kernel-aarch64-fedora.config.${CONFIG_VER}
+-	)
+-	ppc64? (
+-		https://raw.githubusercontent.com/projg2/fedora-kernel-config-for-gentoo/${CONFIG_VER}/kernel-ppc64le-fedora.config
+-			-> kernel-ppc64le-fedora.config.${CONFIG_VER}
+-	)
+-	x86? (
+-		https://raw.githubusercontent.com/projg2/fedora-kernel-config-for-gentoo/${CONFIG_VER}/kernel-i686-fedora.config
+-			-> kernel-i686-fedora.config.${CONFIG_VER}
+-	)
++	https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-overlay.distfiles/main/sys-kernel/gentoo-kernel-ps3/gentoo-kernel-ps3-${PVR}.tar.xz
+ "
+@@ -49,8 +34,3 @@
+ IUSE="debug hardened"
+-REQUIRED_USE="
+-	arm? ( savedconfig )
+-	hppa? ( savedconfig )
+-	riscv? ( savedconfig )
+-	sparc? ( savedconfig )
+-"
++REQUIRED_USE=""
+ 
+@@ -62,5 +42,3 @@
+ "
+-PDEPEND="
+-	>=virtual/dist-kernel-${PV}
+-"
++PDEPEND=""
+ 
+@@ -76,2 +54,3 @@
+ 		"${WORKDIR}"/*.patch
++		"${WORKDIR}/ps3_patches"/*.patch
+ 	)
+@@ -79,46 +58,5 @@
+ 
+-	local biendian=false
++	cp "${WORKDIR}/ps3_gentoo_defconfig" .config || die
+ 
+-	# prepare the default config
+-	case ${ARCH} in
+-		amd64)
+-			cp "${DISTDIR}/kernel-x86_64-fedora.config.${CONFIG_VER}" .config || die
+-			;;
+-		arm)
+-			return
+-			;;
+-		arm64)
+-			cp "${DISTDIR}/kernel-aarch64-fedora.config.${CONFIG_VER}" .config || die
+-			biendian=true
+-			;;
+-		hppa)
+-			return
+-			;;
+-		loong)
+-			return
+-			;;
+-		ppc)
+-			# assume powermac/powerbook defconfig
+-			# we still package.use.force savedconfig
+-			cp "${WORKDIR}/${MY_P}/arch/powerpc/configs/pmac32_defconfig" .config || die
+-			;;
+-		ppc64)
+-			cp "${DISTDIR}/kernel-ppc64le-fedora.config.${CONFIG_VER}" .config || die
+-			biendian=true
+-			;;
+-		riscv)
+-			return
+-			;;
+-		sparc)
+-			return
+-			;;
+-		x86)
+-			cp "${DISTDIR}/kernel-i686-fedora.config.${CONFIG_VER}" .config || die
+-			;;
+-		*)
+-			die "Unsupported arch ${ARCH}"
+-			;;
+-	esac
+-
+-	local myversion="-gentoo-dist"
++	local myversion="-gentoo-ps3-dist"
+ 	use hardened && myversion+="-hardened"
+@@ -129,3 +67,2 @@
+ 		"${T}"/version.config
+-		"${dist_conf_path}"/base.config
+ 	)
+@@ -145,5 +82,3 @@
+ 	# this covers ppc64 and aarch64_be only for now
+-	if [[ ${biendian} == true && $(tc-endian) == big ]]; then
+-		merge_configs+=( "${dist_conf_path}/big-endian.config" )
+-	fi
++	merge_configs+=( "${dist_conf_path}/big-endian.config" )
+ 
+@@ -153 +88,67 @@
+ }
++
++pkg_postinst() {
++
++	kernel-build_pkg_postinst
++
++	# Update KBOOT entry:
++
++	# Find root and boot partition
++	root_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/" {print $1}' /etc/fstab)
++	boot_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/boot" {print $1}' /etc/fstab)
++
++	if [ ! -z "$root_partition" ]; then
++		einfo "Root partition detected: $root_partition."
++		kboot_path="/etc/kboot.conf"
++	fi
++	if [ ! -z "$boot_partition" ]; then
++		einfo "Boot partition detected: $boot_partition."
++		kboot_path="/boot/kboot.conf"
++	fi
++	if [ -z "$root_partition" ]; then
++		ewarn "Skipping kboot configuration, because the root partition was not detected."
++		ewarn "Please configure it manually."
++	fi
++	# If there is no separate /boot partition, the boot entry needs /boot prefix/
++	if [ -z "$boot_partition" ]; then
++		vmlinux_path_prefix="/boot"
++	fi
++	kboot_entry="Gentoo-Kernel-${PV}='${vmlinux_path_prefix}/vmlinux-${PV}-gentoo-ps3-dist root=${root_partition} video=ps3fb:mode:133'"
++	if [ -f "${kboot_path}" ]; then
++		grep -qxF "${kboot_entry}" "${kboot_path}" 2>/dev/null || sed -i "1i ${kboot_entry}" "${kboot_path}"
++	else
++		echo "${kboot_entry}" >> "${kboot_path}"
++	fi
++	elog "KBOOT entry added to ${kboot_path}"
++}
++
++pkg_prerm() {
++	# Find root and boot partition
++	root_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/" {print $1}' /etc/fstab)
++	boot_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/boot" {print $1}' /etc/fstab)
++
++	if [ ! -z "$root_partition" ]; then
++		einfo "Root partition detected: $root_partition."
++		kboot_path="/etc/kboot.conf"
++	fi
++	if [ ! -z "$boot_partition" ]; then
++		einfo "Boot partition detected: $boot_partition."
++		kboot_path="/boot/kboot.conf"
++	fi
++	if [ -z "$root_partition" ]; then
++		ewarn "Skipping kboot configuration, because the root partition was not detected."
++		ewarn "Please configure it manually."
++	fi
++	# If there is no separate /boot partition, the boot entry needs /boot prefix/
++	if [ -z "$boot_partition" ]; then
++		vmlinux_path_prefix="/boot"
++	fi
++	kboot_entry="Gentoo-Kernel-${PV}='${vmlinux_path_prefix}/vmlinux-${PV}-gentoo-ps3-dist root=${root_partition} video=ps3fb:mode:133'"
++
++	if [ -f "${kboot_path}" ]; then
++		sed -i "\|${kboot_entry}|d" "${kboot_path}"
++		elog "KBOOT entry removed from ${kboot_path}"
++	else
++		ewarn "KBOOT configuration file not found: ${kboot_path}"
++	fi
++}
+

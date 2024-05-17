@@ -1,4 +1,7 @@
 branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)" # Name of current branch if running from git repository
+latest_tag=$(git tag -l | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$" | sort -V | tail -n 1)
+new_tag=$(echo "$latest_tag" | awk -F. '{ printf "%d.%d.%d\n", $1, $2+1, $3 }')
+
 timestamp=$(date -u +"%Y%m%dT%H%M%SZ")
 path_start=$(dirname "$(realpath "$0")")
 path_root=$(realpath -m "$path_start/../..")
@@ -14,6 +17,8 @@ path_catalyst_stages="$path_catalyst_tmp/config/stages"
 path_catalyst_patch_dir="/etc/portage/patches/dev-util/catalyst"
 path_catalyst_binhost="/var/tmp/catalyst/packages/default"
 path_repo_binhost="$path_root/binhosts/ps3-gentoo-binhosts/default"
+path_repo_autobuilds="$path_root/autobuilds/ps3-gentoo-autobuilds"
+path_autobuild_new="${path_repo_autobuilds}/${timestamp}"
 path_stage3_seed="$path_catalyst_builds/stage3-ppc64-openrc-$timestamp.tar.xz"
 path_overlay="$path_root/overlays/ps3-gentoo-overlay"
 path_stage1="$path_local_tmp/stage1-cell.$timestamp.spec"
@@ -233,20 +238,17 @@ sed -i "s|@LIVECD_FSSCRIPT@|${path_livecd_fsscript}|g" "$path_stage2_installcd"
   die "Catalyst build failed"
 )
 
-# Generate new release version tag
-latest_tag=$(git tag -l | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$" | sort -V | tail -n 1)
-new_tag=$(echo "$latest_tag" | awk -F. '{ printf "%d.%d.%d\n", $1, $2+1, $3 }')
-
 # Create and upload overlay for ps3-gentoo-installer changes
 new_ebuild_path="${path_installer_ebuild_repo}/ps3-gentoo-installer-${new_tag}.ebuild"
 cp "${path_installer_ebuild_draft}" "${new_ebuild_path}"
-pkgdev manifest
 cd "${path_overlay}"
+pkgdev manifest
 if [[ $(git status --porcelain) ]]; then
     git add -A
     git commit -m "Overlay automatic update (Catalyst release)"
     git push
 fi
+
 # Upload binhost repo
 cd "${path_repo_binhost}"
 if [[ $(git status --porcelain) ]]; then
@@ -255,15 +257,23 @@ if [[ $(git status --porcelain) ]]; then
     git push
 fi
 
+# Save new release in autobuilds
+mkdir -p "${path_autobuild_new}"
+mv "${path_catalyst_builds}"/stage3-cell-openrc-${timestamp}.tar.xz* "${path_autobuild_new}"/
+mv "${path_catalyst_builds}"/install-cell-minimal-${timestamp}.iso* "${path_autobuild_new}"/
+echo "${timestamp}/stage3-cell-openrc-${timestamp}.tar.xz" > "${path_repo_autobuilds}/latest-stage3-cell-openrc.txt"
+echo "${timestamp}/install-cell-minimal-${timestamp}.iso" > "${path_repo_autobuilds}/latest-install-cell-minimal.txt"
+
 # Add new version tag to git and upload it
 cd "${path_root}"
 if [[ $(git status --porcelain) ]]; then
     git add -A
     git commit -m "Release ${new_tag}"
     git push
-    git tag -a "${new_tag}"
+    git tag -a "${new_tag}" -m "Release ${new_tag}"
     git push origin "${new_tag}"
 fi
 
 # Umount binhost repo
 umount ${path_catalyst_binhost}
+

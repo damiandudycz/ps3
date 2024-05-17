@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: Validate if dev-vcs/git-lfs is installed, and if not install it
+
 cd ..
 dir="$(pwd)"
 

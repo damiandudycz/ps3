@@ -174,6 +174,7 @@ stageinfo_url="$url_release_gentoo/latest-stage3-ppc64-openrc.txt"
 latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
 latest_stage3="$(echo "$latest_gentoo_content" | grep "ppc64-openrc" | head -n 1 | cut -d' ' -f1)"
 latest_stage3_filename=$(basename "$latest_stage3")
+seed_timestamp=$(echo "$latest_stage3_filename" | sed -n 's/.*-\([0-9]\{8\}T[0-9]\{6\}Z\)\.tar\.xz/\1/p')
 path_stage3_seed="$path_catalyst_builds/$latest_stage3_filename"
 if [ ! -f "${path_stage3_seed}" ]; then
     if [ -n "$path_stage3_seed" ]; then
@@ -183,7 +184,7 @@ if [ ! -f "${path_stage3_seed}" ]; then
         exit 1
     fi
     # Download stage3 file
-    wget "$url_gentoo_tarball" -O "$path_stage3_seed"
+    wget "$url_gentoo_tarball" -O "$path_stage3_seed" || die "Failed to download seed"
 fi
 
 # Clone or pull current copy of custom overlay
@@ -210,6 +211,7 @@ sed -i "s|@TREEISH@|${squashfs_identifier}|g" "$path_stage1"
 sed -i "s|@TREEISH@|${squashfs_identifier}|g" "$path_stage3"
 sed -i "s|@TREEISH@|${squashfs_identifier}|g" "$path_stage1_installcd"
 sed -i "s|@TREEISH@|${squashfs_identifier}|g" "$path_stage2_installcd"
+sed -i "s|@SEEDTIMESTAMP@|${seed_timestamp}|g" "$path_stage1"
 sed -i "s|@TIMESTAMP@|${timestamp}|g" "$path_stage1"
 sed -i "s|@TIMESTAMP@|${timestamp}|g" "$path_stage3"
 sed -i "s|@TIMESTAMP@|${timestamp}|g" "$path_stage1_installcd"
@@ -277,4 +279,3 @@ fi
 
 # Umount binhost repo
 umount ${path_catalyst_binhost}
-

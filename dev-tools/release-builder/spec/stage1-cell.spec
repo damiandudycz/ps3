@@ -1,6 +1,6 @@
 # Relese version details
 version_stamp: openrc-@TIMESTAMP@
-source_subpath: default/stage3-ppc64-openrc-@TIMESTAMP@
+source_subpath: default/stage3-ppc64-openrc-@SEEDTIMESTAMP@
 snapshot_treeish: @TREEISH@
 portage_confdir: @PORTAGE_CONFDIR@
 @INTERPRETER@

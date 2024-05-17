@@ -31,6 +31,7 @@ path_livecd_fsscript="$path_local_tmp/iso_fsscript.sh"
 path_interpreter="/usr/bin/qemu-ppc64"
 path_installer_ebuild_draft="${path_start}/ps3-gentoo-installer.ebuild"
 path_installer_ebuild_repo="${path_overlay}/sys-apps/ps3-gentoo-installer"
+path_binhost_sanitize="$path_start/binhost-sanitize.sh"
 url_release_gentoo="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc"
 url_binhost="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main"
 url_overlay="https://github.com/damiandudycz/ps3-gentoo-overlay"
@@ -253,6 +254,12 @@ if [[ $(git status --porcelain) ]]; then
     git commit -m "Overlay automatic update (Catalyst release)"
     git push
 fi
+
+# Remove large entries from binhost repos
+source "${path_binhost_sanitize}" "${path_repo_binhost}/livecd-stage1-cell"
+source "${path_binhost_sanitize}" "${path_repo_binhost}/livecd-stage2-cell"
+source "${path_binhost_sanitize}" "${path_repo_binhost}/stage1-cell"
+source "${path_binhost_sanitize}" "${path_repo_binhost}/stage3-cell"
 
 # Upload binhost repo
 cd "${path_repo_binhost}"

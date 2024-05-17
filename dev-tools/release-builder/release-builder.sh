@@ -19,7 +19,6 @@ path_catalyst_binhost="/var/tmp/catalyst/packages/default"
 path_repo_binhost="$path_root/binhosts/ps3-gentoo-binhosts/default"
 path_repo_autobuilds="$path_root/autobuilds/ps3-gentoo-autobuilds"
 path_autobuild_new="${path_repo_autobuilds}/${timestamp}"
-path_stage3_seed="$path_catalyst_builds/stage3-ppc64-openrc-$timestamp.tar.xz"
 path_overlay="$path_root/overlays/ps3-gentoo-overlay"
 path_stage1="$path_local_tmp/stage1-cell.$timestamp.spec"
 path_stage3="$path_local_tmp/stage3-cell.$timestamp.spec"
@@ -171,10 +170,12 @@ catalyst --snapshot stable | tee "$path_local_tmp/snapshot_log.txt"
 squashfs_identifier=$(cat "$path_local_tmp/snapshot_log.txt" | grep -oP 'Creating gentoo tree snapshot \K[0-9a-f]{40}')
 
 # Download stage3 seed
+stageinfo_url="$url_release_gentoo/latest-stage3-ppc64-openrc.txt"
+latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
+latest_stage3="$(echo "$latest_gentoo_content" | grep "ppc64-openrc" | head -n 1 | cut -d' ' -f1)"
+latest_stage3_filename=$(basename "$latest_stage3")
+path_stage3_seed="$path_catalyst_builds/$latest_stage3_filename"
 if [ ! -f "${path_stage3_seed}" ]; then
-    stageinfo_url="$url_release_gentoo/latest-stage3-ppc64-openrc.txt"
-    latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
-    latest_stage3="$(echo "$latest_gentoo_content" | grep "ppc64-openrc" | head -n 1 | cut -d' ' -f1)"
     if [ -n "$path_stage3_seed" ]; then
         url_gentoo_tarball="$url_release_gentoo/$latest_stage3"
     else
@@ -198,7 +199,7 @@ if [ ! -d "${path_repo_binhost}" ]; then
 fi
 
 # Bind github_repo
-mount -o bind ${path_repo_binhost} ${path_catalyst_binhost} || die "Failed to bind binhost repo to ${path_catalyst_binhost}"
+mount -o bind ${path_repo_binhost} ${path_catalyst_binhost} || die "Failed to bind binhost ${path_repo_binhost} repo to ${path_catalyst_binhost}"
 
 # Prepare spec files
 cp "$path_start/spec/stage1-cell.spec" "$path_stage1"

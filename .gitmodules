@@ -10,7 +10,7 @@
 	path = overlays/ps3-gentoo-overlay.distfiles
 	url = git@github.com:damiandudycz/ps3-gentoo-overlay.distfiles.git
 	branch = main
-[submodule "releases/ps3-gentoo-stages"]
-	path = releases/ps3-gentoo-stages
-	url = git@github.com:damiandudycz/ps3-gentoo-stages.git
+[submodule "autobuilds/ps3-gentoo-autobuilds"]
+	path = releases/ps3-gentoo-autobuilds
+	url = git@github.com:damiandudycz/ps3-gentoo-autobuilds.git
 	branch = main

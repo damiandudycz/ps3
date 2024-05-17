@@ -158,6 +158,8 @@ if [ ! -d $path_releng ]; then
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_stages-cell/package.use/00cpu-flags"
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_isos-cell/package.use/00cpu-flags"
     # Enable usage of the latest installer (9999)
+    mkdir -p "${path_portage_confdir_stages-cell}/package.accept_keywords"
+    mkdir -p "${path_portage_confdir_isos-cell}/package.accept_keywords"
     echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "$path_portage_confdir_stages-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
     echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "$path_portage_confdir_isos-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
 fi

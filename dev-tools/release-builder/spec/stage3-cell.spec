@@ -13,4 +13,4 @@ rel_type: default
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
 portage_prefix: releng
-binrepo_path: base
+binrepo_path: default

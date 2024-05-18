@@ -13,7 +13,7 @@ path_catalyst_builds="$path_catalyst_tmp/builds/default"
 path_catalyst_stages="$path_catalyst_tmp/config/stages"
 path_catalyst_patch_dir="/etc/portage/patches/dev-util/catalyst"
 path_catalyst_binhost="/var/tmp/catalyst/packages/default"
-path_repo_binhost="$path_root/binhosts/ps3-gentoo-binhosts/default"
+path_pkg_cache="$path_root/binhosts/ps3-gentoo-binhosts/default"
 path_repo_autobuilds="$path_root/autobuilds/ps3-gentoo-autobuilds"
 path_autobuild_new="${path_repo_autobuilds}/${timestamp}"
 path_overlay="$path_root/overlays/ps3-gentoo-overlay"
@@ -194,13 +194,10 @@ if [ ! -d "${path_overlay}" ]; then
 fi
 
 # Check if binrepo is fetched
-if [ ! -d "${path_repo_binhost}" ]; then
-    echo "Binhost github repository is not prepared. Please clone first to ${path_repo_binhost}"
+if [ ! -d "${path_pkg_cache}" ]; then
+    echo "Binhost github repository is not prepared. Please clone first to ${path_pkg_cache}"
     exit 1
 fi
-
-# Bind github_repo
-mount -o bind ${path_repo_binhost} ${path_catalyst_binhost} || die "Failed to bind binhost ${path_repo_binhost} repo to ${path_catalyst_binhost}"
 
 # Prepare spec files
 cp "$path_start/spec/stage1-cell.spec" "$path_stage1"
@@ -220,6 +217,10 @@ sed -i "s|@PORTAGE_CONFDIR@|${path_portage_confdir_stages}|g" "$path_stage1"
 sed -i "s|@PORTAGE_CONFDIR@|${path_portage_confdir_stages}-cell|g" "$path_stage3"
 sed -i "s|@PORTAGE_CONFDIR@|${path_portage_confdir_isos}|g" "$path_stage1_installcd"
 sed -i "s|@PORTAGE_CONFDIR@|${path_portage_confdir_isos}-cell|g" "$path_stage2_installcd"
+sed -i "s|@PKGCACHE_PATH@|${path_pkg_cache}|g" "$path_stage1"
+sed -i "s|@PKGCACHE_PATH@|${path_pkg_cache}|g" "$path_stage3"
+sed -i "s|@PKGCACHE_PATH@|${path_pkg_cache}|g" "$path_stage1_installcd"
+sed -i "s|@PKGCACHE_PATH@|${path_pkg_cache}|g" "$path_stage2_installcd"
 sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage1"
 sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage3"
 sed -i "s|@INTERPRETER@|${interpreter}|g" "$path_stage1_installcd"
@@ -249,13 +250,10 @@ if [[ $(git status --porcelain) ]]; then
 fi
 
 # Remove large entries from binhost repos
-source "${path_binhost_sanitize}" "${path_repo_binhost}/livecd-stage1-cell"
-source "${path_binhost_sanitize}" "${path_repo_binhost}/livecd-stage2-cell"
-source "${path_binhost_sanitize}" "${path_repo_binhost}/stage1-cell"
-source "${path_binhost_sanitize}" "${path_repo_binhost}/stage3-cell"
+source "${path_binhost_sanitize}" "${path_pkg_cache}"
 
 # Upload binhost repo
-cd "${path_repo_binhost}"
+cd "${path_pkg_cache}"
 if [[ $(git status --porcelain) ]]; then
     git add -A
     git commit -m "Binrepo automatic update (Catalyst release)"
@@ -286,6 +284,3 @@ if [[ $(git status --porcelain) ]]; then
     git tag -a "${timestamp}" -m "Release ${timestamp}"
     git push origin "${timestamp}"
 fi
-
-# Umount binhost repo
-umount ${path_catalyst_binhost}

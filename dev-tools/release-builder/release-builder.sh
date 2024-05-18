@@ -159,10 +159,10 @@ if [ ! -d $path_releng ]; then
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_stages-cell/package.use/00cpu-flags"
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_isos-cell/package.use/00cpu-flags"
     # Enable usage of the latest installer (9999)
-    mkdir -p "${path_portage_confdir_stages-cell}/package.accept_keywords"
-    mkdir -p "${path_portage_confdir_isos-cell}/package.accept_keywords"
-    echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "$path_portage_confdir_stages-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
-    echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "$path_portage_confdir_isos-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
+    mkdir -p "${path_portage_confdir_stages}-cell/package.accept_keywords"
+    mkdir -p "${path_portage_confdir_isos}-cell/package.accept_keywords"
+    echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "${path_portage_confdir_stages}-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
+    echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "${path_portage_confdir_isos}-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
 fi
 
 # Download current snapshot
@@ -238,11 +238,7 @@ sed -i "s|@LIVECD_FSSCRIPT@|${path_livecd_fsscript}|g" "$path_stage2_installcd"
   catalyst -f "${path_stage3}" &&
   catalyst -f "${path_stage1_installcd}" &&
   catalyst -f "${path_stage2_installcd}"
-) ||
-(
-  umount ${path_catalyst_binhost} &&
-  die "Catalyst build failed"
-)
+) || umount ${path_catalyst_binhost} && die "Catalyst build failed"
 
 # Create and upload overlay for ps3-gentoo-installer changes
 new_ebuild_path="${path_installer_ebuild_repo}/ps3-gentoo-installer-${new_tag}.ebuild"
@@ -275,6 +271,14 @@ mv "${path_catalyst_builds}"/stage3-cell-openrc-${timestamp}.tar.xz* "${path_aut
 mv "${path_catalyst_builds}"/install-cell-minimal-${timestamp}.iso* "${path_autobuild_new}"/
 echo "${timestamp}/stage3-cell-openrc-${timestamp}.tar.xz" > "${path_repo_autobuilds}/latest-stage3-cell-openrc.txt"
 echo "${timestamp}/install-cell-minimal-${timestamp}.iso" > "${path_repo_autobuilds}/latest-install-cell-minimal.txt"
+
+# Upload autobuilds directory
+cd "${path_repo_autobuilds}"
+if [[ $(git status --porcelain) ]]; then
+    git add -A
+    git commit -m "Autobuilds automatic update (Catalyst release)"
+    git push
+fi
 
 # Add new version tag to git and upload it
 cd "${path_root}"

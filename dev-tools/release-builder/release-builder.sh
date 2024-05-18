@@ -1,7 +1,4 @@
 branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)" # Name of current branch if running from git repository
-latest_tag=$(git tag -l | grep -E "^[0-9]+\.[0-9]+\.[0-9]+$" | sort -V | tail -n 1)
-new_tag=$(echo "$latest_tag" | awk -F. '{ printf "%d.%d.%d\n", $1, $2+1, $3 }')
-
 timestamp=$(date -u +"%Y%m%dT%H%M%SZ")
 path_start=$(dirname "$(realpath "$0")")
 path_root=$(realpath -m "$path_start/../..")
@@ -284,10 +281,10 @@ fi
 cd "${path_root}"
 if [[ $(git status --porcelain) ]]; then
     git add -A
-    git commit -m "Release ${new_tag}"
+    git commit -m "Release $timestamp}"
     git push
-    git tag -a "${new_tag}" -m "Release ${new_tag}"
-    git push origin "${new_tag}"
+    git tag -a "${timestamp}" -m "Release ${timestamp}"
+    git push origin "${timestamp}"
 fi
 
 # Umount binhost repo

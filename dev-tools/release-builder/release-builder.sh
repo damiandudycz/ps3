@@ -238,7 +238,7 @@ sed -i "s|@LIVECD_FSSCRIPT@|${path_livecd_fsscript}|g" "$path_stage2_installcd"
   catalyst -f "${path_stage3}" &&
   catalyst -f "${path_stage1_installcd}" &&
   catalyst -f "${path_stage2_installcd}"
-) || umount ${path_catalyst_binhost} && die "Catalyst build failed"
+) || die "Catalyst build failed"
 
 # Create and upload overlay for ps3-gentoo-installer changes
 new_ebuild_path="${path_installer_ebuild_repo}/ps3-gentoo-installer-${new_tag}.ebuild"

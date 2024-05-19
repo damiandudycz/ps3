@@ -1,3 +1,14 @@
+# This tool prepares and uploads new release.
+# This include:
+#   - Update of ps3-gentoo-installer repository if required
+#   - New minimal installer cd ISO
+#   - New stage3
+#   - Updates to binhost repository
+#
+# ps3-gentoo-installer new ebuild and distfiles will be automatically created and uploaded
+# if there are any changes in config or installer since last version available in overlay.
+# This is done, by executing script dev-tools/ps3-gentoo-installer/ps3-gentoo-installer-ebuild-updater.sh
+
 timestamp=$(date -u +"%Y%m%dT%H%M%SZ")
 path_start=$(dirname "$(realpath "$0")")
 path_root=$(realpath -m "$path_start/../..")
@@ -230,7 +241,7 @@ sed -i "s|@LIVECD_FSSCRIPT@|${path_livecd_fsscript}|g" "$path_stage2_installcd"
 
 # Update installer ebuild if needed
 cd $(dirname "$path_insteller_updater")
-(source "${path_insteller_updater}")
+(source "${path_insteller_updater}") # Note: () is required to run in subshell, otherwise path_insteller_updater could terminate this script.
 cd "${path_start}"
 
 # Run catalyst
@@ -276,6 +287,3 @@ if [[ $(git status --porcelain) ]]; then
     git tag -a "${timestamp}" -m "Release ${timestamp}"
     git push origin "${timestamp}"
 fi
-
-
-# TODO: Instead of using 9999 installer ebuild, just copy files directly to liveCD, and delete 9999 build of the installer

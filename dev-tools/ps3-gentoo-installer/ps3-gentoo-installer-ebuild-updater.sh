@@ -31,6 +31,9 @@ list_distfiles_tar_files=(
 	config
 )
 
+echo ""
+echo "# Automatic updater for ps3-gentoo-installer"
+
 mkdir -p "${path_tmp}"
 
 # Copy distfiles to tmp
@@ -49,6 +52,7 @@ tar --sort=name \
 needs_update=$(diff -q "$path_distfiles_tar_tmp" "$path_distfiles_tar_old" >/dev/null && echo "false" || echo "true")
 if [ ! "${needs_update}" = true ]; then
 	echo "No changes in installer, skiping update"
+	echo ""
 	exit 0
 fi
 
@@ -73,3 +77,5 @@ if [[ $(git status --porcelain) ]]; then
     git commit -m "Installer automatic update (Catalyst release)"
     git push
 fi
+
+echo ""

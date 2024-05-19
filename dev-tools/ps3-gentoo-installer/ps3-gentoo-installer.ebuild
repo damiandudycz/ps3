@@ -1,4 +1,4 @@
-API=8
+EAPI=8
 DESCRIPTION="Automatic Gentoo Linux installer for the PlayStaion 3"
 HOMEPAGE="https://github.com/damiandudycz/ps3"
 LICENSE="GPL-2"
@@ -11,6 +11,10 @@ DEPEND="
     sys-apps/util-linux
     sys-fs/btrfs-progs
 "
+
+src_unpack() {
+    default
+}
 
 src_install() {
     # Copy installer

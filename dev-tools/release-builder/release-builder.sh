@@ -1,4 +1,3 @@
-branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)" # Name of current branch if running from git repository
 timestamp=$(date -u +"%Y%m%dT%H%M%SZ")
 path_start=$(dirname "$(realpath "$0")")
 path_root=$(realpath -m "$path_start/../..")
@@ -26,14 +25,13 @@ path_livecd_overlay="$path_local_tmp/iso_overlay"
 path_livecd_fsscript_original="$path_start/iso_fsscript.sh"
 path_livecd_fsscript="$path_local_tmp/iso_fsscript.sh"
 path_interpreter="/usr/bin/qemu-ppc64"
-path_installer_ebuild_draft="${path_start}/ps3-gentoo-installer.ebuild"
-path_installer_ebuild_repo="${path_overlay}/sys-apps/ps3-gentoo-installer"
+path_insteller_updater="${path_root}/dev-tools/ps3-gentoo-installer/ps3-gentoo-installer-ebuild-updater.sh"
 path_binhost_sanitize="$path_start/binhost-sanitize.sh"
+path_catalyst_patch1="${path_start}/patches/0001-Introduce-basearch-settings.patch"
+path_catalyst_patch2="${path_start}/patches/0002-Fix-missing-vmlinux-filename-support.patch"
 url_release_gentoo="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc"
 url_binhost="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main"
 url_overlay="https://github.com/damiandudycz/ps3-gentoo-overlay"
-url_catalyst_patch1="https://github.com/damiandudycz/ps3/raw/${branch}/dev-tools/release-builder/patches/0001-Introduce-basearch-settings.patch"
-url_catalyst_patch2="https://github.com/damiandudycz/ps3/raw/${branch}/dev-tools/release-builder/patches/0002-Fix-missing-vmlinux-filename-support.patch"
 conf_jobs="8"
 conf_load="12.0"
 
@@ -66,8 +64,8 @@ if [ ! -d "$path_catalyst_usr" ]; then
     # Remove this patch when catalyst is updated with it
     if [ ! -f "$path_catalyst_patch_dir/0001.patch" ] || [ ! -f "$path_catalyst_patch_dir/0002.patch" ]; then
         mkdir -p "$path_catalyst_patch_dir"
-        wget "$url_catalyst_patch1" -O "$path_catalyst_patch_dir/0001.patch"
-        wget "$url_catalyst_patch2" -O "$path_catalyst_patch_dir/0002.patch"
+        cp "$path_catalyst_patch1" "$path_catalyst_patch_dir/0001.patch"
+        cp "$path_catalyst_patch2" "$path_catalyst_patch_dir/0002.patch"
     fi
 
     # Emerge catalyst
@@ -156,10 +154,10 @@ if [ ! -d $path_releng ]; then
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_stages-cell/package.use/00cpu-flags"
     echo '*/* CPU_FLAGS_PPC: altivec' > "$path_portage_confdir_isos-cell/package.use/00cpu-flags"
     # Enable usage of the latest installer (9999)
-    mkdir -p "${path_portage_confdir_stages}-cell/package.accept_keywords"
-    mkdir -p "${path_portage_confdir_isos}-cell/package.accept_keywords"
-    echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "${path_portage_confdir_stages}-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
-    echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "${path_portage_confdir_isos}-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
+#    mkdir -p "${path_portage_confdir_stages}-cell/package.accept_keywords"
+#    mkdir -p "${path_portage_confdir_isos}-cell/package.accept_keywords"
+#    echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "${path_portage_confdir_stages}-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
+#    echo 'sys-apps/ps3-gentoo-installer ~ppc64' > "${path_portage_confdir_isos}-cell/package.accept_keywords/sys-apps_ps3-gentoo-installer"
 fi
 
 # Download current snapshot
@@ -230,6 +228,11 @@ sed -i "s|@REPOS@|${path_overlay}|g" "$path_stage2_installcd"
 sed -i "s|@LIVECD_OVERLAY@|${path_livecd_overlay}|g" "$path_stage2_installcd"
 sed -i "s|@LIVECD_FSSCRIPT@|${path_livecd_fsscript}|g" "$path_stage2_installcd"
 
+# Update installer ebuild if needed
+cd $(dirname "$path_insteller_updater")
+(source "${path_insteller_updater}")
+cd "${path_start}"
+
 # Run catalyst
 (
   catalyst -f "${path_stage1}" &&
@@ -237,17 +240,6 @@ sed -i "s|@LIVECD_FSSCRIPT@|${path_livecd_fsscript}|g" "$path_stage2_installcd"
   catalyst -f "${path_stage1_installcd}" &&
   catalyst -f "${path_stage2_installcd}"
 ) || die "Catalyst build failed"
-
-# Create and upload overlay for ps3-gentoo-installer changes
-new_ebuild_path="${path_installer_ebuild_repo}/ps3-gentoo-installer-${new_tag}.ebuild"
-cp "${path_installer_ebuild_draft}" "${new_ebuild_path}"
-cd "${path_overlay}"
-pkgdev manifest
-if [[ $(git status --porcelain) ]]; then
-    git add -A
-    git commit -m "Overlay automatic update (Catalyst release)"
-    git push
-fi
 
 # Remove large entries from binhost repos
 source "${path_binhost_sanitize}" "${path_pkg_cache}"
@@ -279,8 +271,11 @@ fi
 cd "${path_root}"
 if [[ $(git status --porcelain) ]]; then
     git add -A
-    git commit -m "Release $timestamp}"
+    git commit -m "Release ${timestamp}"
     git push
     git tag -a "${timestamp}" -m "Release ${timestamp}"
     git push origin "${timestamp}"
 fi
+
+
+# TODO: Instead of using 9999 installer ebuild, just copy files directly to liveCD, and delete 9999 build of the installer

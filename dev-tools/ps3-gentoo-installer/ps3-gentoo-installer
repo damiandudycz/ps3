@@ -239,6 +239,11 @@ read_variables() {
         esac
         shift
     done
+
+    # Set default value of config if none specified
+    if [ -z "$config" ] && [ -z "$custom_config" ]; then
+        custom_config="/etc/ps3-gentoo-installer/config"
+    fi
 }
 
 validate_input_data() {

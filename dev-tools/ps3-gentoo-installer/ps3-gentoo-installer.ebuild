@@ -5,7 +5,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="ppc64"
 SRC_URI="https://github.com/damiandudycz/ps3-gentoo-overlay.distfiles/raw/main/sys-apps/${PN}/${PN}-${PVR}.tar.xz"
-S="${WORKDIR}/${PN}-${PVR}"
+S="${WORKDIR}"
 
 DEPEND="
     sys-apps/util-linux

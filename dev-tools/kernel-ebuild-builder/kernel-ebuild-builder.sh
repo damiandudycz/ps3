@@ -3,7 +3,9 @@
 # Required packages: git, pkgdev, ruby
 
 # TODO: Add metadata.xml to repository
-# TODO: Generate also gentoo-sources ebuild
+# TODO: Store config for versions
+# TODO: Check if needs restoring initramfs in yaboot
+# TODO: Fix path for gentoo-sources (dont include ~flags section in it)
 
 source <(sed '1,/^# FUNCTIONS #.*$/d' "$0") # Load functions at the bottom of the script.
 
@@ -227,7 +229,7 @@ read_variables() {
 
 setup_work_path() {
     if [ -z ${kernel_version} ]; then
-    kernel_version=$(equery m "${fname_ebuild_category}/${fname_ebuild_gentoo_kernel}" | grep " ppc64" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-r[0-9]+)?' | sort -V | tail -n 1)
+        kernel_version=$(equery m "${fname_ebuild_category}/${fname_ebuild_gentoo_kernel}" | grep " ppc64" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-r[0-9]+)?' | sort -V | tail -n 1)
     fi
     path_work=$(realpath -m "${path_local}/kernel-ebuild-builder/${kernel_version}")
 }
@@ -254,8 +256,12 @@ download_patches() {
         for patch_url in ${ps3_patches[@]}; do
             try wget "$patch_url" $flag_quiet
         done
-	mkdir -p "${path_local_version}"
-	cp *.patch "${path_local_version}"/
+        # Save patches used for this version # TODO: Save also config, plus make it work when running after local version was already created
+	# TODO: Move this to save section
+        if [ "${save}" = true ]; then
+	    mkdir -p "${path_local_version}"
+	    cp *.patch "${path_local_version}"/
+        fi
     fi
     cd "${path_initial}"
 }

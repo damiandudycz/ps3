@@ -67,6 +67,7 @@ path_portage_repos="/etc/portage/repos.conf"
 path_portage_repos_gentoo="${path_portage_repos}/gentoo.conf"
 path_repos_gentoo_kernel_ebuild="/var/db/repos/gentoo/${fname_ebuild_category}/${fname_ebuild_gentoo_kernel}/${fname_ebuild_gentoo_kernel}-${kernel_version}.ebuild"
 path_repos_gentoo_sources_ebuild="/var/db/repos/gentoo/${fname_ebuild_category}/${fname_ebuild_gentoo_sources}/${fname_ebuild_gentoo_sources}-${kernel_version}.ebuild"
+path_local_version="${path_data}/versions/${kernel_version}"
 
 # OTHER =========================================================================================
 
@@ -246,9 +247,16 @@ check_if_should_continue() {
 download_patches() {
     try mkdir -p "${path_work_files_patches}"
     cd "${path_work_files_patches}"
-    for patch_url in ${ps3_patches[@]}; do
-        try wget "$patch_url" $flag_quiet
-    done
+
+    if [ -d "${path_local_version}" ]; then
+	cp "${path_local_version}"/*.patch ./
+    else
+        for patch_url in ${ps3_patches[@]}; do
+            try wget "$patch_url" $flag_quiet
+        done
+	mkdir -p "${path_local_version}"
+	cp *.patch "${path_local_version}"/
+    fi
     cd "${path_initial}"
 }
 

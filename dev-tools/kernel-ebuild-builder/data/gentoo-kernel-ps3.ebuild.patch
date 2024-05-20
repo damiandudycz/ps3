@@ -109,9 +109,9 @@
 @@ -153 +88,36 @@
  }
 +
-+pkg_postinst() {
-+	# Call linux-mod_pkg_postinst to handle module installation and other tasks
-+	kernel-build_pkg_postinst
++pkg_config() {
++
++	default
 +
 +	# Update KBOOT entry:
 +
@@ -141,5 +141,5 @@
 +	else
 +		echo "${kboot_entry}" >> "${kboot_path}"
 +	fi
-+        elog "KBOOT entry added to ${kboot_path}"
++	elog "KBOOT entry added to ${kboot_path}"
 +}

@@ -29,7 +29,7 @@ export ps3_patches=(
  https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/ps3-gelic-skb-alloc.patch
  https://svn.exactcode.de/t2/trunk/package/kernel/linux/0666-ps3fb-vram.patch
  https://svn.exactcode.de/t2/trunk/package/kernel/linux/0700-ps3vram-mod-ps3fb.patch
- https://svn.exactcode.de/t2/trunk/package/kernel/linux/hotfix-ppc64-ps3-elfabi.patch
+# https://svn.exactcode.de/t2/trunk/package/kernel/linux/hotfix-ppc64-ps3-elfabi.patch
  https://svn.exactcode.de/t2/trunk/package/kernel/linux/hotfix-ppc64-ps3-srr-clobber.patch
  https://svn.exactcode.de/t2/trunk/package/kernel/linux/ps3-partition.patch
 

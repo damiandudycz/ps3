@@ -9,7 +9,7 @@ path_chroot="/mnt/gentoo-setup-${iid}"                     # Gentoo chroot envir
 edit_config=false                                          # Modify configuration file.
 quiet_flag='--quiet'                                       # Flag used to silence the output.
 branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)" # Name of current branch if running from git repository
-url_installer="https://raw.githubusercontent.com/damiandudycz/ps3/${branch}/dev-tools/ps3-gentoo-installer"
+url_installer="https://raw.githubusercontent.com/damiandudycz/ps3/${branch}/dev-tools/ps3-gentoo-installer/ps3-gentoo-installer"
 
 # MAIN PROGRAM ==================================================================================
 
@@ -630,7 +630,11 @@ setup_portage_repository() {
     try mkdir -p "$path_chroot/etc/portage/repos.conf"
     try cp "$path_chroot/usr/share/portage/config/repos.conf" "$path_chroot/etc/portage/repos.conf/gentoo.conf"
     # Synchronize portage tree.
-    chroot_call "emerge-webrsync $quiet_flag"
+    # Method 1:
+    # chroot_call "emerge-webrsync $quiet_flag"
+    # method 2:
+    try wget "https://gentoo.osuosl.org/snapshots/portage-latest.tar.xz" -O "${path_chroot}/portage-latest.tar.xz"
+    try tar -xvpf "${path_chroot}/portage-latest.tar.xz" -C "${path_chroot}/usr"
     # Create keys.
     chroot_call "getuto"
     chroot_call "killall dirmngr"

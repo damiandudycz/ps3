@@ -2,7 +2,7 @@
 
 # TODO: Validate if dev-vcs/git-lfs is installed, and if not install it
 
-cd ..
+cd ../../
 dir_ps3="$(pwd)"
 
 git submodule update --init --recursive
@@ -20,3 +20,5 @@ echo '    fi' >> hooks/pre-commit
 echo 'done' >> hooks/pre-commit
 echo 'git add .gitattributes' >> hooks/pre-commit
 chmod +x hooks/pre-commit
+
+exit 0

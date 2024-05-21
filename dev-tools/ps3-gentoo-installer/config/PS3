@@ -1,4 +1,4 @@
-# Configuration for the PlayStation 3.
+# Configuration for the PlayStation 3
 
 export arch='ppc/ppc64/powerpc64'         # Architecture of CELL CPU.
 export init_system='openrc'               # [openrc/systemd] # currently only openrc is supported.

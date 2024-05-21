@@ -6,13 +6,23 @@ die() {
     exit 1
 }
 
-# Handle script arguments
-TAG="$1"
-[ ! -z "$TAG" ] || die "Usage: $0 <TAG>"
-
 # Paths
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
+readonly PATH_ENV_READY="${PATH_ROOT}/local/env_ready"
+readonly PATH_LOCAL_TMP="${PATH_ROOT}/local/release_test"
+readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
+
+# Check if env is ready
+[ -f "${PATH_ENV_READY}" ] || die "Dev environment was not initialized. Please run dev-tools/setup-environment.sh first."
+
+# Release information
+readonly TIMESTAMP=$(cat "${PATH_RELEASE_INFO}") || die "Failed to read current release details. Please run release-prepare.sh first."
+[ -z "${TIMESTAMP}" ] && die "Failed to read current release details. Please run release-prepare.sh first."
+
+TAG="$1"
+# If tag was not specified, get the latest tag from catalyst build
+[ -z "$TAG" ] && TAG="${TIMESTAMP}"
 
 # Create new tag and upload all the files to repository
 

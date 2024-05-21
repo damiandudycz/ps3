@@ -5,3 +5,4 @@ To create a new release:
 3. build new release files: dev-tools/release/release-build.sh
 4. upload new release files: dev-tools/release/release-upload.sh
 5. upload binhost repository: binhost-upload.sh
+6. tag and upload new release: dev-tools/release/release-tag.sh

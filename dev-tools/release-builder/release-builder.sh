@@ -5,7 +5,7 @@
 #   - New stage3
 #   - Updates to binhost repository
 #
-# ps3-gentoo-installer new ebuild and distfiles will be automatically created and uploaded
+# new ebuild and distfiles for ps3-gentoo-installer will be automatically created and uploaded
 # if there are any changes in config or installer since last version available in overlay.
 # This is done, by executing script dev-tools/ps3-gentoo-installer/ps3-gentoo-installer-ebuild-updater.sh
 
@@ -267,8 +267,15 @@ fi
 mkdir -p "${path_autobuild_new}"
 mv "${path_catalyst_builds}"/stage3-cell-openrc-${timestamp}.tar.xz* "${path_autobuild_new}"/
 mv "${path_catalyst_builds}"/install-cell-minimal-${timestamp}.iso* "${path_autobuild_new}"/
-echo "${timestamp}/stage3-cell-openrc-${timestamp}.tar.xz" > "${path_repo_autobuilds}/latest-stage3-cell-openrc.txt"
-echo "${timestamp}/install-cell-minimal-${timestamp}.iso" > "${path_repo_autobuilds}/latest-install-cell-minimal.txt"
+formatted_date=$(date -u -d "$timestamp" +"%a, %d %b %Y %H:%M:%S %z")
+epoch_time=$(date -u -d "$timestamp" +%s)
+# Generate txt files with information about latest releases
+echo "# Latest as of $formatted_date" > "${path_repo_autobuilds}/latest-stage3-cell-openrc.txt"
+echo "# ts=$epoch_time" >> "${path_repo_autobuilds}/latest-stage3-cell-openrc.txt"
+echo "${timestamp}/stage3-cell-openrc-${timestamp}.tar.xz $(stat -c%s ${path_autobuild_new}/stage3-cell-openrc-${timestamp}.tar.xz)" >> "${path_repo_autobuilds}/latest-stage3-cell-openrc.txt"
+echo "# Latest as of $formatted_date" > "${path_repo_autobuilds}/latest-install-cell-minimal.txt"
+echo "# ts=$epoch_time" >> "${path_repo_autobuilds}/latest-install-cell-minimal.txt"
+echo "${timestamp}/install-cell-minimal-${timestamp}.iso $(stat -c%s ${path_autobuild_new}/install-cell-minimal-${timestamp}.iso)" >> "${path_repo_autobuilds}/latest-install-cell-minimal.txt"
 
 # Upload autobuilds directory
 cd "${path_repo_autobuilds}"

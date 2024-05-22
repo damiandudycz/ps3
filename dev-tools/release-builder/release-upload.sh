@@ -27,16 +27,17 @@ readonly PATH_CATALYST_BUILD_STAGE3="${PATH_CATALYST_BUILDS}/stage3-cell-openrc-
 readonly PATH_CATALYST_BUILD_ISO="${PATH_CATALYST_BUILDS}/install-cell-minimal-${TIMESTAMP}.iso"
 [ -f "$PATH_CATALYST_BUILD_STAGE3" ] || die "Stage3 not found at ${PATH_CATALYST_BUILD_STAGE3}. Please run release-build.sh first."
 [ -f "$PATH_CATALYST_BUILD_ISO" ] || die "ISO not found at ${PATH_CATALYST_BUILD_ISO}. Please run release-build.sh first."
-realonly PATH_AUTOBUILDS_NEW="${PATH_REPO_AUTOBUILDS}/${TIMESTAMP}"
+readonly PATH_AUTOBUILDS_NEW="${PATH_REPO_AUTOBUILDS}/${TIMESTAMP}"
 mkdir "${PATH_AUTOBUILDS_NEW}" || die "Failed to crate autobuilds location at ${PATH_AUTOBUILDS_NEW}"
 
 # Move files to autobuilds
-mv "${PATH_CATALYST_BUILD_STAGE3}"* "${PATH_AUTOBUILDS_NEW}"/ || die "Failed to move Stage3 files to autobuilds"
-mv "${PATH_CATALYST_BUILD_ISO}"* "${PATH_AUTOBUILDS_NEW}"/ || die "Failed to move ISO files to autobuilds"
+cp "${PATH_CATALYST_BUILD_STAGE3}"* "${PATH_AUTOBUILDS_NEW}"/ || die "Failed to move Stage3 files to autobuilds"
+cp "${PATH_CATALYST_BUILD_ISO}"* "${PATH_AUTOBUILDS_NEW}"/ || die "Failed to move ISO files to autobuilds"
 
 # Generate autobuilds metadata
-FORMATTED_DATE=$(date -u -d "${TIMESTAMP}" +"%a, %d %b %Y %H:%M:%S %z") || die "Failed to update metadata"
-EPOCH_TIME=$(date -u -d "${TIMESTAMP}" +%s) || die "Failed to update metadata"
+TIMESTAMP_FORMATTED=$(echo $TIMESTAMP | sed -r 's/(.*)T(..)(..)(..)/\1 \2:\3:\4/')
+FORMATTED_DATE=$(date -u -d "${TIMESTAMP_FORMATTED}" +"%a, %d %b %Y %H:%M:%S %z") || die "Failed to update metadata"
+EPOCH_TIME=$(date -u -d "${TIMESTAMP_FORMATTED}" +%s) || die "Failed to update metadata"
 echo "# Latest as of ${FORMATTED_DATE}" > "${PATH_REPO_AUTOBUILDS}/latest-stage3-cell-openrc.txt" || die "Failed to update metadata"
 echo "# ts=${EPOCH_TIME}" >> "${PATH_REPO_AUTOBUILDS}/latest-stage3-cell-openrc.txt" || die "Failed to update metadata"
 echo "${TIMESTAMP}/stage3-cell-openrc-${TIMESTAMP}.tar.xz $(stat -c%s ${PATH_AUTOBUILDS_NEW}/stage3-cell-openrc-${TIMESTAMP}.tar.xz)" >> "${PATH_REPO_AUTOBUILDS}/latest-stage3-cell-openrc.txt" || die "Failed to update metadata"

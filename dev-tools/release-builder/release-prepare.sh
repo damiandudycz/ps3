@@ -37,7 +37,7 @@ PATH_PORTAGE_CONFDIR_STAGES="${PATH_RELENG}/releases/portage/stages"
 PATH_PORTAGE_CONFDIR_ISOS="${PATH_RELENG}/releases/portage/isos"
 
 # URLs
-readonly URL_RELEASE_GENTOO="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc"
+readonly URL_RELEASE_GENTOO="https://gentoo.osuosl.org/releases/ppc/autobuilds"
 readonly URL_STAGE_INFO="https://gentoo.osuosl.org/releases/ppc/autobuilds/latest-stage3-ppc64-openrc.txt"
 
 # Determine if host is PS3 or another architecture

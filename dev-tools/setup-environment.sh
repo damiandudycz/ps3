@@ -1,4 +1,5 @@
 declare -a SETUP_SCRIPTS=(
+    setup-dependencies.sh
     setup-submodules.sh
     setup-catalyst.sh
     setup-qemu.sh

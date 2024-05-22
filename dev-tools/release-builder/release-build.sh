@@ -8,7 +8,7 @@ die() {
 
 # Error handling and cleanup function
 cleanup() {
-    umount "${PATH_CATALYST_PACKAGES}" || echo "Failed to umount binhost."
+    $PATH_BINHOST_BIND --unbind || echo "Failed to umount binhost."
 }
 trap cleanup EXIT
 
@@ -17,10 +17,9 @@ readonly PATH_START=$(dirname "$(realpath "$0")") || die
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
 readonly PATH_ENV_READY="${PATH_ROOT}/local/env_ready"
 readonly PATH_LOCAL_TMP="${PATH_ROOT}/local/release-builder"
-readonly PATH_CATALYST_PACKAGES="/var/tmp/catalyst/packages/default"
-readonly PATH_REPO_BINHOST="${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default"
 readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
-readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-gentoo-installer/ps3-gentoo-installer-ebuild-updater.sh "
+readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-gentoo-installer/ps3-gentoo-installer-ebuild-updater.sh"
+readonly PATH_BINHOST_BIND="${PATH_ROOT}/dev-tools/binhost/binhost-bind.sh"
 
 # URLs
 readonly URL_RELEASE_GENTOO="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc"
@@ -43,7 +42,7 @@ readonly PATH_STAGE1_INSTALLCD="${PATH_LOCAL_TMP}/stage1-cell.installcd.$TIMESTA
 readonly PATH_STAGE2_INSTALLCD="${PATH_LOCAL_TMP}/stage2-cell.installcd.$TIMESTAMP.spec"
 
 # Bind binhost
-mount -o bind "${PATH_REPO_BINHOST}" "${PATH_CATALYST_PACKAGES}" || die "Failed to mount binhost repo ${PATH_REPO_BINHOST} to ${PATH_CATALYST_PACKAGES}"
+$PATH_BINHOST_BIND --bind
 
 # Building release
 catalyst -f "${PATH_STAGE1}" || die "Failed to build stage1"

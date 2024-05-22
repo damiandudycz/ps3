@@ -41,7 +41,7 @@ echo "sys-apps/attr static-libs" >> "${PATH_PORTAGE}/package.use/qemu" || die "F
 echo "dev-libs/libpcre2 static-libs" >> "${PATH_PORTAGE}/package.use/qemu" || die "Failed to update package.use"
 echo "# ---" >> "${PATH_PORTAGE}/package.use/qemu" || die "Failed to update package.use"
 
-emerge qemu || die "Failed to emerge qemu"
+emerge qemu -q || die "Failed to emerge qemu"
 
 # Setup Qemu autostart and run it
 rc-update add qemu-binfmt default || die "Failed to add qemu-binfmt to autostart"

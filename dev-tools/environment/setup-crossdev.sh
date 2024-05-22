@@ -18,7 +18,7 @@ if [ -f "${PATH_INTERPRETER}" ]; then
 fi
 
 # Download and setup Crssdev
-emerge crossdev || die "Failed to emerge crossdev"
+emerge crossdev -q || die "Failed to emerge crossdev"
 mkdir -p "/var/db/repos/crossdev/{profiles,metadata}" || die "Failed to create directories"
 chown -R portage:portage "/var/db/repos/crossdev" || die "Failed to update directories permissions"
 mkdir -p "/etc/portage/repos.conf" || die "Failed to create repos.conf directory"

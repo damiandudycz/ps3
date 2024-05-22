@@ -85,7 +85,7 @@ if [ ! -f "${PATH_ACCEPT_KEYWORDS}" ]; then
     echo "sys-fs/squashfs-tools-ng ~*" >> "${PATH_ACCEPT_KEYWORDS}" || die "Failed to update package.accept_keywords"
     echo "sys-apps/util-linux python" >> "${PATH_PACKAGE_USE}" || die "Failed to update package.use"
 fi
-emerge dev-util/catalyst || die "Failed to emerge catalyst"
+emerge dev-util/catalyst -q || die "Failed to emerge catalyst"
 
 # Create working directories
 mkdir -p "${PATH_CATALYST_BUILDS}" || die "Failed to create build directory: ${PATH_CATALYST_BUILDS}"

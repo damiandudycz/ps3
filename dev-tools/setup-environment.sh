@@ -9,6 +9,11 @@ declare -a SETUP_SCRIPTS=(
     setup-crossdev.sh
 )
 
+if [ -f ../local/env_ready ]; then
+    echo "Environment setup was already done. To force, delete file ../local/env_ready"
+    exit 0
+fi
+
 # Run setup scripts
 for SCRIPT in "${SETUP_SCRIPTS[@]}"; do
     DIR=$(dirname "environment/${SCRIPT}")

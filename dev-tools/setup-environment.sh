@@ -1,4 +1,5 @@
 declare -a SETUP_SCRIPTS=(
+    setup-portage.sh
     setup-dependencies.sh
     setup-git.sh
     setup-submodules.sh

@@ -9,6 +9,6 @@ die() {
 }
 
 # Download various required pckages
-emerge --newuse --update --deep ruby pkgdev -q || die "Failed to install dependencies"
+emerge --newuse --update --deep ruby pkgdev dev-vcs/subversion -q || die "Failed to install dependencies"
 
 exit 0

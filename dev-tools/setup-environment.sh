@@ -3,6 +3,7 @@ declare -a SETUP_SCRIPTS=(
     setup-catalyst.sh
     setup-qemu.sh
     setup-releng.sh
+    setup-crossdev.sh
 )
 
 for SCRIPT in "${SETUP_SCRIPTS[@]}"; do

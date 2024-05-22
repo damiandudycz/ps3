@@ -109,9 +109,9 @@
 @@ -153 +88,36 @@
  }
 +
-+pkg_config() {
++pkg_postinst() {
 +
-+	default
++	kernel-build_pkg_postinst
 +
 +	# Update KBOOT entry:
 +

@@ -9,7 +9,7 @@ die() {
 }
 
 # Refresh portage tree
-emerge --sync -q || die "Failed to synchronize portage tree"
+emerge --sync || die "Failed to synchronize portage tree"
 
 # Install updates
 emerge --newuse --update --deep @world -q || die "Failed to update system"

@@ -12,7 +12,7 @@ readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
 readonly PATH_CROSSDEV="/usr/share/crossdev"
 
 # Exit if crossdev is already set up
-if [ -f "${PATH_INTERPRETER}" ]; then
+if [ -d "${PATH_CROSSDEV}" ]; then
     echo "Crossdev already installed. Skipping."
     exit 0
 fi

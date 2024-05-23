@@ -1,74 +1,39 @@
 #!/bin/bash
 
-# This script removes from binhost repository packages larger than 100MB, so that
-# it can be pushed to github repository.
-# Please use it before running binhost-upload.sh.
-
-# Check if the directory argument is provided
-if [[ -z "$1" ]]; then
-    echo "Usage: $0 <binhos_path>"
+# Function to display error message and exit
+die() {
+    echo "$1" >&2
     exit 1
-fi
-
-# Initial settings
-DIR="$1"
-FILE="$DIR/Packages"
-TEMP_FILE=$(mktemp)
-size_limit=104857600 # 100 MB
-packages_count=0
-in_metadata=true
-current_entry=""
-
-# Check if the file exists
-if [[ ! -f "$FILE" ]]; then
-    echo "$FILE not found."
-    exit 1
-fi
-
-process_entry() {
-    if [[ -n "$current_entry" ]]; then
-        size=$(echo "$current_entry" | grep -Po 'SIZE: \K[0-9]+')
-        if (( size <= size_limit )); then
-            echo -e "$current_entry" >> "$TEMP_FILE"
-        else
-            path=$(echo "$current_entry" | grep -Po 'PATH: \K.*')
-            if [[ -n "$path" && -f "$DIR/$path" ]]; then
-                rm -f "$DIR/$path"
-                echo "Removed file: $DIR/$path"
-            fi
-            ((packages_count--))
-        fi
-        current_entry=""
-    fi
 }
 
-# Process the file line by line
-while IFS= read -r line || [[ -n $line ]]; do
-    if $in_metadata; then
-        # In the metadata section
-        if [[ "$line" == "PACKAGES:"* ]]; then
-            packages_count=$(echo "$line" | awk -F': ' '{print $2}')
-        fi
+# Paths
+readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
+readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
+readonly PATH_REPO_BINHOST="${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default"
+readonly SIZE_LIMIT=104857600 # 100 MB
+readonly PATH_DELETE_SCRIPT="${PATH_START}/delete_package.sh"
 
-        echo "$line" >> "$TEMP_FILE"
+# Function to delete a package
+delete_package() {
+    local package="$1"
+    echo "Removing package: $package"
+    "$PATH_DELETE_SCRIPT" "$package" || die "Failed to remove package: $package"
+}
 
-        if [[ -z "$line" ]]; then
-            in_metadata=false
-        fi
-    else
-        # In the packages section
-        if [[ -n "$line" ]]; then
-            current_entry+="$line"$'\n'
-        else
-            process_entry
-        fi
+# Ensure the temporary file is removed on script exit
+trap 'rm -f "$TMP_FILE"' EXIT
+
+# Check if the repository directory exists
+[[ -d "$PATH_REPO_BINHOST" ]] || die "Repository directory not found: $PATH_REPO_BINHOST"
+
+# Iterate through files in the repository directory
+while IFS= read -r -d '' file; do
+    # Check if file size exceeds the limit
+    if [[ -f "$file" && $(stat -c %s "$file") -gt $SIZE_LIMIT ]]; then
+        # Remove the package containing the file
+        delete_package "$(dirname "$file")"
     fi
-done < "$FILE"
+done < <(find "$PATH_REPO_BINHOST" -type f -print0)
 
-# Add the last entry if it exists
-process_entry
-
-# Update the package count in the temporary file
-sed -i "s/^PACKAGES: .*/PACKAGES: $packages_count/" "$TEMP_FILE"
-mv "$TEMP_FILE" "$FILE"
-
+echo "Sanitization complete."
+exit 0

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Install simple dependencies required by other parts of the system
+# This script configures portage, enabling binpkg packages usage.
 
 # Error handling function
 die() {

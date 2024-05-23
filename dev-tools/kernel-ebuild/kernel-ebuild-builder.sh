@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: Split into separate scripts for preparing, testing, building and uploading.
+
 # Required packages: git, pkgdev, ruby
 
 # TODO: Add metadata.xml to repository

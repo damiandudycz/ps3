@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script emerges and configures crossdev.
+# TODO: Currently there is a bug when running crossdev -t, related to used packages versions.
+
 # Error handling function
 die() {
     echo "$*" 1>&2

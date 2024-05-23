@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This script clones and configures releng for the PS3 Gentoo project.
+
 # Error handling function
 die() {
     echo "$*" 1>&2

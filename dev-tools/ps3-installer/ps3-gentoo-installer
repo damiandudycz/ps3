@@ -9,7 +9,7 @@ path_chroot="/mnt/gentoo-setup-${iid}"                     # Gentoo chroot envir
 edit_config=false                                          # Modify configuration file.
 quiet_flag='--quiet'                                       # Flag used to silence the output.
 branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)" # Name of current branch if running from git repository
-url_installer="https://raw.githubusercontent.com/damiandudycz/ps3/${branch}/dev-tools/ps3-gentoo-installer/ps3-gentoo-installer"
+url_installer="https://raw.githubusercontent.com/damiandudycz/ps3/${branch}/dev-tools/ps3-installer/ps3-gentoo-installer"
 
 # MAIN PROGRAM ==================================================================================
 

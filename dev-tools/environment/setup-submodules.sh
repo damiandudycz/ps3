@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# TODO: Validate if dev-vcs/git-lfs is installed, and if not install it
+# This script emerges git-lfs and adds hooks,
+# that makes files larger than 100MB upload using LFS functionality.
 
 cd ../../
 dir_ps3="$(pwd)"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This script emerges, patches and configures catalyst.
+
 # Error handling function
 die() {
     echo "$*" 1>&2
@@ -34,8 +36,8 @@ readonly URL_BINHOST="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-
 
 # Array of patch URLs
 declare -a PATCH_URLS=(
-    "${PATH_START}/patches/0001-Introduce-basearch-settings.patch"
-    "${PATH_START}/patches/0002-Fix-missing-vmlinux-filename-support.patch"
+    "${PATH_START}/data/catalyst-patches/0001-Introduce-basearch-settings.patch"
+    "${PATH_START}/data/catalyst-patches/0002-Fix-missing-vmlinux-filename-support.patch"
 )
 
 # AWK expression for modifying ppc.toml

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Install simple dependencies required by other parts of the system
+# This script installs and configures git and git-lfs packages.
 
 # Error handling function
 die() {
@@ -10,6 +10,9 @@ die() {
 
 GIT_USER="Damian Dudycz"
 GIT_EMAIL="damiandudycz@yahoo.com"
+
+# Emerge git if needed.
+emerge --newuse --update --deep dev-vcs/git -q
 
 # Setup git user details
 git config --global user.name "${GIT_USER}" || die "Failed to set git username"

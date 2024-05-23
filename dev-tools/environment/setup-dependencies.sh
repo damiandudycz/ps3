@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Install simple dependencies required by other parts of the system
+# This script installs simple dependencies required by other parts of the system,
+# which don't require special setup and configuration.
 
 # Error handling function
 die() {

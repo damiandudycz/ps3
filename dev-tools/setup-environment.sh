@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# This script prepares current machine for working with development tools for the PS3 Gentoo project.
+# Please run this script after cloning the repository.
+
 declare -a SETUP_SCRIPTS=(
     setup-portage.sh
     setup-dependencies.sh
@@ -22,3 +27,5 @@ done
 
 mkdir -p ../local
 touch ../local/env_ready
+
+exit 0

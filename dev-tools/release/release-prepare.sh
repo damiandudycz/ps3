@@ -36,7 +36,7 @@ readonly PATH_INTERPRETER="/usr/bin/qemu-ppc64"
 readonly PATH_SNAPSHOT_LOG="${PATH_LOCAL_TMP}/snapshot_log.txt"
 readonly PATH_RELENG="${PATH_ROOT}/local/releng"
 readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
-readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-gentoo-installer/ps3-gentoo-installer-ebuild-updater.sh "
+readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-installer/ps3-gentoo-installer-ebuild-updater.sh "
 
 PATH_PORTAGE_CONFDIR_STAGES="${PATH_RELENG}/releases/portage/stages"
 PATH_PORTAGE_CONFDIR_ISOS="${PATH_RELENG}/releases/portage/isos"

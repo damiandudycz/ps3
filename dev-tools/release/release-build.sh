@@ -24,7 +24,7 @@ readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
 readonly PATH_ENV_READY="${PATH_ROOT}/local/env_ready"
 readonly PATH_LOCAL_TMP="${PATH_ROOT}/local/release-builder"
 readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
-readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-gentoo-installer/ps3-gentoo-installer-ebuild-updater.sh"
+readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-installer/ps3-gentoo-installer-ebuild-updater.sh"
 readonly PATH_BINHOST_BIND="${PATH_ROOT}/dev-tools/binhost/binhost-bind.sh"
 
 # URLs

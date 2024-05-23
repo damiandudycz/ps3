@@ -29,7 +29,7 @@ readonly PATH_REPO_BINHOST=$(realpath "${PATH_ROOT}/binhosts/ps3-gentoo-binhosts
 
 case "$1" in
     --bind)
-# Check if already mounted
+        # Check if already mounted
         CURRENT_MOUNT=$(findmnt -nr -o SOURCE,TARGET "${PATH_CATALYST_PACKAGES}")
 
         if [ -n "$CURRENT_MOUNT" ]; then

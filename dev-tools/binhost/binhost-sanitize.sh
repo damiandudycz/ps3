@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This script removes from binhost repository packages larger than 100MB, so that
+# it can be pushed to github repository.
+# Please use it before running binhost-upload.sh.
+
 # Check if the directory argument is provided
 if [[ -z "$1" ]]; then
     echo "Usage: $0 <binhos_path>"

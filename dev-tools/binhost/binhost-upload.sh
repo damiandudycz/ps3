@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This tool uploads current state of binhost repository to github.
+# Before running, please use binhost-sanitize.sh, to remove packages
+# that are too large for github.
+
 # Error handling function
 die() {
     echo "$*" 1>&2

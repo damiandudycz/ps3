@@ -15,6 +15,7 @@ declare -a SETUP_SCRIPTS=(
     "../binhost/binhost-bind.sh --bind"
     "release-build.sh"
     "release-upload.sh"
+    "../binhost/binhost-sanitize.sh"
     "../binhost/binhost-upload.sh"
     "../binhost/binhost-bind.sh --unbind"
     "release-tag.sh"

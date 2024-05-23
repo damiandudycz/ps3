@@ -14,10 +14,6 @@ die() {
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
 readonly PATH_REPO_BINHOST="${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default"
-readonly PATH_SANITIZE="${PATH_START}/binhost-sanitize.sh"
-
-# Sanitize binhost - remove files larger than 100MB
-$PATH_SANITIZE $PATH_REPO_BINHOST || die "Failed to sanitize binhost repository $PATH_REPO_BINHOST"
 
 # Upload repository
 cd "${PATH_REPO_BINHOST}" || die "Failed to open PATH_REPO_BINHOST"

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# This script prepares catalyst files for a new release.
+# It will fetch the new snapshot and seed, and then generage spec files.
+# At the beggining it also checks if there is a need to release a new ps3-gentoo-installer
+# ebuild, and asks if you want to release it first, so that it can be used in the new build.
+
 # Error handling function
 die() {
     echo "$*" 1>&2

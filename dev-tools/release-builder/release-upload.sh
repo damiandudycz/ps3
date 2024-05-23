@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# This script uploads the newest version of generated release files.
+# Please use after finishing release-build.sh.
+# Script also updates the metadata files:
+# latest-stage3-cell-openrc.txt, latest-install-cell-minimal.txt.
+
 # Error handling function
 die() {
     echo "$*" 1>&2

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script adds a new tag to the repository, marking new release timestamp.
+# Please use after finishing release-upload.sh.
+
 # Error handling function
 die() {
     echo "$*" 1>&2
@@ -25,7 +28,6 @@ TAG="$1"
 [ -z "$TAG" ] && TAG="${TIMESTAMP}"
 
 # Create new tag and upload all the files to repository
-
 cd "${PATH_ROOT}" || die "Failed to switch directory to PATH_ROOT"
 git add -A || die "Failed to add files to repo"
 git commit -m "New release" || die "Failed to commit files to repo"
@@ -35,5 +37,3 @@ git push origin "${TAG}"
 cd "${PATH_START}" || die "Failed to return to PATH_START"
 
 exit 0
-
-

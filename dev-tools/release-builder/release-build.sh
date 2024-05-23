@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# This script builds all the stages of a new release using catalyst.
+# Before running this tool, please generate new stage files first, using
+# release-prepare.sh.
+# In the process, script also binds binhost repository to catalyst, so that catalyst can
+# use and update binhost repository in the process. After finishing it unbinds binhost repository.
+
 # Error handling function
 die() {
     echo "$*" 1>&2

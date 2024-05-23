@@ -1,15 +1,23 @@
 #!/bin/bash
 
+# This script combines all the tools required to release a new version of:
+# - IOS File,
+# - Binhost packages,
+# - Stage3 File,
+# - Automatic installer.
+#
+# Use it instead of running all the tools separately when preparing a new release.
+
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 
 declare -a SETUP_SCRIPTS=(
-    "release-builder/release-prepare.sh"
-    "binhost/binhost-bind.sh --bind"
-    "release-builder/release-build.sh"
-    "release-builder/release-upload.sh"
-    "binhost/binhost-upload.sh"
-    "binhost/binhost-bind.sh --unbind"
-    "release-builder/release-tag.sh"
+    "release-prepare.sh"
+    "../binhost/binhost-bind.sh --bind"
+    "release-build.sh"
+    "release-upload.sh"
+    "../binhost/binhost-upload.sh"
+    "../binhost/binhost-bind.sh --unbind"
+    "release-tag.sh"
 )
 
 for SCRIPT_ENTRY in "${SETUP_SCRIPTS[@]}"; do
@@ -23,6 +31,6 @@ for SCRIPT_ENTRY in "${SETUP_SCRIPTS[@]}"; do
     cd "${PATH_START}"
 done
 
-echo "New release was successfully released!"
+echo "New version was successfully released!"
 
 exit 0

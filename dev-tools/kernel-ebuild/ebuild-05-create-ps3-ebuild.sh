@@ -4,6 +4,8 @@
 # It uses config(diffs) file and patches stored for selected version.
 # This script requires that version data is prepared, it can not use default variables.
 
+# TODO: Allow unmasking
+
 # Error handling function
 die() {
     echo "$*" 1>&2

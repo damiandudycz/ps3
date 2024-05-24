@@ -6,7 +6,6 @@
 
 # TODO: Allow unmasking
 
-# Error handling function
 die() {
     echo "$*" 1>&2
     [ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || echo "Failed to remove tmp directory ${PATH_WORK}"
@@ -25,15 +24,14 @@ readonly LIST_DISTFILES_FILES=(
 
 readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_PATCHES="${PATH_START}/data/patches"
-readonly PATH_CONFIGS="${PATH_START}/data/configs"
-readonly PATH_EBUILD_PACTHES="${PATH_START}/data/ebuild-patches"
-readonly PATH_PORTAGE_EBUILD_FILE="/var/db/repos/gentoo/${NAME_PACKAGE}/gentoo-kernel-${PACKAGE_VERSION}.ebuild"
+readonly PATH_VERSION_STORAGE="${PATH_START}/data/version-storage"
 readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-00-find-version.sh"
 [ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
-readonly PATH_VERSION_PATCHES="${PATH_PATCHES}/${PACKAGE_VERSION}"
-readonly PATH_VERSION_CONFIG="${PATH_CONFIGS}/${PACKAGE_VERSION}"
-readonly PATH_VERSION_DEFCONFIG="${PATH_CONFIGS}/${PACKAGE_VERSION}.defconfig"
+readonly PATH_VERSION_CONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/diffs"
+readonly PATH_VERSION_DEFCONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/defconfig"
+readonly PATH_VERSION_PATCHES="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/patches"
+readonly PATH_EBUILD_PACTHES="${PATH_START}/data/ebuild-patches"
+readonly PATH_PORTAGE_EBUILD_FILE="/var/db/repos/gentoo/${NAME_PACKAGE}/gentoo-kernel-${PACKAGE_VERSION}.ebuild"
 readonly PATH_WORK="${PATH_ROOT}/local/gentoo-kernel-ps3/${PACKAGE_VERSION}/ebuild"
 readonly PATH_WORK_EBUILD="${PATH_WORK}/ebuild"
 readonly PATH_WORK_DISTFILES="${PATH_WORK}/distfiles"
@@ -42,8 +40,9 @@ readonly PATH_WORK_EBUILD_FILE="${PATH_WORK_EBUILD}/gentoo-kernel-ps3-${PACKAGE_
 
 # Verify data.
 [[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
-[ -d "${PATH_PATCHES}" ] || die "Patches for version ${PACKAGE_VERSION} not found. Please run ebuild-apply-kernel-patches.sh first."
-[ -d "${PATH_CONFIGS}" ] || die "Configs for version ${PACKAGE_VERSION} not found. Please run ebuild-configure.sh first."
+[ -d "${PATH_VERSION_PATCHES}" ] || die "Patches for version ${PACKAGE_VERSION} not found. Please run ebuild-apply-kernel-patches.sh first."
+[ -f "${PATH_VERSION_DEFCONFIG}" ] || die "Defconfigs for version ${PACKAGE_VERSION} not found. Please run ebuild-configure.sh first."
+[ -f "${PATH_VERSION_CONFIG}" ] || die "Configs for version ${PACKAGE_VERSION} not found. Please run ebuild-configure.sh first."
 
 # Create local working directory for distfiles and ebuild.
 [ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || die "Failed to clean work dir ${PATH_WORK}"

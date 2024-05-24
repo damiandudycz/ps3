@@ -12,8 +12,6 @@
 #
 # If you just want to test generating configs, without storing <version> config, use --pretent flag.
 
-#!/bin/bash
-
 die() {
     echo "$*" 1>&2
     [ ! ${PATH_NEW_CONFIG_TMP} ] || [ ! -d ${PATH_NEW_CONFIG_TMP} ] || rm -f "${PATH_NEW_CONFIG_TMP}" || echo "Failed to clean temp file ${PATH_NEW_CONFIG_TMP}"

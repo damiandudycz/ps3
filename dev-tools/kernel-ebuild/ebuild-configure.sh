@@ -43,13 +43,13 @@ while [ $# -gt 0 ]; do
     shift
 done
 
+readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
+readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-find-version.sh"
 [ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
 
-readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
 readonly PATH_LOCAL="${PATH_ROOT}/local/kernel/${PACKAGE_VERSION}/src"
 readonly PATH_CONFIGS="${PATH_START}/data/configs"
-readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-find-version.sh"
 readonly PATH_SCRIPT_APPLY_DIFFCONFIG="${PATH_START}/data/scripts/apply-diffconfig.rb"
 
 readonly PATH_VERSION_CONFIG="${PATH_CONFIGS}/${PACKAGE_VERSION}"

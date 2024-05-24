@@ -18,7 +18,7 @@ readonly PACKAGE_VERSION="$1"
 
 readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_LOCAL="${PATH_ROOT}/local/kernel"
+readonly PATH_LOCAL="${PATH_ROOT}/local/${PACKAGE_VERSION}/kernel"
 readonly PATH_PATCHES="${PATH_START}/data/patches"
 readonly PATH_FETCH_LIST="${PATH_PATCHES}/remote.txt"
 readonly PATH_VERSION_PATCHES="${PATH_PATCHES}/${PACKAGE_VERSION}"

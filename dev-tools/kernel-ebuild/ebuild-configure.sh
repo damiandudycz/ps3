@@ -43,14 +43,14 @@ while [ $# -gt 0 ]; do
     shift
 done
 
+[ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
+
 readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_LOCAL="${PATH_ROOT}/local/kernel"
+readonly PATH_LOCAL="${PATH_ROOT}/local/kernel/${PACKAGE_VERSION}/src"
 readonly PATH_CONFIGS="${PATH_START}/data/configs"
 readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-find-version.sh"
 readonly PATH_SCRIPT_APPLY_DIFFCONFIG="${PATH_START}/data/scripts/apply-diffconfig.rb"
-
-[ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
 
 readonly PATH_VERSION_CONFIG="${PATH_CONFIGS}/${PACKAGE_VERSION}"
 readonly PATH_DEFAULT_CONFIG="${PATH_CONFIGS}/default"
@@ -58,7 +58,7 @@ readonly PATH_DEFAULT_CONFIG="${PATH_CONFIGS}/default"
 readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
 readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
 
-readonly PATH_SOURCES_WORK="${PATH_LOCAL}/${PACKAGE_VERSION}/portage/${NAME_PACKAGE}-${PACKAGE_VERSION}/work/"
+readonly PATH_SOURCES_WORK="${PATH_LOCAL}/portage/${NAME_PACKAGE}-${PACKAGE_VERSION}/work/"
 readonly PATH_SOURCES_SRC="$(find ${PATH_SOURCES_WORK} -maxdepth 1 -name linux-* -type d -print -quit)"
 [ ! $PATH_SOURCES_SRC ] && die "Failed to find PATH_SOURCES_SRC"
 readonly PATH_SCRIPT_MERGE_CONFIG="${PATH_SOURCES_SRC}/scripts/kconfig/merge_config.sh"
@@ -72,7 +72,7 @@ PATH_USED_CONFIG="${PATH_VERSION_CONFIG}"
 echo "Config used: ${PATH_USED_CONFIG}"
 
 [[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
-[ -d "${PATH_LOCAL}/${PACKAGE_VERSION}" ] || die "${PATH_LOCAL}/${PACKAGE_VERSION} not found. Please run ebuild-emerge-gentoo-sources.sh <version> first."
+[ -d "${PATH_LOCAL}" ] || die "${PATH_LOCAL} not found. Please run ebuild-emerge-gentoo-sources.sh <version> first."
 
 [ ! ${PRETENT} ] || [ ! ${SAVE_DEFAULT} ] || die "Cannot use --pretent and --savedefault at the same time"
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# This script generates new ebuild and distfiles for gentoo-kernel-ps3.
-# It uses config(diffs) file and patches stored for selected version.
-# This script requires that version data is prepared, it can not use default variables.
+# This script copies gentoo-kernel-ps3.ebuild and distfiles to overlay directory.
+# Next it generates manifest and uploads changes to the repository.
+# Use after running ebuild-create-ps3-ebuild.sh.
 
 # Error handling function
 die() {
@@ -13,17 +13,16 @@ die() {
 
 PACKAGE_VERSION="$1"
 
+readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
+readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
+
 readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
+readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
+readonly PATH_LOCAL="${PATH_ROOT}/local/kernel/${PACKAGE_VERSION}/ebuild"
 
 readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-find-version.sh"
 [ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
 [[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
-
-readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
-readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
-
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_LOCAL="${PATH_ROOT}/local/kernel/${PACKAGE_VERSION}/ebuild"
 
 readonly PATH_WORK="${PATH_LOCAL}"
 readonly PATH_WORK_EBUILD="${PATH_WORK}/ebuild"

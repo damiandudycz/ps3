@@ -3,7 +3,7 @@
 
 export URL_PS3_PATCHES=(
     https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0009-ps3disk-blk_mq_queue_stopped.patch
-    https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0010-ps3stor-multiple-regions.patch
+#    https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0010-ps3stor-multiple-regions.patch
     https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0011-ps3stor-send-cmd-timeout.patch
     https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0030-ps3flash.patch
     https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0040-ps3sysmgr-lpar-reboot.patch

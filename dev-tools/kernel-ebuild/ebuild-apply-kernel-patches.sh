@@ -25,7 +25,11 @@ PACKAGE_VERSION="$1"
 
 readonly PATH_VERSION_PATCHES="${PATH_PATCHES}/${PACKAGE_VERSION}"
 readonly PATH_DEFAULT_PATCHES="${PATH_PATCHES}/default"
-readonly PATH_SOURCES_USRSRC="${PATH_LOCAL}/${PACKAGE_VERSION}/usr/src/linux-${PACKAGE_VERSION}-gentoo"
+
+readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
+
+readonly PATH_SOURCES_WORK="${PATH_LOCAL}/${PACKAGE_VERSION}/portage/${NAME_PACKAGE}-${PACKAGE_VERSION}/work/"
+readonly PATH_SOURCES_SRC="$(find ${PATH_SOURCES_WORK} -maxdepth 1 -name linux-* -type d -print -quit)"
 
 # Determine used local patches directory - version or default.
 PATH_USED_PATCHES="${PATH_VERSION_PATCHES}"
@@ -37,7 +41,7 @@ PATH_USED_PATCHES="${PATH_VERSION_PATCHES}"
 # Apply patches
 for PATCH in "${PATH_USED_PATCHES}"/*.patch; do
     echo "Apply patch ${PATCH}:"
-    patch --batch --force -p1 -i "${PATCH}" -d "${PATH_SOURCES_USRSRC}" || die "Failed to apply patch ${PATCH}"
+    patch --batch --force -p1 -i "${PATCH}" -d "${PATH_SOURCES_SRC}" || die "Failed to apply patch ${PATCH}"
 done
 
 # If patches were applied succesfully from default folder, store them for this version, so that there is a working backup.

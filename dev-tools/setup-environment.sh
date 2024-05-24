@@ -11,7 +11,7 @@ declare -a SETUP_SCRIPTS=(
     setup-catalyst.sh
     setup-qemu.sh
     setup-releng.sh
-    setup-crossdev.sh
+#    setup-crossdev.sh # Currently not needed.
 )
 
 if [ -f ../local/env_ready ]; then

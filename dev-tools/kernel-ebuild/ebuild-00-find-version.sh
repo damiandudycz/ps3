@@ -12,13 +12,13 @@ die() {
 }
 
 readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
-NAME_KEYWORD=" ppc64"
 
+NAME_KEYWORD=" ppc64"
 [ "$1" = "--unstable" ] && NAME_KEYWORD="~ppc64"
 
-NEWEST_VERSION=$(equery m "${NAME_PACKAGE}" | grep "${NAME_KEYWORD}" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-r[0-9]+)?' | sort -V | tail -n 1)
-[ ! $NEWEST_VERSION ] && die "Failed to find gentoo-kernel version"
+readonly NEWEST_VERSION=$(equery m "${NAME_PACKAGE}" | grep "${NAME_KEYWORD}" | awk '{print $2}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-r[0-9]+)?' | sort -V | tail -n 1)
+
+[ $NEWEST_VERSION ] || die "Failed to find gentoo-kernel version"
 
 echo $NEWEST_VERSION
-
 exit 0

@@ -12,13 +12,12 @@
 #
 # If you just want to test generating configs, without storing <version> config, use --pretent flag.
 
-# Error handling function
 die() {
     echo "$*" 1>&2
+    [ ! ${PATH_NEW_CONFIG_TMP} ] || [ ! -d ${PATH_NEW_CONFIG_TMP} ] || rm -f "${PATH_NEW_CONFIG_TMP}" || echo "Failed to clean temp file ${PATH_NEW_CONFIG_TMP}"
     exit 1
 }
 
-# Read exec flags
 while [ $# -gt 0 ]; do
     case "$1" in
     --default)
@@ -43,38 +42,31 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
-readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-find-version.sh"
-[ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
-
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_LOCAL="${PATH_ROOT}/local/kernel/${PACKAGE_VERSION}/src"
-readonly PATH_CONFIGS="${PATH_START}/data/configs"
-readonly PATH_SCRIPT_APPLY_DIFFCONFIG="${PATH_START}/data/scripts/apply-diffconfig.rb"
-
-readonly PATH_VERSION_CONFIG="${PATH_CONFIGS}/${PACKAGE_VERSION}"
-readonly PATH_DEFAULT_CONFIG="${PATH_CONFIGS}/default"
-
 readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
 readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
 
-readonly PATH_SOURCES_WORK="${PATH_LOCAL}/portage/${NAME_PACKAGE}-${PACKAGE_VERSION}/work/"
-readonly PATH_SOURCES_SRC="$(find ${PATH_SOURCES_WORK} -maxdepth 1 -name linux-* -type d -print -quit)"
-[ ! $PATH_SOURCES_SRC ] && die "Failed to find PATH_SOURCES_SRC"
-readonly PATH_SCRIPT_MERGE_CONFIG="${PATH_SOURCES_SRC}/scripts/kconfig/merge_config.sh"
-readonly PATH_SCRIPT_DIFFCONFIG="${PATH_SOURCES_SRC}/scripts/diffconfig"
-
-# Determine used local config file - version or default.
+readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
+readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
+readonly PATH_CONFIGS="${PATH_START}/data/configs"
+readonly PATH_DEFAULT_CONFIG="${PATH_CONFIGS}/default"
+readonly PATH_SCRIPT_APPLY_DIFFCONFIG="${PATH_START}/data/scripts/apply-diffconfig.rb"
+readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-find-version.sh"
+[ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
+readonly PATH_VERSION_CONFIG="${PATH_CONFIGS}/${PACKAGE_VERSION}"
 PATH_USED_CONFIG="${PATH_VERSION_CONFIG}"
 [ -f "${PATH_VERSION_CONFIG}" ] || PATH_USED_CONFIG="${PATH_DEFAULT_CONFIG}"
 [ ! ${FORCE_DEFAULT} ] || PATH_USED_CONFIG="${PATH_DEFAULT_CONFIG}"
-
-echo "Config used: ${PATH_USED_CONFIG}"
+readonly PATH_WORK="${PATH_ROOT}/local/kernel/${PACKAGE_VERSION}/src"
+readonly PATH_SOURCES_SRC="$(find ${PATH_WORK}/portage/${NAME_PACKAGE}-${PACKAGE_VERSION}/work/ -maxdepth 1 -name linux-* -type d -print -quit)"
+readonly PATH_SCRIPT_MERGE_CONFIG="${PATH_SOURCES_SRC}/scripts/kconfig/merge_config.sh"
+readonly PATH_SCRIPT_DIFFCONFIG="${PATH_SOURCES_SRC}/scripts/diffconfig"
 
 [[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
-[ -d "${PATH_LOCAL}" ] || die "${PATH_LOCAL} not found. Please run ebuild-emerge-gentoo-sources.sh <version> first."
-
+[ ! $PATH_SOURCES_SRC ] && die "Failed to find PATH_SOURCES_SRC"
+[ -d "${PATH_WORK}" ] || die "${PATH_WORK} not found. Please run ebuild-emerge-gentoo-sources.sh <version> first."
 [ ! ${PRETENT} ] || [ ! ${SAVE_DEFAULT} ] || die "Cannot use --pretent and --savedefault at the same time"
+
+echo "Config used: ${PATH_USED_CONFIG}"
 
 cd "${PATH_SOURCES_SRC}" || die "Failed to open diretory ${PATH_SOURCES_SRC}"
 
@@ -97,7 +89,7 @@ ${PATH_SCRIPT_DIFFCONFIG} "arch/powerpc/configs/${NAME_PS3_DEFCONFIG}" defconfig
 cp defconfig "${PATH_NEW_DEFCONFIG}" || die "Failed to save new defconfig file"
 rm -f defconfig .config || die "Failed to delete config files in ${PATH_SOURCES_SRC}"
 
-# Update default config if specified.
+# Update default config if used --savedefault.
 [ ! ${SAVE_DEFAULT} ] || cp "${PATH_NEW_CONFIG}" "${PATH_DEFAULT_CONFIG}" || die "Failed to update default config"
 
 # Cleaning.

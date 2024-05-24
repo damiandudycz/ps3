@@ -9,41 +9,39 @@
 # Error handling function
 die() {
     echo "$*" 1>&2
-    rm -rf "${PATH_WORK}" || echo "Failed to remove tmp directory ${PATH_WORK}"
+    [ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || echo "Failed to remove tmp directory ${PATH_WORK}"
     exit 1
 }
 
 PACKAGE_VERSION="$1"
-
-readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
-
-readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-find-version.sh"
-[ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
-[[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
-
 readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
 readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
+readonly LIST_DISTFILES_FILES=(
+    # List of files and directories compressed into distfiles tarball for overlay distfiles repository.
+    ps3_defconfig_diffs # Not needed, but kept for tracking changes between versions.
+    ps3_gentoo_defconfig # Updated ps3_defconfig that will replace the original one.
+    ps3_patches # PS3 specific patches to be applied to kernel. Snapshot created with ebuild.
+)
 
+readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_LOCAL="${PATH_ROOT}/local/kernel/${PACKAGE_VERSION}/ebuild"
-
-readonly PATH_WORK="${PATH_LOCAL}"
+readonly PATH_PATCHES="${PATH_START}/data/patches"
+readonly PATH_CONFIGS="${PATH_START}/data/configs"
+readonly PATH_EBUILD_PACTHES="${PATH_START}/data/ebuild-patches"
+readonly PATH_PORTAGE_EBUILD_FILE="/var/db/repos/gentoo/${NAME_PACKAGE}/gentoo-kernel-${PACKAGE_VERSION}.ebuild"
+readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-find-version.sh"
+[ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
+readonly PATH_VERSION_PATCHES="${PATH_PATCHES}/${PACKAGE_VERSION}"
+readonly PATH_VERSION_CONFIG="${PATH_CONFIGS}/${PACKAGE_VERSION}"
+readonly PATH_VERSION_DEFCONFIG="${PATH_CONFIGS}/${PACKAGE_VERSION}.defconfig"
+readonly PATH_WORK="${PATH_ROOT}/local/kernel/${PACKAGE_VERSION}/ebuild"
 readonly PATH_WORK_EBUILD="${PATH_WORK}/ebuild"
 readonly PATH_WORK_DISTFILES="${PATH_WORK}/distfiles"
 readonly PATH_WORK_DISTFILES_TAR="${PATH_WORK_DISTFILES}/gentoo-kernel-ps3-files-${PACKAGE_VERSION}.tar.xz"
 readonly PATH_WORK_EBUILD_FILE="${PATH_WORK_EBUILD}/gentoo-kernel-ps3-${PACKAGE_VERSION}.ebuild"
 
-readonly PATH_PATCHES="${PATH_START}/data/patches"
-readonly PATH_CONFIGS="${PATH_START}/data/configs"
-readonly PATH_EBUILD_PACTHES="${PATH_START}/data/ebuild-patches"
-readonly PATH_VERSION_PATCHES="${PATH_PATCHES}/${PACKAGE_VERSION}"
-readonly PATH_VERSION_CONFIG="${PATH_CONFIGS}/${PACKAGE_VERSION}"
-readonly PATH_VERSION_DEFCONFIG="${PATH_CONFIGS}/${PACKAGE_VERSION}.defconfig"
-
-readonly PATH_PORTAGE_EBUILDS="/var/db/repos/gentoo/${NAME_PACKAGE}"
-readonly PATH_PORTAGE_EBUILD_FILE="${PATH_PORTAGE_EBUILDS}/gentoo-kernel-${PACKAGE_VERSION}.ebuild"
-
-# Check if required files were generated - patches, config(diffs), defconfig
+# Verify data.
+[[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
 [ -d "${PATH_PATCHES}" ] || die "Patches for version ${PACKAGE_VERSION} not found. Please run ebuild-apply-kernel-patches.sh first."
 [ -d "${PATH_CONFIGS}" ] || die "Configs for version ${PACKAGE_VERSION} not found. Please run ebuild-configure.sh first."
 
@@ -59,16 +57,11 @@ cp -f "${PATH_VERSION_PATCHES}"/*.patch "${PATH_WORK_DISTFILES}/ps3_patches"/ ||
 cp -f "${PATH_VERSION_CONFIG}" "${PATH_WORK_DISTFILES}/ps3_defconfig_diffs" || die "Failed to copy config diffs"
 cp -f "${PATH_VERSION_DEFCONFIG}" "${PATH_WORK_DISTFILES}/ps3_gentoo_defconfig" || die "Failed to copy defconfig"
 
-# Create distfiles TAR with config(diffs), defconfig and patches
-LIST_DISTFILES_FILES=(
-    # List of files and directories compressed into distfiles tarball for overlay distfiles repository.
-    ps3_defconfig_diffs # Not needed, but kept for tracking changes between versions.
-    ps3_gentoo_defconfig # Updated ps3_defconfig that will replace the original one.
-    ps3_patches # PS3 specific patches to be applied to kernel. Snapshot created with ebuild.
-)
+# Create distfiles tarball.
 tar --sort=name --mtime="" --owner=0 --group=0 --numeric-owner --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
     -caf "${PATH_WORK_DISTFILES_TAR}" -C "${PATH_WORK_DISTFILES}" "${LIST_DISTFILES_FILES[@]}"
-# Remove tmp files
+
+# Remove tmp files.
 for FILE in "${LIST_DISTFILES_FILES[@]}"; do
     rm -rf "$PATH_WORK_DISTFILES/$FILE" || die "Failed to remove ${FILE}"
 done

@@ -41,8 +41,6 @@ rm -rf "${PATH_WORK}/profiles" || die "Failed to remove profiles directory"
 rm -rf "${PATH_WORK}/metadata" || die "Failed to remove metadata directory"
 
 # Prune manifest from files other than custom distfiles.
-echo ""
-echo "NEW MANIFEST:"
 if ! while IFS= read -r line; do
     if [ -e "${PATH_WORK_DISTFILES}/$(echo "$line" | cut -d' ' -f2)" ]; then
         echo "$line"

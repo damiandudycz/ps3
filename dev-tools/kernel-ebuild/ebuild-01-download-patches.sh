@@ -18,7 +18,6 @@ readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine sc
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
 readonly PATH_VERSION_STORAGE="${PATH_START}/data/version-storage"
 readonly PATH_FETCH_LIST="${PATH_VERSION_STORAGE}/remote.txt"
-readonly PATH_WORK="${PATH_ROOT}/local/${PACKAGE_VERSION}/kernel"
 readonly PATH_VERSION_PATCHES="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/patches"
 readonly PATH_VERSION_PATCHES_DEFAULT="${PATH_VERSION_STORAGE}/default/patches"
 PATH_VERSION_PATCHES_USED="${PATH_VERSION_PATCHES}"

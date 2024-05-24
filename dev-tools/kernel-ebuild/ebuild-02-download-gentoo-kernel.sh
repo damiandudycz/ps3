@@ -24,7 +24,7 @@ readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determ
 readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-00-find-version.sh"
 readonly PATH_REPO_GENTOO="/var/db/repos/gentoo"
 [ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
-readonly PATH_WORK="${PATH_ROOT}/local/kernel/${PACKAGE_VERSION}/src"
+readonly PATH_WORK="${PATH_ROOT}/local/gentoo-kernel-ps3/${PACKAGE_VERSION}/src"
 
 # Validate data.
 [[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"

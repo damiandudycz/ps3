@@ -4,14 +4,14 @@
 # Please run this script after cloning the repository.
 
 declare -a SETUP_SCRIPTS=(
-    setup-portage.sh
-    setup-dependencies.sh
-    setup-git.sh
-    setup-submodules.sh
-    setup-catalyst.sh
-    setup-qemu.sh
-    setup-releng.sh
-#    setup-crossdev.sh # Currently not needed.
+    setup-00-portage.sh
+    setup-01-dependencies.sh
+    setup-02-git.sh
+    setup-03-submodules.sh
+    setup-04-catalyst.sh
+    setup-05-qemu.sh
+    setup-06-releng.sh
+#    setup-07-crossdev.sh # Currently not needed.
 )
 
 if [ -f ../local/env_ready ]; then

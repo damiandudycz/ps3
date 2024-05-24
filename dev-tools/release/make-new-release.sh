@@ -11,14 +11,14 @@
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 
 declare -a SETUP_SCRIPTS=(
-    "release-prepare.sh"
-    "../binhost/binhost-bind.sh --bind"
-    "release-build.sh"
-    "release-upload.sh"
-    "../binhost/binhost-sanitize.sh"
-    "../binhost/binhost-upload.sh"
-    "../binhost/binhost-bind.sh --unbind"
-    "release-tag.sh"
+    "release-00-prepare.sh"
+    "../binhost/binhost-00-bind.sh --bind"
+    "release-01-build.sh"
+    "release-02-upload.sh"
+    "../binhost/binhost-02-sanitize.sh"
+    "../binhost/binhost-03-upload.sh"
+    "../binhost/binhost-00-bind.sh --unbind"
+    "release-03-tag.sh"
 )
 
 for SCRIPT_ENTRY in "${SETUP_SCRIPTS[@]}"; do

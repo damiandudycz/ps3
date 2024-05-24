@@ -22,11 +22,14 @@ readonly PATH_WORK_DISTFILES="${PATH_WORK}/distfiles"
 readonly PATH_WORK_DISTFILES_TAR="${PATH_WORK_DISTFILES}/${NAME_DISTFILES_FILE}"
 readonly PATH_WORK_EBUILD_FILE="${PATH_WORK}/sys-kernel/gentoo-kernel-ps3/${NAME_EBUILD_FILE}"
 readonly PATH_EBUILD_MANIFEST="${PATH_WORK}/sys-kernel/gentoo-kernel-ps3/Manifest"
-
 readonly PATH_OVERLAY_MAIN="${PATH_ROOT}/overlays/ps3-gentoo-overlay"
 readonly PATH_OVERLAY_EBUILDS="${PATH_OVERLAY_MAIN}"
 readonly PATH_OVERLAY_DISTFILES="${PATH_OVERLAY_MAIN}.distfiles"
 readonly PATH_OVERLAY_MANIFEST="${PATH_OVERLAY_EBUILDS}/sys-kernel/gentoo-kernel-ps3/Manifest"
+readonly PATHS_REPOSITORIES_TO_UPLOAD=(
+    "${PATH_OVERLAY_DISTFILES}"
+    "${PATH_OVERLAY_EBUILDS}"
+)
 
 # Verify data.
 [[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
@@ -44,7 +47,16 @@ sed -i "/${NAME_DISTFILES_DIST_ENTRY}/d" "${PATH_OVERLAY_MANIFEST}" || die "Fail
 cat "${PATH_EBUILD_MANIFEST}" >> "${PATH_OVERLAY_MANIFEST}" || die "Failed to add new entry to Manifest"
 
 # Upload changes in repositories
-
+for PATH_REPO in "${PATHS_REPOSITORIES_TO_UPLOAD[@]}"; do
+    cd "${PATH_REPO}" || die "Failed to open ${PATH_REPO}"
+    if [ -n "$(git status --porcelain)" ]; then
+        git add -A || die "Failed to add files to repo ${PATH_REPO}"
+        git commit -m "Gentoo-Kernel-PS3 package update" || die "Failed to commit files to repo ${PATH_REPO}"
+        git push || die "Failed to push files to repo ${PATH_REPO}"
+    else
+        echo "No changes in repository ${PATH_REPO}. Skipping."
+    fi
+done
 
 echo "Gentoo-Kernel-PS3 package ${PACKAGE_VERSION} merged successfully."
 exit 0

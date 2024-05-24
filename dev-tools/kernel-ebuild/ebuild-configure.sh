@@ -89,9 +89,11 @@ rm .config_modified || die "Failed to remove .config_modified"
 # Generate and store new config.
 ARCH=powerpc make savedefconfig || die "Failed so make new defconfig"
 PATH_NEW_CONFIG="${PATH_VERSION_CONFIG}"
+PATH_NEW_DEFCONFIG="${PATH_VERSION_CONFIG}.defconfig"
 [ ! ${PRETENT} ] || PATH_NEW_CONFIG_TMP=$(mktemp) || die "Failed to generate tmp file for PRETENT"
 [ ! ${PATH_NEW_CONFIG_TMP} ] || PATH_NEW_CONFIG="${PATH_NEW_CONFIG_TMP}" || die "Failed to set tmp config location ad new config path"
 ${PATH_SCRIPT_DIFFCONFIG} "arch/powerpc/configs/${NAME_PS3_DEFCONFIG}" defconfig > "${PATH_NEW_CONFIG}" || die "Failed to save new difconfig diffs"
+cp defconfig "${PATH_NEW_DEFCONFIG}" || die "Failed to save new defconfig file"
 rm -f defconfig .config || die "Failed to delete config files in ${PATH_SOURCES_SRC}"
 
 # Update default config if specified.

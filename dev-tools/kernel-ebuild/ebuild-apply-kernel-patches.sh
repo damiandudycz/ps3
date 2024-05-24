@@ -22,6 +22,7 @@ readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-find-version.sh"
 
 PACKAGE_VERSION="$1"
 [ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
+[[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
 
 readonly PATH_VERSION_PATCHES="${PATH_PATCHES}/${PACKAGE_VERSION}"
 readonly PATH_DEFAULT_PATCHES="${PATH_PATCHES}/default"
@@ -36,7 +37,6 @@ readonly PATH_SOURCES_SRC="$(find ${PATH_SOURCES_WORK} -maxdepth 1 -name linux-*
 PATH_USED_PATCHES="${PATH_VERSION_PATCHES}"
 [ -d "${PATH_VERSION_PATCHES}" ] || PATH_USED_PATCHES="${PATH_DEFAULT_PATCHES}"
 
-[[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
 [ -d "${PATH_LOCAL}/${PACKAGE_VERSION}" ] || die "${PATH_LOCAL}/${PACKAGE_VERSION} not found. Please run ebuild-emerge-gentoo-sources.sh <version> first."
 
 # Apply patches

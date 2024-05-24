@@ -30,6 +30,7 @@ readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
 
 readonly PATH_SOURCES_WORK="${PATH_LOCAL}/${PACKAGE_VERSION}/portage/${NAME_PACKAGE}-${PACKAGE_VERSION}/work/"
 readonly PATH_SOURCES_SRC="$(find ${PATH_SOURCES_WORK} -maxdepth 1 -name linux-* -type d -print -quit)"
+[ ! $PATH_SOURCES_SRC ] && die "Failed to find PATH_SOURCES_SRC"
 
 # Determine used local patches directory - version or default.
 PATH_USED_PATCHES="${PATH_VERSION_PATCHES}"

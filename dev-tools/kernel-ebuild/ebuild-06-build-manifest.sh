@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This function generates partial manifest for new package and it's distfiles.
+# This information can later be merged with full overlay repository.
+
 die() {
     echo "$*" 1>&2
     exit 1
@@ -25,6 +28,9 @@ readonly PATH_EBUILD_MANIFEST="${PATH_WORK}/sys-kernel/gentoo-kernel-ps3/Manifes
 [ -f "${PATH_WORK_EBUILD_FILE}" ] || die "Ebuild for version ${PACKAGE_VERSION} not found."
 [ -f "${PATH_WORK_DISTFILES_TAR}" ] || die "Distfiles for version ${PACKAGE_VERSION} not found."
 
+# Clear old Manifest file if eists:
+[ ! -f "${PATH_EBUILD_MANIFEST}" ] || rm "${PATH_EBUILD_MANIFEST}" || die "Failed to remove old manifest at ${PATH_EBUILD_MANIFEST}"
+
 # Create manifest and digest
 cd "${PATH_WORK}" || die "Failed to open ${PATH_WORK}"
 DISTDIR="${PATH_WORK_DISTFILES}" ebuild sys-kernel/gentoo-kernel-ps3/${NAME_EBUILD_FILE} manifest || die "Failed to build manifest"
@@ -32,6 +38,19 @@ DISTDIR="${PATH_WORK_DISTFILES}" ebuild sys-kernel/gentoo-kernel-ps3/${NAME_EBUI
 # Clear other downloaded distfiles, except gentoo-kernel-ps3-files.
 find "${PATH_WORK_DISTFILES}" ! -name "${NAME_DISTFILES_FILE}" -type f -exec rm {} + || die "Failed to prunt distfiles"
 rm -rf "${PATH_WORK}/profiles" || die "Failed to remove profiles directory"
+rm -rf "${PATH_WORK}/metadata" || die "Failed to remove metadata directory"
 
-echo "Gentoo-Kernel-PS3 Ebuild manifest generated successfully."
+# Prune manifest from files other than custom distfiles.
+echo ""
+echo "NEW MANIFEST:"
+if ! while IFS= read -r line; do
+    if [ -e "${PATH_WORK_DISTFILES}/$(echo "$line" | cut -d' ' -f2)" ]; then
+        echo "$line"
+    fi
+done < "${PATH_EBUILD_MANIFEST}" > "${PATH_EBUILD_MANIFEST}.tmp"; then
+    die "Failed to prune manifest"
+fi
+mv "${PATH_EBUILD_MANIFEST}.tmp" "${PATH_EBUILD_MANIFEST}"
+
+echo "Gentoo-Kernel-PS3 Ebuild manifest generated successfully. "
 exit 0

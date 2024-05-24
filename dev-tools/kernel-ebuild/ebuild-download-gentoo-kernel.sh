@@ -31,6 +31,7 @@ mkdir -p "${PATH_LOCAL}/${PACKAGE_VERSION}" || die "Failed to create local worki
 
 #ACCEPT_KEYWORDS="~*" emerge --nodeps --root="${PATH_LOCAL}/${PACKAGE_VERSION}" --oneshot =${NAME_PACKAGE}-${PACKAGE_VERSION} --quiet --fetchonly --fetch-all-uri || die "Failed to emerge ${NAME_PACKAGE}-${PACKAGE_VERSION}"
 
-PORTAGE_TMPDIR="${PATH_LOCAL}/${PACKAGE_VERSION}" ebuild "${PATH_REPO_GENTOO}/${NAME_PACKAGE}/${NAME_EBUILD}-${PACKAGE_VERSION}.ebuild" configure
+PORTAGE_TMPDIR="${PATH_LOCAL}/${PACKAGE_VERSION}" ebuild "${PATH_REPO_GENTOO}/${NAME_PACKAGE}/${NAME_EBUILD}-${PACKAGE_VERSION}.ebuild" configure || die "Failed to download Gentoo Kernel ${PACKAGE_VERSION}"
 
+echo "Gentoo Kernel ${PACKAGE_VERSION} downloaded successfully"
 exit 0

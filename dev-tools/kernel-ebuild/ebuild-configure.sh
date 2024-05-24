@@ -10,8 +10,7 @@
 #
 # To store new configuration as the default, use --savedefault flag.
 #
-# If you just want to test generating configs, without storing <version> config, use --pretend flag.
-# if you use both --pretend and --savedefault flags, default config only will be updated.
+# If you just want to test generating configs, without storing <version> config, use --pretent flag.
 
 # Error handling function
 die() {
@@ -25,11 +24,11 @@ while [ $# -gt 0 ]; do
     --default)
         FORCE_DEFAULT=true
         ;;
-    --config)
+    --edit)
         CONFIGURE=true
         ;;
     --pretent)
-        PRETEND=true
+        PRETENT=true
         ;;
     --savedefault)
         SAVE_DEFAULT=true
@@ -74,6 +73,8 @@ echo "Config used: ${PATH_USED_CONFIG}"
 [[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
 [ -d "${PATH_LOCAL}/${PACKAGE_VERSION}" ] || die "${PATH_LOCAL}/${PACKAGE_VERSION} not found. Please run ebuild-emerge-gentoo-sources.sh <version> first."
 
+[ ! ${PRETENT} ] || [ ! ${SAVE_DEFAULT} ] || die "Cannot use --pretent and --savedefault at the same time"
+
 cd "${PATH_SOURCES_SRC}" || die "Failed to open diretory ${PATH_SOURCES_SRC}"
 
 # Generate default PS3_Defconfig.
@@ -88,7 +89,7 @@ rm .config_modified || die "Failed to remove .config_modified"
 # Generate and store new config.
 ARCH=powerpc make savedefconfig || die "Failed so make new defconfig"
 PATH_NEW_CONFIG="${PATH_VERSION_CONFIG}"
-[ ! ${PRETEND} ] || PATH_NEW_CONFIG_TMP=$(mktemp) || die "Failed to generate tmp file for pretend"
+[ ! ${PRETENT} ] || PATH_NEW_CONFIG_TMP=$(mktemp) || die "Failed to generate tmp file for PRETENT"
 [ ! ${PATH_NEW_CONFIG_TMP} ] || PATH_NEW_CONFIG="${PATH_NEW_CONFIG_TMP}" || die "Failed to set tmp config location ad new config path"
 ${PATH_SCRIPT_DIFFCONFIG} "arch/powerpc/configs/${NAME_PS3_DEFCONFIG}" defconfig > "${PATH_NEW_CONFIG}" || die "Failed to save new difconfig diffs"
 rm -f defconfig .config || die "Failed to delete config files in ${PATH_SOURCES_SRC}"
@@ -99,4 +100,5 @@ rm -f defconfig .config || die "Failed to delete config files in ${PATH_SOURCES_
 # Cleaning.
 [ ! ${PATH_NEW_CONFIG_TMP} ] || rm -f "${PATH_NEW_CONFIG_TMP}" || die "Failed to clean temp file ${PATH_NEW_CONFIG_TMP}"
 
+echo "Configuration generated successfully."
 exit 0

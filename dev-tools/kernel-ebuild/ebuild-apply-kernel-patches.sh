@@ -49,4 +49,5 @@ if [ "${PATH_USED_PATCHES}" = "${PATH_DEFAULT_PATCHES}" ]; then
     cp -rf "${PATH_DEFAULT_PATCHES}" "${PATH_VERSION_PATCHES}" || die "Failed to store copy of patches for ${PATH_VERSION_PATCHES}"
 fi
 
+echo "Patches applied successfully"
 exit 0

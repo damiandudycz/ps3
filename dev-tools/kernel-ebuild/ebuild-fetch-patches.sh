@@ -45,4 +45,5 @@ for URL_PATCH in "${URL_PS3_PATCHES[@]}"; do
     wget "${URL_PATCH}" --quiet || die "Failed to download patch ${URL_PATCH}"
 done
 
+echo "Patches for ${PATH_USED_PATCHES} updated successfully"
 exit 0

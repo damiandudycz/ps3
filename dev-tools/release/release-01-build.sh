@@ -39,7 +39,7 @@ $PATH_INSTALLER_UPDATER --ask || die "Failed to run installer updater"
 
 # Release information
 readonly TIMESTAMP=$(cat "${PATH_RELEASE_INFO}") || die "Failed to read current release details. Please run release-prepare.sh first."
-[ -z "${TIMESTAMP}" ] && die "Failed to read current release details. Please run release-prepare.sh first."
+[ ! -z "${TIMESTAMP}" ] || die "Failed to read current release details. Please run release-prepare.sh first."
 
 # Release files paths
 readonly PATH_STAGE1="${PATH_LOCAL_TMP}/stage1-cell.$TIMESTAMP.spec"

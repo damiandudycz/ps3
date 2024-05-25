@@ -40,7 +40,7 @@ cp "${PATH_CATALYST_BUILD_STAGE3}"* "${PATH_AUTOBUILDS_NEW}"/ || die "Failed to 
 cp "${PATH_CATALYST_BUILD_ISO}"* "${PATH_AUTOBUILDS_NEW}"/ || die "Failed to move ISO files to autobuilds"
 
 # Generate autobuilds metadata
-TIMESTAMP_FORMATTED=$(echo $TIMESTAMP | sed -r 's/(.*)T(..)(..)(..)/\1 \2:\3:\4/')
+TIMESTAMP_FORMATTED=$(echo $TIMESTAMP | sed -r 's/(.*)T(..)(..)(..)/\1 \2:\3:\4/') || die "Failed to get timestamp"
 FORMATTED_DATE=$(date -u -d "${TIMESTAMP_FORMATTED}" +"%a, %d %b %Y %H:%M:%S %z") || die "Failed to update metadata"
 EPOCH_TIME=$(date -u -d "${TIMESTAMP_FORMATTED}" +%s) || die "Failed to update metadata"
 echo "# Latest as of ${FORMATTED_DATE}" > "${PATH_REPO_AUTOBUILDS}/latest-stage3-cell-openrc.txt" || die "Failed to update metadata"

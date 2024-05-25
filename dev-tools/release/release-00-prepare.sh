@@ -58,7 +58,7 @@ fi
 [ -f "${PATH_ENV_READY}" ] || die "Dev environment was not initialized. Please run dev-tools/setup-environment.sh first."
 
 # Ask if should update installer if there are any changes pending.
-$PATH_INSTALLER_UPDATER --ask
+$PATH_INSTALLER_UPDATER --ask || die "Failed to run installer updater."
 
 # Create local tmp path
 mkdir -p "${PATH_LOCAL_TMP}" || die "Failed to create local tmp directory"
@@ -75,8 +75,8 @@ readonly SQUASHFS_IDENTIFIER=$(grep -oP 'Creating gentoo tree snapshot \K[0-9a-f
 # Download stage3 seed
 readonly LATEST_GENTOO_CONTENT=$(wget -q -O - "${URL_STAGE_INFO}" --no-http-keep-alive --no-cache --no-cookies) || die "Failed to download latest stage3 seed"
 readonly LATEST_STAGE3=$(echo "${LATEST_GENTOO_CONTENT}" | grep "ppc64-openrc" | head -n 1 | cut -d' ' -f1)
-readonly LATEST_STAGE3_FILENAME=$(basename "${LATEST_STAGE3}")
-readonly SEED_TIMESTAMP=$(echo "${LATEST_STAGE3_FILENAME}" | sed -n 's/.*-\([0-9]\{8\}T[0-9]\{6\}Z\)\.tar\.xz/\1/p')
+readonly LATEST_STAGE3_FILENAME=$(basename "${LATEST_STAGE3}") || die "Failed to get stage3 filename"
+readonly SEED_TIMESTAMP=$(echo "${LATEST_STAGE3_FILENAME}" | sed -n 's/.*-\([0-9]\{8\}T[0-9]\{6\}Z\)\.tar\.xz/\1/p') || die "Failed to get seed timestamp"
 readonly PATH_STAGE3_SEED="${PATH_CATALYST_BUILDS}/${LATEST_STAGE3_FILENAME}"
 readonly URL_GENTOO_TARBALL="$URL_RELEASE_GENTOO/$LATEST_STAGE3"
 [ -z "${LATEST_STAGE3}" ] && die "Failed to download Stage3 URL"

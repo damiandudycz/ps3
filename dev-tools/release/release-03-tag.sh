@@ -21,11 +21,11 @@ readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
 
 # Release information
 readonly TIMESTAMP=$(cat "${PATH_RELEASE_INFO}") || die "Failed to read current release details. Please run release-prepare.sh first."
-[ -z "${TIMESTAMP}" ] && die "Failed to read current release details. Please run release-prepare.sh first."
+[ ! -z "${TIMESTAMP}" ] || die "Failed to read current release details. Please run release-prepare.sh first."
 
 TAG="$1"
 # If tag was not specified, get the latest tag from catalyst build
-[ -z "$TAG" ] && TAG="${TIMESTAMP}"
+[ ! -z "$TAG" ] || TAG="${TIMESTAMP}"
 
 # Create new tag and upload all the files to repository
 cd "${PATH_ROOT}" || die "Failed to switch directory to PATH_ROOT"

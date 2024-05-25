@@ -34,7 +34,8 @@ case "$1" in
 
         if [ -n "$CURRENT_MOUNT" ]; then
             CURRENT_SOURCE=$(echo "$CURRENT_MOUNT" | awk '{print $1}')
-            CURRENT_SOURCE_REALPATH=$(realpath "${CURRENT_SOURCE#/dev/*}" 2>/dev/null)
+            CURRENT_SOURCE_REALPATH=$(realpath "$(echo "$CURRENT_SOURCE" | tail -n 1 | sed -E 's|.+\[(.+)\]|\1|')" 2>/dev/null)
+
             if [ "$CURRENT_SOURCE_REALPATH" == "${PATH_REPO_BINHOST}" ]; then
                 echo "${PATH_CATALYST_PACKAGES} is already mounted with ${PATH_REPO_BINHOST}."
                 exit 0

@@ -25,7 +25,7 @@ readonly PATH_ENV_READY="${PATH_ROOT}/local/env_ready"
 readonly PATH_LOCAL_TMP="${PATH_ROOT}/local/release"
 readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
 readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-installer/ps3-gentoo-installer-ebuild-updater.sh"
-readonly PATH_BINHOST_BIND="${PATH_ROOT}/dev-tools/binhost/binhost-bind.sh"
+readonly PATH_BINHOST_BIND="${PATH_ROOT}/dev-tools/binhost/binhost-00-bind.sh"
 
 # URLs
 readonly URL_RELEASE_GENTOO="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc"
@@ -35,7 +35,7 @@ readonly URL_STAGE_INFO="https://gentoo.osuosl.org/releases/ppc/autobuilds/lates
 [ -f "${PATH_ENV_READY}" ] || die "Dev environment was not initialized. Please run dev-tools/setup-environment.sh first."
 
 # Ask if should update installer if there are any changes pending.
-$PATH_INSTALLER_UPDATER --ask
+$PATH_INSTALLER_UPDATER --ask || die "Failed to run installer updater"
 
 # Release information
 readonly TIMESTAMP=$(cat "${PATH_RELEASE_INFO}") || die "Failed to read current release details. Please run release-prepare.sh first."
@@ -48,7 +48,7 @@ readonly PATH_STAGE1_INSTALLCD="${PATH_LOCAL_TMP}/stage1-cell.installcd.$TIMESTA
 readonly PATH_STAGE2_INSTALLCD="${PATH_LOCAL_TMP}/stage2-cell.installcd.$TIMESTAMP.spec"
 
 # Bind binhost
-$PATH_BINHOST_BIND --bind
+$PATH_BINHOST_BIND --bind || die "Failed to bind binhost ${PATH_BINHOST_BIND}"
 
 # Building release
 catalyst -f "${PATH_STAGE1}" || die "Failed to build stage1"

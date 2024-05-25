@@ -1,0 +1,6 @@
+# This file contains the list of remote patches to download for new releases when calling
+# ebuild-fetch-patches.sh.
+
+export URL_PS3_PATCHES=(
+
+)

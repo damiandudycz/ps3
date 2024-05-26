@@ -40,6 +40,7 @@ find "${PATH_WORK_DISTFILES}" ! -name "${NAME_DISTFILES_FILE}" -type f -exec rm 
 rm -rf "${PATH_WORK}/profiles" || die "Failed to remove profiles directory"
 rm -rf "${PATH_WORK}/metadata" || die "Failed to remove metadata directory"
 
+# TODO: Instead of pruning here, all should be stored, and during migration all duplicates should be removed.
 # Prune manifest from files other than custom distfiles.
 if ! while IFS= read -r line; do
     if [ -e "${PATH_WORK_DISTFILES}/$(echo "$line" | cut -d' ' -f2)" ]; then

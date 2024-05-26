@@ -14,7 +14,7 @@ die() {
 # Paths
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
-readonly PATH_ENV_READY="${PATH_ROOT}/local/env_ready"
+readonly PATH_ENV_READY="${PATH_ROOT}/.env_ready"
 readonly PATH_LOCAL_TMP="${PATH_ROOT}/local/release"
 readonly PATH_REPO_AUTOBUILDS="${PATH_ROOT}/autobuilds/ps3-gentoo-autobuilds"
 readonly PATH_CATALYST_BUILDS="/var/tmp/catalyst/builds/default"

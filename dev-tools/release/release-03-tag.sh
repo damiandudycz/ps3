@@ -12,7 +12,7 @@ die() {
 # Paths
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
-readonly PATH_ENV_READY="${PATH_ROOT}/local/env_ready"
+readonly PATH_ENV_READY="${PATH_ROOT}/.env_ready"
 readonly PATH_LOCAL_TMP="${PATH_ROOT}/local/release"
 readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
 

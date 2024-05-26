@@ -17,7 +17,7 @@ usage() {
 # Paths
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
-readonly PATH_ENV_READY="${PATH_ROOT}/local/env_ready"
+readonly PATH_ENV_READY="${PATH_ROOT}/.env_ready"
 readonly PATH_CATALYST_PACKAGES="/var/tmp/catalyst/packages/default"
 readonly PATH_REPO_BINHOST=$(realpath "${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default") || die
 

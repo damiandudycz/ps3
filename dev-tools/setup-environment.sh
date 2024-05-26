@@ -14,8 +14,8 @@ declare -a SETUP_SCRIPTS=(
 #    setup-07-crossdev.sh # Currently not needed.
 )
 
-if [ -f ../local/env_ready ]; then
-    echo "Environment setup was already done. To force, delete file ../local/env_ready"
+if [ -f ../.env_ready ]; then
+    echo "Environment setup was already done. To force, delete file ../.env_ready"
     exit 0
 fi
 
@@ -25,7 +25,6 @@ for SCRIPT in "${SETUP_SCRIPTS[@]}"; do
     (cd "${DIR}" && "./${SCRIPT}") || { echo "Script ${SCRIPT} failed. Exiting."; exit 1; }
 done
 
-mkdir -p ../local
-touch ../local/env_ready
+touch ../.env_ready
 
 exit 0

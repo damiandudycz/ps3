@@ -12,7 +12,7 @@ die() {
 # Constants
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
-readonly PATH_LOCAL_TMP="${PATH_ROOT}/local/releng"
+readonly PATH_LOCAL_TMP="/var/tmp/ps3/releng"
 
 PATH_PORTAGE_CONFDIR_STAGES="${PATH_LOCAL_TMP}/releases/portage/stages"
 PATH_PORTAGE_CONFDIR_ISOS="${PATH_LOCAL_TMP}/releases/portage/isos"

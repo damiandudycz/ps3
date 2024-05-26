@@ -17,7 +17,7 @@ trap cleanup EXIT
 # Constants
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
-readonly PATH_LOCAL_TMP="${PATH_ROOT}/local/release"
+readonly PATH_LOCAL_TMP="/var/tmp/ps3/release"
 readonly PATH_CATALYST_USR="/usr/share/catalyst"
 readonly PATH_CATALYST_TMP="/var/tmp/catalyst"
 readonly PATH_CATALYST_CONFIGS="/etc/catalyst"

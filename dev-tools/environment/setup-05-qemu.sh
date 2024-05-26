@@ -11,7 +11,7 @@ die() {
 # Constants
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
-readonly PATH_LOCAL_TMP="${PATH_ROOT}/local/release"
+readonly PATH_LOCAL_TMP="/var/tmp/ps3/release"
 readonly PATH_RELENG="${PATH_LOCAL_TMP}/releng"
 readonly PATH_INTERPRETER="/usr/bin/qemu-ppc64"
 readonly PATH_PORTAGE="/etc/portage"

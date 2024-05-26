@@ -20,7 +20,7 @@ readonly CONF_LOAD="12.0"
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
 readonly PATH_ENV_READY="${PATH_ROOT}/.env_ready"
-readonly PATH_LOCAL_TMP="${PATH_ROOT}/local/release"
+readonly PATH_LOCAL_TMP="/var/tmp/ps3/release"
 readonly PATH_CATALYST_BUILDS="/var/tmp/catalyst/builds/default"
 readonly PATH_PKG_CACHE="${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default"
 readonly PATH_OVERLAY="${PATH_ROOT}/overlays/ps3-gentoo-overlay"
@@ -34,7 +34,7 @@ readonly PATH_LIVECD_FSSCRIPT_ORIGINAL="${PATH_START}/data/iso_fsscript.sh"
 readonly PATH_LIVECD_FSSCRIPT="${PATH_LOCAL_TMP}/iso_fsscript.sh"
 readonly PATH_INTERPRETER="/usr/bin/qemu-ppc64"
 readonly PATH_SNAPSHOT_LOG="${PATH_LOCAL_TMP}/snapshot_log.txt"
-readonly PATH_RELENG="${PATH_ROOT}/local/releng"
+readonly PATH_RELENG="/var/tmp/ps3/releng"
 readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
 readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-installer/ps3-gentoo-installer-ebuild-updater.sh "
 

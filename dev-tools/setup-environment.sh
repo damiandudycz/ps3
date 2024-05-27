@@ -97,7 +97,11 @@ echo_color() { # Usage: echo_color COLOR MESSAGE
 
 # Handling errors.
 failure() {
-    echo_color \${COLOR_RED} "[ Fatal error ]"
+    local line="\${BASH_LINENO[0]}"
+    local cmd="\${BASH_COMMAND}"
+    local file="\${BASH_SOURCE[1]}"
+    echo_color \${COLOR_RED} "[ Error at line \$line in file '\$file' ]"
+    echo_color \${COLOR_RED} "Failed command: '\$cmd'"
     exit 1
 }
 

@@ -2,11 +2,9 @@
 
 # This script binds or unbinds the repository binhost directory to/from the catalyst packages directory.
 
-# Function to print error message and exit
-die() {
-    echo "$1" >&2
-    exit 1
-}
+# --- Shared environment
+source ../../.env-shared.sh || exit 1
+trap failure ERR
 
 # Function to show usage options
 usage() {
@@ -15,14 +13,8 @@ usage() {
 }
 
 # Paths
-readonly PATH_START=$(dirname "$(realpath "$0")") || die
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
-readonly PATH_ENV_READY="${PATH_ROOT}/.env_ready"
 readonly PATH_CATALYST_PACKAGES="/var/tmp/catalyst/packages/default"
 readonly PATH_REPO_BINHOST=$(realpath "${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default") || die
-
-# Check if environment is ready
-[ -f "${PATH_ENV_READY}" ] || die "Dev environment was not initialized. Please run dev-tools/setup-environment.sh first."
 
 # Check the argument count and display usage if incorrect
 [ "$#" -ne 1 ] && usage

@@ -5,53 +5,41 @@
 # --- Shared environment
 source ../../.env-shared.sh || exit 1
 trap failure ERR
+register_usage "$0 --bind | --unbind"
 
-usage() {
-    echo "Usage: $0 --bind | --unbind"
-    exit 1
-}
-[ "$#" -ne 1 ] && usage
+[ "$#" -ne 1 ] && show_usage
 
-# Paths
-readonly PATH_CATALYST_PACKAGES="/var/tmp/catalyst/packages/default"
-readonly PATH_REPO_BINHOST=$(realpath "${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default") || die
-
-readonly PATH_CATALYST_USR="${PATH_USR_SHARE}/catalyst"
-readonly PATH_CATALYST_TMP="${PATH_VAR_TMP}/catalyst"
-readonly PATH_CATALYST_BUILDS="${PATH_CATALYST_TMP}/builds/default"
-readonly PATH_CATALYST_STAGES="${PATH_CATALYST_TMP}/config/stages"
-readonly PATH_CATALYST_BINHOST="${PATH_CATALYST_TMP}/packages/default"
-readonly PATH_CATALYST_PATCH_DIR="${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
+readonly CONF_RELEASE_NAME="${CONF_CATALYST_RELEASE_NAME_DFAULT}"
+readonly PATH_BIND_SRC="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_RELEASE_NAME}"
+readonly PATH_BIND_DST="${PATH_CATALYST_PACKAGES}/${CONF_RELEASE_NAME}"
 
 case "$1" in
     --bind)
         # Check if already mounted
-        CURRENT_MOUNT=$(findmnt -nr -o SOURCE,TARGET "${PATH_CATALYST_PACKAGES}")
+        CURRENT_MOUNT=$(findmnt -nr -o SOURCE,TARGET "${PATH_BIND_DST}" || true)
 
         if [ -n "$CURRENT_MOUNT" ]; then
             CURRENT_SOURCE=$(echo "$CURRENT_MOUNT" | awk '{print $1}')
             CURRENT_SOURCE_REALPATH=$(realpath "$(echo "$CURRENT_SOURCE" | tail -n 1 | sed -E 's|.+\[(.+)\]|\1|')" 2>/dev/null)
 
-            if [ "$CURRENT_SOURCE_REALPATH" == "${PATH_REPO_BINHOST}" ]; then
-                echo "${PATH_CATALYST_PACKAGES} is already mounted with ${PATH_REPO_BINHOST}."
-                exit 0
+            if [ "$CURRENT_SOURCE_REALPATH" == "${PATH_BIND_SRC}" ]; then
+                echo "${PATH_BIND_SRC} is already bound with ${PATH_BIND_DST}."
             else
-                die "${PATH_CATALYST_PACKAGES} is already mounted with ${CURRENT_SOURCE_REALPATH}, not ${PATH_REPO_BINHOST}."
+                failure "${PATH_BIND_SRC} is already bound with ${CURRENT_SOURCE_REALPATH}, not ${PATH_BIND_DST}."
             fi
+        else
+            # Bind binhost
+            mount -o bind "${PATH_BIND_SRC}" "${PATH_BIND_DST}"
+            echo "Successfully bounded ${PATH_BIND_SRC} to ${PATH_BIND_DST}"
         fi
-        # Bind binhost
-        mount -o bind "${PATH_REPO_BINHOST}" "${PATH_CATALYST_PACKAGES}" || die "Failed to mount binhost repo ${PATH_REPO_BINHOST} to ${PATH_CATALYST_PACKAGES}"
-        echo "Successfully mounted ${PATH_REPO_BINHOST} to ${PATH_CATALYST_PACKAGES}"
         ;;
     --unbind)
         # Unbind binhost
-        umount "${PATH_CATALYST_PACKAGES}" || die "Failed to unmount ${PATH_CATALYST_PACKAGES}"
-        echo "Successfully unmounted ${PATH_CATALYST_PACKAGES}"
+        umount "${PATH_BIND_DST}"
+        echo "Successfully unbounded ${PATH_BIND_DST}"
         ;;
     *)
         # Unsupported option
-        usage
+        show_usage
         ;;
 esac
-
-exit 0

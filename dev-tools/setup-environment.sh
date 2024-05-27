@@ -19,6 +19,8 @@ cat <<EOF > "${PATH_ENV_FILE}"
 readonly PS3_ENV_SHARED_LOADED=true
 readonly PROJECT_NAME="PS3_Gentoo"
 readonly CONF_CATALYST_RELEASE_NAMES=(default) # Supported release configurations, eq. LTO, CLANG, etc.
+readonly CONF_CATALYST_RELEASE_NAME_DFAULT="default" # Supported release configurations, eq. LTO, CLANG, etc.
+declare -A USAGE_DESCRIPTIONS
 
 # ---------- Paths.
 
@@ -73,7 +75,7 @@ readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
 readonly PATH_CATALYST_TMP="\${PATH_VAR_TMP}/catalyst"
 readonly PATH_CATALYST_BUILDS="\${PATH_CATALYST_TMP}/builds"
 readonly PATH_CATALYST_STAGES="\${PATH_CATALYST_TMP}/config/stages"
-readonly PATH_CATALYST_BINHOST="\${PATH_CATALYST_TMP}/packages"
+readonly PATH_CATALYST_PACKAGES="\${PATH_CATALYST_TMP}/packages"
 readonly PATH_CATALYST_PATCH_DIR="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
 
 # ---------- URLs.
@@ -101,8 +103,24 @@ failure() {
     local line="\${BASH_LINENO[0]}"
     local cmd="\${BASH_COMMAND}"
     local file="\${BASH_SOURCE[1]}"
+    local custom_message="\$1"
     echo_color \${COLOR_RED} "[ Error at line \$line in file '\$file' ]"
-    echo_color \${COLOR_RED} "Failed command: '\$cmd'"
+    if [[ -n "\$custom_message" ]]; then
+        echo_color \${COLOR_RED} "\$custom_message"
+    else
+        echo_color \${COLOR_RED} "Failed command: '\$cmd'"
+    fi
+    exit 1
+}
+
+register_usage() {
+    local file="\$(basename \"\${BASH_SOURCE[1]}\")"
+    USAGE_DESCRIPTIONS["\$file"]="\$1"
+}
+
+show_usage() {
+    local file="\$(basename \"\${BASH_SOURCE[1]}\")"
+    echo "Usage: \${USAGE_DESCRIPTIONS[\$file]}"
     exit 1
 }
 

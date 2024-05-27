@@ -3,79 +3,65 @@
 # This script deletes a specified package from the binhost repository.
 # Usage example: ./binhost-delete-package.sh sys-kernel/gentoo-kernel-ps3.
 
-# Function to display error message and exit
-die() {
-    echo "$1" >&2
-    exit 1
-}
+# --- Shared environment
+source ../../.env-shared.sh || exit 1
+trap failure ERR
+register_usage "$0 <pckage>"
 
-# Paths
-readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_REPO_BINHOST="${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default"
-readonly PATH_METADATA="${PATH_REPO_BINHOST}/Packages"
-readonly PATH_TMP_FILE=$(mktemp) || die "Failed to create temporary file."
+readonly CONF_PACKAGE_NAME="$1"
+readonly CONF_PACKAGE_VERSION="$2"
+readonly CONF_RELEASE_NAME="${CONF_CATALYST_RELEASE_NAME_DFAULT}"
+readonly PATH_BINHOST="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_RELEASE_NAME}"
+readonly PATH_BINHOST_METADATA="${PATH_BINHOST}/Packages"
 
-# Ensure the temporary file is removed on script exit
-trap 'rm -f "$PATH_TMP_FILE"' EXIT
+# Check if package parameter is provided and package exists
+[[ ! -z "${CONF_PACKAGE_NAME}" ]] || show_usage
+[[ -d "${PATH_BINHOST}/${CONF_PACKAGE_NAME}" ]] || failure "Package ${CONF_PACKAGE_NAME} not found in ${PATH_BINHOST}"
 
-# Check if package parameter is provided
-[[ -z "$1" ]] && die "Usage: $0 <package>"
+# Temp file.
+readonly TEMP_DELETE_FILE=$(mktemp)
+trap 'rm -f "$TEMP_DELETE_FILE"' EXIT
 
-# Check if package directory exists in the repository
-[[ -d "${PATH_REPO_BINHOST}/$1" ]] || die "Package directory does not exist in the repository."
+ENTRY=""
+PACKAGES_COUNT=$(grep -oP '^PACKAGES: \K[0-9]+' "${PATH_BINHOST_METADATA}")
+PACKAGE_FOUND=false
 
-# Function to delete a specific package
-delete_package() {
-    local PACKAGE="$1"
-    local TEMP_DELETE_FILE=$(mktemp) || die "Failed to create temporary file."
-    local ENTRY=""
-    local PACKAGES_COUNT=$(grep -oP '^PACKAGES: \K[0-9]+' "$PATH_METADATA")
-    local PACKAGE_FOUND=false
-
-    # Ensure the temporary file is removed on script exit
-    trap 'rm -f "$TEMP_DELETE_FILE"' EXIT
-
-    while IFS= read -r LINE || [[ -n $LINE ]]; do
-        if [[ -n "$LINE" ]]; then
-            ENTRY+="$LINE"$'\n'
-        else
-            if [[ "$ENTRY" == *"$PACKAGE"* ]]; then
-                PATH_PACKAGE=$(echo "$ENTRY" | grep -Po 'PATH: \K.*')
-                if [[ -n "$PATH_PACKAGE" && -f "$PATH_REPO_BINHOST/$PATH_PACKAGE" ]]; then
-                    rm -f "$PATH_REPO_BINHOST/$PATH_PACKAGE" || die "Failed to remove file: $PATH_REPO_BINHOST/$PATH_PACKAGE"
-                    echo "Removed file: $PATH_REPO_BINHOST/$PATH_PACKAGE"
-                fi
-                (( PACKAGES_COUNT-- ))
-                PACKAGE_FOUND=true
-            else
-                echo -e "$ENTRY" >> "$TEMP_DELETE_FILE" || die "Failed to write to temporary file."
+while IFS= read -r LINE || [[ -n $LINE ]]; do
+    if [[ -n "$LINE" ]]; then
+        ENTRY+="$LINE"$'\n'
+    else
+        if [[ "$ENTRY" == *"${CONF_PACKAGE_NAME}"* ]]; then
+            PATH_PACKAGE=$(echo "$ENTRY" | grep -Po 'PATH: \K.*')
+            if [[ -n "$PATH_PACKAGE" && -f "${PATH_BINHOST}/$PATH_PACKAGE" ]]; then
+                rm -f "${PATH_BINHOST}/$PATH_PACKAGE"
+                echo "Removed file: ${PATH_BINHOST}/$PATH_PACKAGE"
             fi
-            ENTRY=""
+            ((PACKAGES_COUNT--))
+            PACKAGE_FOUND=true
+       else
+            echo -e "$ENTRY" >> "$TEMP_DELETE_FILE"
         fi
-    done < "$PATH_METADATA"
-
-    if [[ "$ENTRY" == *"$PACKAGE"* ]]; then
-        PATH_PACKAGE=$(echo "$ENTRY" | grep -Po 'PATH: \K.*')
-        if [[ -n "$PATH_PACKAGE" && -f "$PATH_REPO_BINHOST/$PATH_PACKAGE" ]]; then
-            rm -f "$PATH_REPO_BINHOST/$PATH_PACKAGE" || die "Failed to remove file: $PATH_REPO_BINHOST/$PATH_PACKAGE"
-            echo "Removed file: $PATH_REPO_BINHOST/$PATH_PACKAGE"
-        fi
-        (( PACKAGES_COUNT-- ))
-        PACKAGE_FOUND=true
-    else
-        echo -e "$ENTRY" >> "$TEMP_DELETE_FILE" || die "Failed to write to temporary file."
+        ENTRY=""
     fi
+done < "$PATH_BINHOST_METADATA"
 
-    if $PACKAGE_FOUND; then
-        mv "$TEMP_DELETE_FILE" "$PATH_METADATA" || die "Failed to move temporary file."
-        sed -i "s/^PACKAGES: .*/PACKAGES: $PACKAGES_COUNT/" "$PATH_METADATA" || die "Failed to update package count."
-        echo "Package $PACKAGE removed from repository."
-    else
-        rm -f "$TEMP_DELETE_FILE" || die "Failed to remove temporary file."
-        echo "Package $PACKAGE not found in repository."
+if [[ "$ENTRY" == *"${CONF_PACKAGE_NAME}"* ]]; then
+    PATH_PACKAGE=$(echo "$ENTRY" | grep -Po 'PATH: \K.*')
+    if [[ -n "$PATH_PACKAGE" && -f "${PATH_BINHOST}/$PATH_PACKAGE" ]]; then
+        rm -f "${PATH_BINHOST}/$PATH_PACKAGE"
+        echo "Removed file: ${PATH_BINHOST}/$PATH_PACKAGE"
     fi
-}
+    ((PACKAGES_COUNT--))
+    PACKAGE_FOUND=true
+else
+    echo -e "$ENTRY" >> "$TEMP_DELETE_FILE"
+fi
 
-delete_package "$1"
-exit 0
+if $PACKAGE_FOUND; then
+    mv "$TEMP_DELETE_FILE" "${PATH_BINHOST_METADATA}"
+    sed -i "s/^PACKAGES: .*/PACKAGES: $PACKAGES_COUNT/" "${PATH_BINHOST_METADATA}"
+    echo "Package ${CONF_PACKAGE_NAME} removed from repository."
+else
+    rm -f "$TEMP_DELETE_FILE"
+    echo "Package ${CONF_PACKAGE_NAME} not found in repository."
+fi

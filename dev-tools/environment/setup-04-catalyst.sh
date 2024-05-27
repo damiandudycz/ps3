@@ -37,7 +37,7 @@ emerge dev-util/catalyst --newuse --update --deep
 # Create working directories
 for RELEASE_NAME in ${CONF_RELEASE_NAMES[@]}; do
     mkdir -p "${PATH_CATALYST_BUILDS}/${RELEASE_NAME}"
-    mkdir -p "${PATH_CATALYST_BINHOST}/${RELEASE_NAME}"
+    mkdir -p "${PATH_CATALYST_PACKAGES}/${RELEASE_NAME}"
 done
 mkdir -p "${PATH_CATALYST_STAGES}"
 

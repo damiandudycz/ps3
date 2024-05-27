@@ -1,7 +1,3 @@
-[submodule "autobuilds/ps3-gentoo-autobuilds"]
-	path = autobuilds/ps3-gentoo-autobuilds
-	url = git@github.com:damiandudycz/ps3-gentoo-autobuilds.git
-	branch = main
 [submodule "binhosts/ps3-gentoo-binhosts"]
 	path = binhosts/ps3-gentoo-binhosts
 	url = git@github.com:damiandudycz/ps3-gentoo-binhosts.git

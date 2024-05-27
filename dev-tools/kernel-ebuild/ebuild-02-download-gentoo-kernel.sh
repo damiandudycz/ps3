@@ -7,11 +7,10 @@
 # Pass the version number as a parameter of this function.
 # If no version is specified, script will use current stable version available.
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
+# --- Shared environment
+source ../../.env-shared.sh || exit 1
+trap failure ERR
+register_usage "$0 [package_version]"
 
 PACKAGE_VERSION="$1"
 NAME_KEYWORD=" ppc64"
@@ -19,23 +18,17 @@ readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
 readonly NAME_EBUILD="gentoo-kernel"
 
 # Setup patchs.
-readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-00-find-version.sh"
-readonly PATH_REPO_GENTOO="/var/db/repos/gentoo"
-[ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
-readonly PATH_WORK="/var/tmp/ps3/gentoo-kernel-ps3/${PACKAGE_VERSION}/src"
+readonly PATH_VERSION_SCRIPT="${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-00-find-version.sh"
+[ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT)
+
+readonly PATH_WORK_DOWNLOAD_GENTOO_KERNEL="${PATH_WORK_KERNEL_EBUILD}/${PACKAGE_VERSION}/src"
 
 # Validate data.
-[[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
+[ ! -z "${PACKAGE_VERSION}" ] || failure "Failed to determine kernel version"
+[[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || show_usage
 
 # Prepare workdir.
-[ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || die "Failed to clean previous files in ${PATH_WORK}"
-mkdir -p "${PATH_WORK}" || die "Failed to create local working directory"
+[ ! -d "${PATH_WORK_DOWNLOAD_GENTOO_KERNEL}" ] || rm -rf "${PATH_WORK_DOWNLOAD_GENTOO_KERNEL}"
+mkdir -p "${PATH_WORK_DOWNLOAD_GENTOO_KERNEL}"
 
-# Download gentoo-kernel.
-echo "Downloading Gentoo Kenrel ${PACKAGE_VERSION}"
-PORTAGE_TMPDIR="${PATH_WORK}" ebuild "${PATH_REPO_GENTOO}/${NAME_PACKAGE}/${NAME_EBUILD}-${PACKAGE_VERSION}.ebuild" configure || die "Failed to download Gentoo Kernel ${PACKAGE_VERSION}"
-
-echo "Gentoo Kernel ${PACKAGE_VERSION} downloaded successfully"
-exit 0
+PORTAGE_TMPDIR="${PATH_WORK_DOWNLOAD_GENTOO_KERNEL}" ebuild "${PATH_VAR_DB_REPOS_GENTOO}/${NAME_PACKAGE}/${NAME_EBUILD}-${PACKAGE_VERSION}.ebuild" configure

@@ -60,6 +60,8 @@ readonly PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS="\${PATH_ETC_PORTAGE}/package.
 readonly PATH_VAR_TMP="\${PATH_VAR}/tmp"
 readonly PATH_USR_SHARE="\${PATH_USR}/share"
 readonly PATH_USR_BIN="\${PATH_USR}/bin"
+readonly PATH_VAR_DB_REPOS="\${PATH_VAR}/db/repos"
+readonly PATH_VAR_DB_REPOS_GENTOO="\${PATH_VAR_DB_REPOS}/gentoo"
 
 # Various project paths:
 readonly PATH_WORK="\${PATH_VAR_TMP}/\${PROJECT_NAME}"
@@ -82,10 +84,10 @@ readonly PATH_CATALYST_PATCH_DIR="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst
 # ---------- URLs.
 
 readonly URL_GIRHUB_RAW_MAIN="https://raw.githubusercontent.com/damiandudycz"
-readonly URL_GITHUB_RAW_PS3="${URL_GIRHUB_RAW_MAIN}/ps3"
-readonly URL_GITHUB_RAW_AUTOBUILDS="${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-autobuilds"
-readonly URL_GITHUB_RAW_BINHOSTS="${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-binhosts"
-readonly URL_GITHUB_RAW_OVERLAY="${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-overlay"
+readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_MAIN}/ps3"
+readonly URL_GITHUB_RAW_AUTOBUILDS="\${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-autobuilds"
+readonly URL_GITHUB_RAW_BINHOSTS="\${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-binhosts"
+readonly URL_GITHUB_RAW_OVERLAY="\${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-overlay"
 
 # ---------- Shared functionality.
 
@@ -134,7 +136,7 @@ upload_repository() {
 }
 
 # Print environment details.
-echo_color \${COLOR_TURQUOISE_BOLD} "[ PS3-Gentoo development environment - \${PATH_ROOT} ]"
+[ "\$1" == "--silent" ] || echo_color \${COLOR_TURQUOISE_BOLD} "[ PS3-Gentoo development environment - \${PATH_ROOT} ]"
 
 EOF
 # -----------------------------------------------------------------------------------------

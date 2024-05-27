@@ -16,6 +16,7 @@ git config --global user.email "${CONF_GIT_EMAIL}"
 
 # GIT-LFS setup.
 readonly PATH_GIT_LFS_USE="${PATH_ETC_PORTAGE_PACKAGE_USE}/PS3_ENV_git-lfs"
+readonly PATH_GIT_LFS_ACCEPT_KEYWORDS="${PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS}/PS3_ENV_git-lfs"
 echo ">=sys-devel/binutils-2.41-r5 gold" > "${PATH_GIT_LFS_USE}"
-echo "dev-vcs/git-lfs ~$(portageq envvar ARCH)" > "${PATH_GIT_LFS_USE}"
+echo "dev-vcs/git-lfs ~$(portageq envvar ARCH)" > "${PATH_GIT_LFS_ACCEPT_KEYWORDS}"
 emerge --newuse --update --deep dev-vcs/git-lfs

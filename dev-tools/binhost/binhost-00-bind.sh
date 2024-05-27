@@ -6,18 +6,22 @@
 source ../../.env-shared.sh || exit 1
 trap failure ERR
 
-# Function to show usage options
 usage() {
     echo "Usage: $0 --bind | --unbind"
     exit 1
 }
+[ "$#" -ne 1 ] && usage
 
 # Paths
 readonly PATH_CATALYST_PACKAGES="/var/tmp/catalyst/packages/default"
 readonly PATH_REPO_BINHOST=$(realpath "${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default") || die
 
-# Check the argument count and display usage if incorrect
-[ "$#" -ne 1 ] && usage
+readonly PATH_CATALYST_USR="${PATH_USR_SHARE}/catalyst"
+readonly PATH_CATALYST_TMP="${PATH_VAR_TMP}/catalyst"
+readonly PATH_CATALYST_BUILDS="${PATH_CATALYST_TMP}/builds/default"
+readonly PATH_CATALYST_STAGES="${PATH_CATALYST_TMP}/config/stages"
+readonly PATH_CATALYST_BINHOST="${PATH_CATALYST_TMP}/packages/default"
+readonly PATH_CATALYST_PATCH_DIR="${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
 
 case "$1" in
     --bind)

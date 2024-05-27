@@ -18,6 +18,7 @@ cat <<EOF > "${PATH_ENV_FILE}"
 [ ! \${PS3_ENV_SHARED_LOADED} ] || return 0
 readonly PS3_ENV_SHARED_LOADED=true
 readonly PROJECT_NAME="PS3_Gentoo"
+readonly CONF_CATALYST_RELEASE_NAMES=(default) # Supported release configurations, eq. LTO, CLANG, etc.
 
 # ---------- Paths.
 
@@ -70,9 +71,9 @@ readonly PATH_INTERPRETER="\${PATH_USR_BIN}/qemu-ppc64"
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
 readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
 readonly PATH_CATALYST_TMP="\${PATH_VAR_TMP}/catalyst"
-readonly PATH_CATALYST_BUILDS="\${PATH_CATALYST_TMP}/builds/default"
+readonly PATH_CATALYST_BUILDS="\${PATH_CATALYST_TMP}/builds"
 readonly PATH_CATALYST_STAGES="\${PATH_CATALYST_TMP}/config/stages"
-readonly PATH_CATALYST_BINHOST="\${PATH_CATALYST_TMP}/packages/default"
+readonly PATH_CATALYST_BINHOST="\${PATH_CATALYST_TMP}/packages"
 readonly PATH_CATALYST_PATCH_DIR="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
 
 # ---------- URLs.

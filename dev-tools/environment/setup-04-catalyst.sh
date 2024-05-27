@@ -35,9 +35,11 @@ fi
 emerge dev-util/catalyst --newuse --update --deep
 
 # Create working directories
-mkdir -p "${PATH_CATALYST_BUILDS}"
+for RELEASE_NAME in ${CONF_RELEASE_NAMES[@]}; do
+    mkdir -p "${PATH_CATALYST_BUILDS}/${RELEASE_NAME}"
+    mkdir -p "${PATH_CATALYST_BINHOST}/${RELEASE_NAME}"
+done
 mkdir -p "${PATH_CATALYST_STAGES}"
-mkdir -p "${PATH_CATALYST_BINHOST}"
 
 # Configure Catalyst
 sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' "${PATH_CATALYST_CONF}"

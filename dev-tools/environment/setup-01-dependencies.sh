@@ -3,13 +3,12 @@
 # This script installs simple dependencies required by other parts of the system,
 # which don't require special setup and configuration.
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
+# --- Shared environment --- # Imports shared environment configuration,
+source ../../.env-shared.sh  # patches and functions.
+trap failure ERR             # Sets a failure trap on any error.
+# -------------------------- #
 
-# Download various required pckages
-emerge --newuse --update --deep gentoolkit ruby pkgdev dev-vcs/subversion -q || die "Failed to install dependencies"
+readonly PACKAGES=(gentoolkit ruby pkgdev dev-vcs/subversion)
+emerge --newuse --update --deep "${PACKAGES[@]}"
 
 exit 0

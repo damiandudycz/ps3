@@ -113,9 +113,7 @@ export -A guest_rc_startup=(
 )
 
 export -A binhosts=(
-    [PS3-stage3]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/default/stage3-cell"
-    [PS3-livecd-stage1-cell]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/default/livecd-stage1-cell"
-    [PS3-livecd-stage2-cell]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/default/livecd-stage2-cell"
+    [ps3]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/default"
 )
 
 export -A overlays=(

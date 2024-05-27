@@ -1,13 +1,9 @@
 #!/bin/bash
 
 # This script emerges and configures crossdev.
-# TODO: Currently there is a bug when running crossdev -t, related to used packages versions.
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
+source ../../.env-shared.sh
+trap 'failure' ERR
 
 # Constants
 readonly PATH_START=$(dirname "$(realpath "$0")") || die
@@ -38,7 +34,6 @@ echo 'masters = gentoo' >> "/etc/portage/repos.conf/crossdev.conf" || die "Faile
 echo 'auto-sync = no' >> "/etc/portage/repos.conf/crossdev.conf" || die "Failed to update crossdev config"
 
 # Setup crossdev environment
-#crossdev -t powerpc64-unknown-linux-gnu --abis altivec || die "Failed to setup crossdev environment" # Restore using defaults when they works
-crossdev -t powerpc64-unknown-linux-gnu --abis altivec --b '2.41-r3' --g '13.2.1_p20240113-r1' --k '6.6' --l '2.37-r7' || die "Failed to setup crossdev environment"
+crossdev -t powerpc64-unknown-linux-gnu --abis altivec || die "Failed to setup crossdev environment"
 
 exit 0

@@ -2,25 +2,22 @@
 
 # This script installs and configures git and git-lfs packages.
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
+# --- Shared environment --- # Imports shared environment configuration,
+source ../../.env-shared.sh  # patches and functions.
+trap failure ERR             # Sets a failure trap on any error.
+# -------------------------- #
 
-GIT_USER="Damian Dudycz"
-GIT_EMAIL="damiandudycz@yahoo.com"
+readonly CONF_GIT_USER="Damian Dudycz"
+readonly CONF_GIT_EMAIL="damiandudycz@yahoo.com"
 
-# Emerge git if needed.
-emerge --newuse --update --deep dev-vcs/git -q
+# GIT setup.
+emerge --newuse --update --deep dev-vcs/git
+git config --global user.name "${CONF_GIT_USER}"
+git config --global user.email "${CONF_GIT_EMAIL}"
 
-# Setup git user details
-git config --global user.name "${GIT_USER}" || die "Failed to set git username"
-git config --global user.email "${GIT_EMAIL}" || die "Failed to set git email"
-
-# GIT-LFS setup
-echo ">=sys-devel/binutils-2.41-r5 gold" >> /etc/portage/package.use/git-lfs || die "Failed to setup GIT-LFS"
-echo "dev-vcs/git-lfs ~$(portageq envvar ARCH)" >> /etc/portage/package.accept_keywords/git-lfs || die "Failed to setup GIT-LFS"
-emerge --newuse --update --deep dev-vcs/git-lfs -q || die "Failed to install GIT-LFS"
+# GIT-LFS setup.
+echo ">=sys-devel/binutils-2.41-r5 gold" > /etc/portage/package.use/PS3_ENV_git-lfs
+echo "dev-vcs/git-lfs ~$(portageq envvar ARCH)" > /etc/portage/package.accept_keywords/PS3_ENV_git-lfs
+emerge --newuse --update --deep dev-vcs/git-lfs
 
 exit 0

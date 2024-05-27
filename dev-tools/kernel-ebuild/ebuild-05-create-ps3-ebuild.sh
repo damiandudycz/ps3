@@ -12,7 +12,22 @@ die() {
     exit 1
 }
 
-PACKAGE_VERSION="$1"
+# Read exec flags
+while [ $# -gt 0 ]; do
+    case "$1" in
+    --unmask)
+        UNMASK=true
+        ;;
+    --*)
+        die "Unknown option: $1"
+        ;;
+    *)
+      	PACKAGE_VERSION="$1"
+        ;;
+    esac
+    shift
+done
+
 readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
 readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
 readonly LIST_DISTFILES_FILES=(
@@ -73,8 +88,11 @@ done
 cp "${PATH_PORTAGE_EBUILD_FILE}" "${PATH_WORK_EBUILD_FILE}" || die "Failed to copy original ebuild ${PATH_PORTAGE_EBUILD_FILE}"
 for PATCH in "${PATH_EBUILD_PACTHES}"/*.patch; do
     echo "Apply patch ${PATCH}:"
-    patch --batch --force -p0 -i "${PATCH}" "${PATH_WORK_EBUILD_FILE}" || die "Failed to apply patch ${PATCH} to ${TARGET_FILE}"
+    patch --batch --force -p0 -i "${PATCH}" "${PATH_WORK_EBUILD_FILE}" || die "Failed to apply patch ${PATCH} to ${PATH_WORK_EBUILD_FILE}"
 done
+
+# Unmask if selected
+[ ! $UNMASK ] || sed -i 's/\(KEYWORDS=.*\)~ppc64/\1ppc64/' "${PATH_WORK_EBUILD_FILE}" || die "Failed to unmask package"
 
 echo "Gentoo-Kernel-PS3 Ebuild and distfiles generated successfully."
 exit 0

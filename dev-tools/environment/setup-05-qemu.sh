@@ -2,15 +2,10 @@
 
 # This sctipt emerges and configures Qemu for the PS3 Gentoo project.
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
+source ../../.env-shared.sh
+trap failure ERR
 
 # Constants
-readonly PATH_START=$(dirname "$(realpath "$0")") || die
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
 readonly PATH_LOCAL_TMP="/var/tmp/ps3/release"
 readonly PATH_RELENG="${PATH_LOCAL_TMP}/releng"
 readonly PATH_INTERPRETER="/usr/bin/qemu-ppc64"

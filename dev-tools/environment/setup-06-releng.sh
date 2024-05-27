@@ -2,15 +2,17 @@
 
 # This script clones and configures releng for the PS3 Gentoo project.
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
+source ../../.env-shared.sh
+trap failure ERR
+
+cleanup() {
+echo "CLEAN"
     rm -rf "${PATH_LOCAL_TMP}" || echo "Failed to remove temporary directory: ${PATH_LOCAL_TMP}" 1>&2
-    exit 1
 }
+trap 'cleanup' EXIT
 
 # Constants
-readonly PATH_START=$(dirname "$(realpath "$0")") || die
+readonly PATH_START=$(dirname "$(realpath "$0")")
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
 readonly PATH_LOCAL_TMP="/var/tmp/ps3/releng"
 
@@ -19,6 +21,7 @@ PATH_PORTAGE_CONFDIR_ISOS="${PATH_LOCAL_TMP}/releases/portage/isos"
 
 if [ -d "${PATH_LOCAL_TMP}" ]; then
     echo "Releng already installed. Skipping"
+sdssdasd
     exit 0
 fi
 

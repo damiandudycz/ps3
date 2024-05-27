@@ -1,2 +1,2 @@
 *.DS_Store
-.env_ready
+.env-shared.sh

@@ -2,19 +2,22 @@
 
 # This script configures portage, enabling binpkg packages usage.
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
+# --- Shared environment --- # Imports shared environment configuration,
+source ../../.env-shared.sh  # patches and functions.
+trap failure ERR             # Sets a failure trap on any error.
+# -------------------------- #
 
-# Enable binpkg usage
-echo 'FEATURES="${FEATURES} getbinpkg"' >> /etc/portage/make.conf || die "Failed to enabled getbinpkg flag"
+# Append getbinpkg to features if needed.
+if ! grep -q "^FEATURES=\"[^\"]* getbinpkg" "${PATH_ETC_PORTAGE_MAKE_CONF}"; then
+    if grep -q "^FEATURES=" "${PATH_ETC_PORTAGE_MAKE_CONF}"; then
+        sed -i "/^FEATURES=/ s/\"\(.*\)\"/\"\1 getbinpkg\"/" "${PATH_ETC_PORTAGE_MAKE_CONF}"
+    else
+        echo "FEATURES=\"getbinpkg\"" | tee -a "${PATH_ETC_PORTAGE_MAKE_CONF}" >/dev/null
+    fi
+fi
 
-# Refresh portage tree
-emerge --sync || die "Failed to synchronize portage tree"
-
-# Install updates
-emerge --newuse --update --deep @world -q || die "Failed to update system"
+# Update the system.
+#emerge --sync
+#emerge --newuse --update --deep @world
 
 exit 0

@@ -17,5 +17,6 @@ if ! grep -q "^FEATURES=\"[^\"]* ${CONF_FEATURES}" "${PATH_ETC_PORTAGE_MAKE_CONF
 fi
 
 # Update the system.
-#emerge --sync
+# Synchronizes emerge only once a day
+[[ "$(stat -c %Y /var/db/repos/gentoo/metadata/timestamp.chk)" -lt "$(date -d 'today 00:00' +%s)" ]] && emerge --sync
 emerge --newuse --update --deep @world

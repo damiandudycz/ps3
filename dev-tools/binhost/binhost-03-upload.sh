@@ -4,22 +4,9 @@
 # Before running, please use binhost-sanitize.sh, to remove packages
 # that are too large for github.
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
+# --- Shared environment
+source ../../.env-shared.sh || exit 1
+trap failure ERR
 
-# Paths
-readonly PATH_START=$(dirname "$(realpath "$0")") || die
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
-readonly PATH_REPO_BINHOST="${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default"
-
-# Upload repository
-cd "${PATH_REPO_BINHOST}" || die "Failed to open PATH_REPO_BINHOST"
-git add -A || die "Failed to add files to repo"
-git commit -m "Binhost automatic update (Catalyst release)" || die "Failed to commit files to repo"
-git push || die "Failed to push files to repo"
-cd "${PATH_START}" || die "Failed to return to starting location"
-
-exit 0
+readonly PATH_BINHOST="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_CATALYST_RELEASE_NAME_DFAULT}"
+upload_repository "${PATH_BINHOST}" "Binhost automatic update"

@@ -10,8 +10,7 @@ source ../../.env-shared.sh || exit 1
 trap failure ERR
 register_usage "$0 <pckage>[-version] | --if-larger <SIZE_LIMIT>"
 
-readonly CONF_RELEASE_NAME="${CONF_CATALYST_RELEASE_NAME_DFAULT}"
-readonly PATH_BINHOST="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_RELEASE_NAME}"
+readonly PATH_BINHOST="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_CATALYST_RELEASE_NAME_DFAULT}"
 readonly PATH_BINHOST_METADATA="${PATH_BINHOST}/Packages"
 
 # Parse input parameters

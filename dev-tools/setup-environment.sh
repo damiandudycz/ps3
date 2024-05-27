@@ -20,6 +20,7 @@ readonly PS3_ENV_SHARED_LOADED=true
 readonly PROJECT_NAME="PS3_Gentoo"
 readonly CONF_CATALYST_RELEASE_NAMES=(default) # Supported release configurations, eq. LTO, CLANG, etc.
 readonly CONF_CATALYST_RELEASE_NAME_DFAULT="default" # Supported release configurations, eq. LTO, CLANG, etc.
+readonly CONF_GITHUB_SIZE_LIMIT="100M"
 declare -A USAGE_DESCRIPTIONS
 
 # ---------- Paths.

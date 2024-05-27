@@ -13,3 +13,4 @@
 [submodule "autobuilds/ps3-gentoo-autobuilds"]
 	path = autobuilds/ps3-gentoo-autobuilds
 	url = git@github.com:damiandudycz/ps3-gentoo-autobuilds
+	branch = main

@@ -7,8 +7,8 @@ source ../../.env-shared.sh || exit 1
 trap failure ERR
 
 [ "$(uname -m)" != "ppc64" ] && FLAG_QEMU="-qemu"
-PATH_PORTAGE_CONFDIR_STAGES="${PATH_RELENG}/releases/portage/stages${FLAG_QEMU}"
-PATH_PORTAGE_CONFDIR_ISOS="${PATH_RELENG}/releases/portage/isos${FLAG_QEMU}"
+readonly PATH_PORTAGE_CONFDIR_STAGES="${PATH_RELENG}/releases/portage/stages${FLAG_QEMU}"
+readonly PATH_PORTAGE_CONFDIR_ISOS="${PATH_RELENG}/releases/portage/isos${FLAG_QEMU}"
 
 # Create local tmp path
 [ ! -d "${PATH_RELENG}" ] || rm -rf "${PATH_RELENG}"

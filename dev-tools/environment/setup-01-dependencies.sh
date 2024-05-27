@@ -3,12 +3,9 @@
 # This script installs simple dependencies required by other parts of the system,
 # which don't require special setup and configuration.
 
-# --- Shared environment --- # Imports shared environment configuration,
-source ../../.env-shared.sh  # patches and functions.
-trap failure ERR             # Sets a failure trap on any error.
-# -------------------------- #
+# --- Shared environment
+source ../../.env-shared.sh || exit 1
+trap failure ERR
 
-readonly PACKAGES=(gentoolkit ruby pkgdev dev-vcs/subversion)
-emerge --newuse --update --deep "${PACKAGES[@]}"
-
-exit 0
+readonly PACKAGES_DEPENDENCIES=(gentoolkit ruby pkgdev dev-vcs/subversion)
+emerge --newuse --update --deep "${PACKAGES_DEPENDENCIES[@]}"

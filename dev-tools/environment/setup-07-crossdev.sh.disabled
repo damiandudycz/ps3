@@ -2,8 +2,9 @@
 
 # This script emerges and configures crossdev.
 
-source ../../.env-shared.sh
-trap 'failure' ERR
+# --- Shared environment
+source ../../.env-shared.sh || exit 1
+trap failure ERR
 
 # Constants
 readonly PATH_START=$(dirname "$(realpath "$0")") || die

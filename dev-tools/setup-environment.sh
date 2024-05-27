@@ -51,8 +51,11 @@ readonly PATH_VAR="/var"
 readonly PATH_BOOT="/boot"
 readonly PATH_ETC_PORTAGE="\${PATH_ETC}/portage"
 readonly PATH_ETC_PORTAGE_MAKE_CONF="\${PATH_ETC_PORTAGE}/make.conf"
+readonly PATH_ETC_PORTAGE_PACKAGE_USE="\${PATH_ETC_PORTAGE}/package.use"
+readonly PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS="\${PATH_ETC_PORTAGE}/package.accept_keywords"
 readonly PATH_VAR_TMP="\${PATH_VAR}/tmp"
 readonly PATH_USR_SHARE="\${PATH_USR}/share"
+readonly PATH_USR_BIN="\${PATH_USR}/bin"
 
 # Various project paths:
 readonly PATH_WORK="\${PATH_VAR_TMP}/\${PROJECT_NAME}"
@@ -63,6 +66,14 @@ readonly PATH_WORK_KERNEL_EBUILD="\${PATH_WORK}/kernel_ebuild"
 readonly PATH_WORK_PS3_INSTALLER="\${PATH_WORK}/ps3_installer"
 readonly PATH_WORK_RELEASE="\${PATH_WORK}/release"
 readonly PATH_WORK_RELENG="\${PATH_WORK}/releng"
+readonly PATH_INTERPRETER="\${PATH_USR_BIN}/qemu-ppc64"
+readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
+readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
+readonly PATH_CATALYST_TMP="\${PATH_VAR_TMP}/catalyst"
+readonly PATH_CATALYST_BUILDS="\${PATH_CATALYST_TMP}/builds/default"
+readonly PATH_CATALYST_STAGES="\${PATH_CATALYST_TMP}/config/stages"
+readonly PATH_CATALYST_BINHOST="\${PATH_CATALYST_TMP}/packages/default"
+readonly PATH_CATALYST_PATCH_DIR="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
 
 # ---------- URLs.
 
@@ -114,7 +125,5 @@ for SCRIPT in ${SETUP_SCRIPTS[@]}; do
     echo_color ${COLOR_TURQUOISE} "[ ${SCRIPT} ]"
     cd $(dirname "${SCRIPT}")
     SCRIPT_NAME=$(basename "${SCRIPT}")
-    (source "${SCRIPT_NAME}")
+    source "${SCRIPT_NAME}"
 done
-
-exit 0

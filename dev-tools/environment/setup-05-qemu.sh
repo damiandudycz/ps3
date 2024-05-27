@@ -2,51 +2,42 @@
 
 # This sctipt emerges and configures Qemu for the PS3 Gentoo project.
 
-source ../../.env-shared.sh
+# --- Shared environment
+source ../../.env-shared.sh || exit 1
 trap failure ERR
 
-# Constants
-readonly PATH_LOCAL_TMP="/var/tmp/ps3/release"
-readonly PATH_RELENG="${PATH_LOCAL_TMP}/releng"
-readonly PATH_INTERPRETER="/usr/bin/qemu-ppc64"
-readonly PATH_PORTAGE="/etc/portage"
-
 # QEMU registration expression
-readonly QEMU_REGISTRATION_EXPR=':ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:'"${PATH_INTERPRETER}"':'
+readonly CONF_QEMU_REGISTRATION_EXPR=':ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:'"${PATH_INTERPRETER}"':'
+readonly NAME_QEMU_SECTION_START="# FOR CATALYST QEMU ---------- START"
+readonly NAME_QEMU_SECTION_END="# FOR CATALYST QEMU ---------- END"
+readonly PATH_PACKAGE_USE_QEMU="${PATH_ETC_PORTAGE_PACKAGE_USE}/PS3_ENV_qemu"
+readonly PATH_BINFMT="/proc/sys/fs/binfmt_misc"
+readonly PATH_BINFMT_REGISTER="${PATH_BINFMT}/register"
 
-# Determine if host is PS3 or another architecture
-[ "$(uname -m)" != "ppc64" ] && use_qemu=true
+[ "$(uname -m)" != "ppc64" ] || return 0 # Qemu not needed for PPC64
 
-# Exit if Qemu is already set up
-if [ ! "$use_qemu" ] || [ -f "${PATH_INTERPRETER}" ]; then
-    echo "Qemu already installed or not needed. Skipping."
-    exit 0
-fi
+# Configure make.conf qemu section.
+[ ! -f "${PATH_ETC_PORTAGE_MAKE_CONF}" ] || sed -i "/${NAME_QEMU_SECTION_START}/,/${NAME_QEMU_SECTION_END}/d" "${PATH_ETC_PORTAGE_MAKE_CONF}" # Clean old section in make.conf if found
+echo "${NAME_QEMU_SECTION_START}" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
+echo "QEMU_SOFTMMU_TARGETS=\"aarch64 ppc64\"" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
+echo "QEMU_USER_TARGETS=\"ppc64\"" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
+echo "${NAME_QEMU_SECTION_END}" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
 
-# Download and setup Qemu
-echo "" >> "${PATH_PORTAGE}/make.conf" || die "Failed to update make.conf"
-echo "# Catalyst requirements" >> "${PATH_PORTAGE}/make.conf" || die "Failed to update make.conf"
-echo "QEMU_SOFTMMU_TARGETS=\"aarch64 ppc64\"" >> "${PATH_PORTAGE}/make.conf" || die "Failed to update make.conf"
-echo "QEMU_USER_TARGETS=\"ppc64\"" >> "${PATH_PORTAGE}/make.conf" || die "Failed to update make.conf"
-echo "# ---" >> "${PATH_PORTAGE}/make.conf" || die "Failed to update make.conf"
-echo "" >> "${PATH_PORTAGE}/package.use/qemu" || die "Failed to update package.use"
-echo "# Catalyst requirements" >> "${PATH_PORTAGE}/package.use/qemu" || die "Failed to update package.use"
-echo "app-emulation/qemu static-user" >> "${PATH_PORTAGE}/package.use/qemu" || die "Failed to update package.use"
-echo "dev-libs/glib static-libs" >> "${PATH_PORTAGE}/package.use/qemu" || die "Failed to update package.use"
-echo "sys-libs/zlib static-libs" >> "${PATH_PORTAGE}/package.use/qemu" || die "Failed to update package.use"
-echo "sys-apps/attr static-libs" >> "${PATH_PORTAGE}/package.use/qemu" || die "Failed to update package.use"
-echo "dev-libs/libpcre2 static-libs" >> "${PATH_PORTAGE}/package.use/qemu" || die "Failed to update package.use"
-echo "# ---" >> "${PATH_PORTAGE}/package.use/qemu" || die "Failed to update package.use"
+# Configure portage qemu section.
+[ ! -f "${PATH_PACKAGE_USE_QEMU}" ] || sed -i "/${NAME_QEMU_SECTION_START}/,/${NAME_QEMU_SECTION_END}/d" "${PATH_PACKAGE_USE_QEMU}" # Clean old section in package.use/PS3_ENV_qemu if found
+echo "${NAME_QEMU_SECTION_START}" >> "${PATH_PACKAGE_USE_QEMU}"
+echo "app-emulation/qemu static-user" >> "${PATH_PACKAGE_USE_QEMU}"
+echo "dev-libs/glib static-libs" >> "${PATH_PACKAGE_USE_QEMU}"
+echo "sys-libs/zlib static-libs" >> "${PATH_PACKAGE_USE_QEMU}"
+echo "sys-apps/attr static-libs" >> "${PATH_PACKAGE_USE_QEMU}"
+echo "dev-libs/libpcre2 static-libs" >> "${PATH_PACKAGE_USE_QEMU}"
+echo "${NAME_QEMU_SECTION_END}" >> "${PATH_PACKAGE_USE_QEMU}"
 
-emerge qemu -q || die "Failed to emerge qemu"
+emerge --newuse --update --deep qemu
 
 # Setup Qemu autostart and run it
-rc-update add qemu-binfmt default || die "Failed to add qemu-binfmt to autostart"
-rc-config start qemu-binfmt || die "Failed to start qemu-binfmt service"
-[ -d /proc/sys/fs/binfmt_misc ] || modprobe binfmt_misc || die "Failed to load binfmt_misc module"
-[ -f /proc/sys/fs/binfmt_misc/register ] || mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc || die "Failed to mount binfmt_misc"
-
-# Setup Qemu for PPC64
-echo "${QEMU_REGISTRATION_EXPR}" > /proc/sys/fs/binfmt_misc/register || die "Failed to setup QEMU for PPC64"
-
-exit 0
+rc-update add qemu-binfmt default
+rc-config start qemu-binfmt
+[ -d "${PATH_BINFMT}" ] || modprobe binfmt_misc
+[ -f "${PATH_BINFMT_REGISTER}" ] || mount binfmt_misc -t binfmt_misc "${PATH_BINFMT}"
+[ -f "${PATH_BINFMT_REGISTER}" ] || echo "${CONF_QEMU_REGISTRATION_EXPR}" > "${PATH_BINFMT_REGISTER}"

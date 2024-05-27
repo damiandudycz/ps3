@@ -3,25 +3,23 @@
 # This script emerges git-lfs and adds hooks,
 # that makes files larger than 100MB upload using LFS functionality.
 
-# --- Shared environment --- # Imports shared environment configuration,
-source ../../.env-shared.sh  # patches and functions.
-trap failure ERR             # Sets a failure trap on any error.
-# -------------------------- #
+# --- Shared environment
+source ../../.env-shared.sh || exit 1
+trap failure ERR
 
 cd "${PATH_ROOT}"
-#git submodule update --init --recursive
-#git submodule foreach 'git checkout main'
+git submodule update --init --recursive
+git submodule foreach 'git checkout main'
 
 # Setup LFS for autobuilds
-cd "${PATH_ROOT}/.git/modules/autobuilds/ps3-gentoo-autobuilds"
-echo '# Find all files larger than 100MB and track them with Git LFS' >> hooks/pre-commit
-echo 'find . -type f -size +100M | while read file; do' >> hooks/pre-commit
-echo '    if [[ $file != *".git"* ]]; then' >> hooks/pre-commit
-echo '        git lfs track "$file"' >> hooks/pre-commit
-echo '        git add "$file"' >> hooks/pre-commit
-echo '    fi' >> hooks/pre-commit
-echo 'done' >> hooks/pre-commit
-echo 'git add .gitattributes' >> hooks/pre-commit
-chmod +x hooks/pre-commit
-
-exit 0
+readonly PATH_HOOK_AUTOBUILDS="${PATH_ROOT}/.git/modules/autobuilds/ps3-gentoo-autobuilds/pre-commit"
+[ ! -f "${PATH_HOOK_AUTOBUILDS}" ] || rm -f "${PATH_HOOK_AUTOBUILDS}"
+echo '# Find all files larger than 100MB and track them with Git LFS' >> "${PATH_HOOK_AUTOBUILDS}"
+echo 'find . -type f -size +100M | while read file; do' >> "${PATH_HOOK_AUTOBUILDS}"
+echo '    if [[ $file != *".git"* ]]; then' >> "${PATH_HOOK_AUTOBUILDS}"
+echo '        git lfs track "$file"' >> "${PATH_HOOK_AUTOBUILDS}"
+echo '        git add "$file"' >> "${PATH_HOOK_AUTOBUILDS}"
+echo '    fi' >> "${PATH_HOOK_AUTOBUILDS}"
+echo 'done' >> "${PATH_HOOK_AUTOBUILDS}"
+echo 'git add .gitattributes' >> "${PATH_HOOK_AUTOBUILDS}"
+chmod +x "${PATH_HOOK_AUTOBUILDS}"

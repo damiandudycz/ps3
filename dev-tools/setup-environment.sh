@@ -124,6 +124,14 @@ show_usage() {
     exit 1
 }
 
+upload_repository() {
+    # Upload repository at given location with commit message
+    cd "\${1}"
+    git add -A
+    git commit -m "\$2"
+    git push
+}
+
 # Print environment details.
 echo_color \${COLOR_TURQUOISE_BOLD} "[ PS3-Gentoo development environment - \${PATH_ROOT} ]"
 

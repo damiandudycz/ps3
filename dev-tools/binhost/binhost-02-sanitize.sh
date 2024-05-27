@@ -1,39 +1,13 @@
 #!/bin/bash
 
-# Function to display error message and exit
-die() {
-    echo "$1" >&2
-    exit 1
-}
+# This function removes packages larger than size limit in github.
 
-# Paths
-readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_REPO_BINHOST="${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default"
-readonly SIZE_LIMIT=104857600 # 100 MB
-readonly PATH_DELETE_SCRIPT="${PATH_START}/delete_package.sh"
+# --- Shared environment
+source ../../.env-shared.sh || exit 1
+trap failure ERR
+register_usage "$0 <pckage>[-version] | --if-larger <SIZE_LIMIT>"
 
-# Function to delete a package
-delete_package() {
-    local package="$1"
-    echo "Removing package: $package"
-    "$PATH_DELETE_SCRIPT" "$package" || die "Failed to remove package: $package"
-}
+readonly CONF_SIZE_LIMIT="100M"
+readonly PATH_DELETE_SCRIPT="${PATH_DEV_TOOLS_BINHOST}/binhost-01-delete-packages.sh"
 
-# Ensure the temporary file is removed on script exit
-trap 'rm -f "$TMP_FILE"' EXIT
-
-# Check if the repository directory exists
-[[ -d "$PATH_REPO_BINHOST" ]] || die "Repository directory not found: $PATH_REPO_BINHOST"
-
-# Iterate through files in the repository directory
-while IFS= read -r -d '' file; do
-    # Check if file size exceeds the limit
-    if [[ -f "$file" && $(stat -c %s "$file") -gt $SIZE_LIMIT ]]; then
-        # Remove the package containing the file
-        delete_package "$(dirname "$file")"
-    fi
-done < <(find "$PATH_REPO_BINHOST" -type f -print0)
-
-echo "Sanitization complete."
-exit 0
+source ${PATH_DELETE_SCRIPT} --if-larger ${CONF_SIZE_LIMIT}

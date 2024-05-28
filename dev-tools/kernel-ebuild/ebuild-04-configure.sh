@@ -12,18 +12,15 @@
 #
 # If you just want to test generating configs, without storing <version> config, use --pretent flag.
 
-cleanup_gentoo_kernel_configure_on_failure() {
-    [ ! ${PATH_NEW_CONFIG_TMP} ] || [ ! -d ${PATH_NEW_CONFIG_TMP} ] || rm -f "${PATH_NEW_CONFIG_TMP}" || echo "Failed to clean temp file ${PATH_NEW_CONFIG_TMP}"
-}
-
 # --- Shared environment
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
-trap 'cleanup_gentoo_kernel_configure_on_failure; failure' ERR
+register_failure_handler cleanup_gentoo_kernel_configure_on_failure
 register_usage "$0 [package_version] [--edit] [--default] [--pretend] [--savedefault]"
 
-
-
+cleanup_gentoo_kernel_configure_on_failure() {
+    [ ! ${PATH_NEW_CONFIG_TMP} ] || [ ! -d ${PATH_NEW_CONFIG_TMP} ] || rm -f "${PATH_NEW_CONFIG_TMP}" || echo "Failed to clean temp file ${PATH_NEW_CONFIG_TMP}"
+}
 
 readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
 readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"

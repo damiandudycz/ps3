@@ -7,15 +7,15 @@
 # Pass the version number as a parameter of this function.
 # If no version is specified, script will use current stable version available.
 
-clean_download_folder_on_failure() {
-    [ ! -d "${KE_PATH_WORK_SRC}" ] || rm -rf "${KE_PATH_WORK_SRC}" || echo "Failed to cleanup ${KE_PATH_WORK_SRC}"
-}
-
 # --- Shared environment
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
-trap 'clean_download_folder_on_failure; failure' ERR
+register_failure_handler clean_download_folder_on_failure
 register_usage "$0 [package_version]"
+
+clean_download_folder_on_failure() {
+    [ ! -d "${KE_PATH_WORK_SRC}" ] || rm -rf "${KE_PATH_WORK_SRC}" || echo "Failed to cleanup ${KE_PATH_WORK_SRC}"
+}
 
 # Prepare workdir.
 [ ! -d "${KE_PATH_WORK_SRC}" ] || rm -rf "${KE_PATH_WORK_SRC}"

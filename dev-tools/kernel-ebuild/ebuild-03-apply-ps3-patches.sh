@@ -11,7 +11,6 @@
 # --- Shared environment
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
-trap failure ERR
 register_usage "$0 [package_version]"
 
 # Apply patches

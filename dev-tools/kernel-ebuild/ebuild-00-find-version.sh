@@ -9,7 +9,6 @@
 # --- Shared environment
 source ../../.env-shared.sh --silent || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
-trap failure ERR
 register_usage "$0 [--unstable]"
 
 if [ $KE_PACKAGE_VERSION_SPECIFIED ]; then

@@ -22,6 +22,7 @@ readonly CONF_CATALYST_RELEASE_NAMES=(default) # Supported release configuration
 readonly CONF_CATALYST_RELEASE_NAME_DFAULT="default"
 readonly CONF_GITHUB_SIZE_LIMIT="100M"
 declare -A USAGE_DESCRIPTIONS
+declare -A FAILURE_HANDLERS
 
 # Shared environment configuration and functionality for PS3-Gentoo project dev tools.
 readonly PATH_ROOT="${PATH_ROOT_INITIAL}"
@@ -121,7 +122,18 @@ failure() {
     else
         echo_color \${COLOR_RED} "Failed command: '\$cmd'"
     fi
+
+    # Execute failure handler if added
+    local failure_handler_name="\$(basename \"\${BASH_SOURCE[1]}\")"
+    local failure_handler=\${FAILURE_HANDLERS[\$failure_handler_name]}
+    [ -n "\$failure_handler" ] && \${failure_handler}
+
     exit 1
+}
+
+register_failure_handler() {
+    local file="\$(basename \"\${BASH_SOURCE[1]}\")"
+    FAILURE_HANDLERS["\$file"]="\$1"
 }
 
 register_usage() {
@@ -145,6 +157,8 @@ upload_repository() {
 
 # Print environment details.
 [ "\$1" == "--silent" ] || echo_color \${COLOR_TURQUOISE_BOLD} "[ PS3-Gentoo development environment - \${PATH_ROOT} ]"
+
+trap failure ERR
 
 EOF
 # -----------------------------------------------------------------------------------------

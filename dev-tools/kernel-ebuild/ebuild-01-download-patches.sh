@@ -6,15 +6,15 @@
 # If downloading of any of the patches fails, script will delete data/patches/<version>
 # directory and return an error code.
 
-clean_download_patches_on_failure() {
-    [ ! -d "${KE_PATH_PATCHES_DOWNLOADS}" ] || rm -rf "${KE_PATH_PATCHES_DOWNLOADS}" || echo "Failed to cleanup ${KE_PATH_PATCHES_DOWNLOADS}"
-}
-
 # --- Shared environment
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
-trap 'clean_download_patches_on_failure; failure' ERR
+register_failure_handler clean_download_patches_on_failure
 register_usage "$0 [package_version]"
+
+clean_download_patches_on_failure() {
+    [ ! -d "${KE_PATH_PATCHES_DOWNLOADS}" ] || rm -rf "${KE_PATH_PATCHES_DOWNLOADS}" || echo "Failed to cleanup ${KE_PATH_PATCHES_DOWNLOADS}"
+}
 
 # Prepare parches storege directory.
 [ ! -d "${KE_PATH_PATCHES_DOWNLOADS}" ] || rm -rf "${KE_PATH_PATCHES_DOWNLOADS}" || failure "Failed to cleanup previous patches in ${KE_PATH_PATCHES_DOWNLOADS}"

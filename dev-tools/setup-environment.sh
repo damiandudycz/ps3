@@ -155,6 +155,12 @@ upload_repository() {
     git push
 }
 
+empty_directory() {
+    # Remove directory if exists and create empty one
+    [ ! -d "\${1}" ] || rm -rf "\${1}"
+    mkdir -p "\${1}"
+}
+
 # Print environment details.
 [ "\$1" == "--silent" ] || echo_color \${COLOR_TURQUOISE_BOLD} "[ PS3-Gentoo development environment - \${PATH_ROOT} ]"
 

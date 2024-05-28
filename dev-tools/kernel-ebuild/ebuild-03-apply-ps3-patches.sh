@@ -17,5 +17,12 @@ register_usage "$0 [package_version]"
 echo "Applying patches from ${KE_PATH_PATCHES_SELECTED} in ${KE_PATH_WORK_SRC_LINUX}"
 for PATCH in "${KE_PATH_PATCHES_SELECTED}"/*.patch; do
     echo "Apply patch ${PATCH}:"
-    patch --batch --force -p1 -i "${PATCH}" -d "${KE_PATH_WORK_SRC_LINUX}"
+#    patch --batch --force -p1 -i "${PATCH}" -d "${KE_PATH_WORK_SRC_LINUX}"
 done
+
+# Save patches if needed
+if [ ${KE_FLAG_SAVE_PATCHES} ] && [ "${KE_PATH_PATCHES_SELECTED}" != "${KE_PATH_PATCHES_VERSIONED}" ]; then
+    echo "Saving default patches to ${KE_PATH_PATCHES_VERSIONED}"
+    empty_directory "${KE_PATH_PATCHES_VERSIONED}"
+    cp "${KE_PATH_PATCHES_SELECTED}"/*.patch "${KE_PATH_PATCHES_VERSIONED}"/
+fi

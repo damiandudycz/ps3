@@ -17,8 +17,6 @@ clean_download_folder_on_failure() {
     [ ! -d "${KE_PATH_WORK_SRC}" ] || rm -rf "${KE_PATH_WORK_SRC}" || echo "Failed to cleanup ${KE_PATH_WORK_SRC}"
 }
 
-# Prepare workdir.
-[ ! -d "${KE_PATH_WORK_SRC}" ] || rm -rf "${KE_PATH_WORK_SRC}"
-mkdir -p "${KE_PATH_WORK_SRC}"
+empty_directory "${KE_PATH_WORK_SRC}"
 
 PORTAGE_TMPDIR="${KE_PATH_WORK_SRC}" ebuild "${KEY_PATH_EBUILD_FILE_SRC}" configure

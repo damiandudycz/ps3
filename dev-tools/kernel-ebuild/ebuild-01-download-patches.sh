@@ -13,19 +13,17 @@ register_failure_handler clean_download_patches_on_failure
 register_usage "$0 [package_version]"
 
 clean_download_patches_on_failure() {
-    [ ! -d "${KE_PATH_PATCHES_DOWNLOADS}" ] || rm -rf "${KE_PATH_PATCHES_DOWNLOADS}" || echo "Failed to cleanup ${KE_PATH_PATCHES_DOWNLOADS}"
+    [ ! -d "${KE_PATH_PATCHES_SAVETO}" ] || rm -rf "${KE_PATH_PATCHES_SAVETO}" || echo "Failed to cleanup ${KE_PATH_PATCHES_SAVETO}"
 }
 
-# Prepare parches storege directory.
-[ ! -d "${KE_PATH_PATCHES_DOWNLOADS}" ] || rm -rf "${KE_PATH_PATCHES_DOWNLOADS}" || failure "Failed to cleanup previous patches in ${KE_PATH_PATCHES_DOWNLOADS}"
-mkdir -p "${KE_PATH_PATCHES_DOWNLOADS}"
+empty_directory "${KE_PATH_PATCHES_SAVETO}"
 
 # Load URL of patches to download.
-source "${KE_PATH_FETCH_LIST}"
+source "${KE_PATH_PATCHES_FETCH_LIST}"
 
 # Download patches.
-echo "Downloading patches to ${KE_PATH_PATCHES_DOWNLOADS}"
-cd "${KE_PATH_PATCHES_DOWNLOADS}"
+echo "Downloading patches to ${KE_PATH_PATCHES_SAVETO}"
+cd "${KE_PATH_PATCHES_SAVETO}"
 for URL_PATCH in "${URL_PS3_PATCHES[@]}"; do
     echo "${URL_PATCH}"
     wget "${URL_PATCH}" --quiet

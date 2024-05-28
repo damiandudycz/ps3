@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# This script returns the version of the newest version of gentoo-kernel package
-# available in standard gentoo repository.
-# By default it returns the stable version, but it can also be called with --unstable
-# flag, to determine the newest unstable available version.
-# If user specified version as an argument, this script will just return user specified version number, even it it doesn't exists.
-
-# --- Shared environment
 source ../../.env-shared.sh --silent || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
 register_usage "$0 [--unstable]"

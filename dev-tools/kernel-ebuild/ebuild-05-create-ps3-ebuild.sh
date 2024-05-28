@@ -1,16 +1,15 @@
 #!/bin/bash
 
-# This script generates new ebuild and distfiles for gentoo-kernel-ps3.
-# It uses config(diffs) file and patches stored for selected version.
-# This script requires that version data is prepared, it can not use default variables.
+source ../../.env-shared.sh || exit 1
+source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
+register_failure_handler cleanup_create_ps3_ebuild
+register_usage "$0 [package_version] [--edit] [--default] [--pretend]"
 
-# TODO: Allow unmasking
-
-#die() {
-#    echo "$*" 1>&2
+cleanup_create_ps3_ebuild() {
+    echo "CLEANUP"
 #    [ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || echo "Failed to remove tmp directory ${PATH_WORK}"
-#    exit 1
-#}
+    # TODO
+}
 
 readonly LIST_DISTFILES_FILES=(
     # List of files and directories compressed into distfiles tarball for overlay distfiles repository.
@@ -19,21 +18,24 @@ readonly LIST_DISTFILES_FILES=(
     ps3_patches # PS3 specific patches to be applied to kernel. Snapshot created with ebuild.
 )
 
-readonly PATH_VERSION_CONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/diffs"
-readonly PATH_VERSION_DEFCONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/defconfig"
-readonly PATH_VERSION_PATCHES="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/patches"
-readonly PATH_EBUILD_PACTHES="${PATH_START}/data/ebuild-patches"
-readonly PATH_PORTAGE_EBUILD_FILE="/var/db/repos/gentoo/${NAME_PACKAGE}/gentoo-kernel-${PACKAGE_VERSION}.ebuild"
-readonly PATH_WORK="/var/tmp/ps3/gentoo-kernel-ps3/${PACKAGE_VERSION}/ebuild"
-readonly PATH_WORK_EBUILD="${PATH_WORK}/${NAME_PACKAGE}-ps3"
-readonly PATH_WORK_DISTFILES="${PATH_WORK}/distfiles"
-readonly PATH_WORK_DISTFILES_TAR="${PATH_WORK_DISTFILES}/gentoo-kernel-ps3-files-${PACKAGE_VERSION}.tar.xz"
-readonly PATH_WORK_EBUILD_FILE="${PATH_WORK_EBUILD}/gentoo-kernel-ps3-${PACKAGE_VERSION}.ebuild"
+#readonly PATH_VERSION_CONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/diffs"
+#readonly PATH_VERSION_DEFCONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/defconfig"
+#readonly PATH_VERSION_PATCHES="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/patches"
+#readonly PATH_EBUILD_PACTHES="${PATH_START}/data/ebuild-patches"
+#readonly PATH_PORTAGE_EBUILD_FILE="/var/db/repos/gentoo/${NAME_PACKAGE}/gentoo-kernel-${PACKAGE_VERSION}.ebuild"
+#readonly PATH_WORK="/var/tmp/ps3/gentoo-kernel-ps3/${PACKAGE_VERSION}/ebuild"
+#readonly PATH_WORK_EBUILD="${PATH_WORK}/${NAME_PACKAGE}-ps3"
+#readonly PATH_WORK_DISTFILES="${PATH_WORK}/distfiles"
+#readonly PATH_WORK_DISTFILES_TAR="${PATH_WORK_DISTFILES}/gentoo-kernel-ps3-files-${PACKAGE_VERSION}.tar.xz"
+#readonly PATH_WORK_EBUILD_FILE="${PATH_WORK_EBUILD}/gentoo-kernel-ps3-${PACKAGE_VERSION}.ebuild"
 
 # Verify required data existence - patches and configs.
-[ -d "${KE_PATH_PATCHES_VERSIONED}" ] || failure
-[ -f "${KE_PATH_CONFIG_VERSIONED}/diffs" ] || failure
+[ -d "${KE_PATH_PATCHES_VERSIONED}" ] || failure "KE_PATH_PATCHES_VERSIONED: ${KE_PATH_PATCHES_VERSIONED} does not exists"
+[ -f "${KE_PATH_CONFIG_VERSIONED}/diffs" ] || failure ""
 [ -f "${KE_PATH_CONFIG_VERSIONED}/defconfig" ] || failure
+
+echo "All good so far"
+exit
 
 # Create local working directory for distfiles and ebuild.
 [ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || die "Failed to clean work dir ${PATH_WORK}"

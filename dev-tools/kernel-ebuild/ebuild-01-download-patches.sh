@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# This script downloads patches specified in data/patches/remote.txt
-# and stores in data/patches/<version> directory.
-# If version is not specified it will download to default patches directory.
-# If downloading of any of the patches fails, script will delete data/patches/<version>
-# directory and return an error code.
-
-# --- Shared environment
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
 register_failure_handler clean_download_patches_on_failure

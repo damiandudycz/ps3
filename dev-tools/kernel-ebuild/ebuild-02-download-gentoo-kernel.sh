@@ -9,6 +9,7 @@
 
 # --- Shared environment
 source ../../.env-shared.sh || exit 1
+source "${PATH_ADDITIONAL_PATHS_KERNEL_EBUILDER}" || exit 1
 trap failure ERR
 register_usage "$0 [package_version]"
 

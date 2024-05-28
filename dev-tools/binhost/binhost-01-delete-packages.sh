@@ -15,28 +15,26 @@ readonly PATH_BINHOST_METADATA="${PATH_BINHOST}/Packages"
 
 # Parse input parameters
 declare -a ARG_PACKAGES_TO_REMOVE
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-        --verbose);; # Handled by env-shared.sh
-        --if-larger|-s)
-            # Pobranie wartości dla parametru --param2
-            SIZE_LIMIT=$2
-            case "${SIZE_LIMIT: -1}" in
-                K|k) SIZE_LIMIT=$(( ${SIZE_LIMIT%K*} * 1024 )) ;;
-                M|m) SIZE_LIMIT=$(( ${SIZE_LIMIT%M*} * 1024 * 1024 )) ;;
-                G|g) SIZE_LIMIT=$(( ${SIZE_LIMIT%G*} * 1024 * 1024 * 1024 )) ;;
-            esac
-            shift 2
-            ;;
-        --*|-*)
-            failure "Unknown parameter: $1"
-            ;;
-        *)
-            ARG_PACKAGES_TO_REMOVE+=("$1")
-            shift
-            ;;
-    esac
-done
+while [[ $# -gt 0 ]]; do case "$1" in
+    --verbose);; # Handled by env-shared.sh
+    --if-larger|-s)
+        # Pobranie wartości dla parametru --param2
+        SIZE_LIMIT=$2
+        case "${SIZE_LIMIT: -1}" in
+            K|k) SIZE_LIMIT=$(( ${SIZE_LIMIT%K*} * 1024 )) ;;
+            M|m) SIZE_LIMIT=$(( ${SIZE_LIMIT%M*} * 1024 * 1024 )) ;;
+            G|g) SIZE_LIMIT=$(( ${SIZE_LIMIT%G*} * 1024 * 1024 * 1024 )) ;;
+        esac
+        shift 2
+        ;;
+    --*|-*)
+        failure "Unknown parameter: $1"
+        ;;
+    *)
+        ARG_PACKAGES_TO_REMOVE+=("$1")
+        shift
+        ;;
+esac; done
 
 # Check if package parameter is provided and package exists
 [[ ! -z "${ARG_PACKAGES_TO_REMOVE}" ]] || [ ${SIZE_LIMIT} ] || show_usage

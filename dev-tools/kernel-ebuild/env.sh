@@ -40,13 +40,14 @@ readonly KE_NAME_PACKAGE_DST="sys-kernel/gentoo-kernel-ps3" # Name of customized
 # Names of helper files and directories.
 readonly KE_NAME_FOLDER_DATA="data"                         # Data folder (data).
 readonly KE_NAME_FOLDER_VERSION_STORAGE="version-storage"   # Version storage folder (data/version-storage).
-readonly KE_NAME_FOLDER_PATCHES="patches"                   # Patches folder (data/version-storage/<version>/patches).
+readonly KE_NAME_FOLDER_PATCHES="ps3_patches"               # Patches folder (data/version-storage/<version>/patches).
 readonly KE_NAME_FOLDER_CONFIG="config"                     # Config folder (data/version-storage/<version>/config).
 readonly KE_NAME_FOLDER_DEFAULT="default"                   # Default storage folder (data/version-storage/default).
 readonly KE_NAME_FOLDER_REPO_DRAFT="repo"                   # Draft of empty overlay repository (data/repo).
 readonly KE_NAME_FOLDER_SCRIPTS="scripts"                   # Scripts folder (data/scripts).
-readonly KE_NAME_FILE_CONF_DIFFS="diffs"                    # Config diffs file (data/version-storage/<version>/diffs).
-readonly KE_NAME_FILE_CONF_DEFCONF="defconfig"              # Default config file (data/version-storage/<version>/defconf).
+readonly KE_NAME_FOLDER_DISTFILES="distfiles"               # Directory containing all files stored in distfiles repository.
+readonly KE_NAME_FILE_CONF_DIFFS="ps3_defconfig_diffs"      # Config diffs file (data/version-storage/<version>/diffs).
+readonly KE_NAME_FILE_CONF_DEFCONF="ps3_gentoo_defconfig"   # Default config file (data/version-storage/<version>/defconf).
 readonly KE_NAME_FILE_PATCHES_CURRENT="patches-current.txt" # List of patches to download (data/patches-current.txt).
 
 # Names of ebuild files and variables.
@@ -75,22 +76,21 @@ readonly KE_PATH_CONFIG_DEFAULT="${KE_PATH_VERSION_STORAGE_DEFAULT}/${KE_NAME_FO
 readonly KE_PATH_CONFIG_VERSIONED="${KE_PATH_VERSION_STORAGE_VERSIONED}/${KE_NAME_FOLDER_CONFIG}"
          KE_PATH_CONFIG_SAVETO="${KE_PATH_CONFIG_VERSIONED}"; # Script ebuild-04-configure.sh will save to this dicrecoty - always in versioned directory.
          KE_PATH_CONFIG_SELECTED="${KE_PATH_CONFIG_VERSIONED}"; ([ ! -f "${KE_PATH_CONFIG_SELECTED}/${KE_NAME_FILE_CONF_DIFFS}" ] || [ ${KE_FLAG_FORCE_DEFAULT} ]) && KE_PATH_CONFIG_SELECTED="${KE_PATH_CONFIG_DEFAULT}" # Versioned if exists, otherwise default.
-
 readonly KE_PATH_CONFIG_DIFFS_DEFAULT="${KE_PATH_CONFIG_DEFAULT}/${KE_NAME_FILE_CONF_DIFFS}"
 readonly KE_PATH_CONFIG_DIFFS_VERSIONED="${KE_PATH_CONFIG_VERSIONED}/${KE_NAME_FILE_CONF_DIFFS}"
-readonlt KE_PATH_CONFIG_DIFFS_SAVETO="${KE_PATH_CONFIG_SAVETO}/${KE_NAME_FILE_CONF_DIFFS}"
+readonly KE_PATH_CONFIG_DIFFS_SAVETO="${KE_PATH_CONFIG_SAVETO}/${KE_NAME_FILE_CONF_DIFFS}"
 readonly KE_PATH_CONFIG_DIFFS_SELECTED="${KE_PATH_CONFIG_SELECTED}/${KE_NAME_FILE_CONF_DIFFS}"
-
 readonly KE_PATH_CONFIG_DEFCONF_DEFAULT="${KE_PATH_CONFIG_DEFAULT}/${KE_NAME_FILE_CONF_DEFCONF}"
 readonly KE_PATH_CONFIG_DEFCONF_VERSIONED="${KE_PATH_CONFIG_VERSIONED}/${KE_NAME_FILE_CONF_DEFCONF}"
-readonlt KE_PATH_CONFIG_DEFCONF_SAVETO="${KE_PATH_CONFIG_SAVETO}/${KE_NAME_FILE_CONF_DEFCONF}"
+readonly KE_PATH_CONFIG_DEFCONF_SAVETO="${KE_PATH_CONFIG_SAVETO}/${KE_NAME_FILE_CONF_DEFCONF}"
 readonly KE_PATH_CONFIG_DEFCONF_SELECTED="${KE_PATH_CONFIG_SELECTED}/${KE_NAME_FILE_CONF_DEFCONF}"
-
 readonly KE_PATH_OVERLAY_DRAFT="${KE_PATH_DATA}/${KE_NAME_FOLDER_REPO_DRAFT}"
+readonly KE_PATH_EBUILD_PATCHES="${KE_PATH_DATA}/ebuild-patches"
 
 # Workdirs.
 readonly KE_PATH_WORK_SRC="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/src"
 readonly KE_PATH_WORK_SRC_LINUX="$(find ${KE_PATH_WORK_SRC}/portage/${KE_NAME_PACKAGE_SRC}-${KE_PACKAGE_VERSION_SELECTED}/work/ -maxdepth 1 -name linux-* -type d -print -quit 2>/dev/null)"
+readonly KE_PATH_WORK_EBUILD="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/ebuild"
 
 # Helper scripts.
 readonly KE_PATH_SCRIPTS="${KE_PATH_DATA}/${KE_NAME_FOLDER_SCRIPTS}"
@@ -99,4 +99,13 @@ readonly KE_PATH_SCRIPT_MERGE_CONFIG="${KE_PATH_WORK_SRC_LINUX}/scripts/kconfig/
 readonly KE_PATH_SCRIPT_DIFFCONFIG="${KE_PATH_WORK_SRC_LINUX}/scripts/diffconfig"
 
 # Other.
-readonly KEY_PATH_EBUILD_FILE_SRC="${PATH_VAR_DB_REPOS_GENTOO}/${KE_NAME_PACKAGE_SRC}/${KE_NAME_EBUILD_FILE_SRC}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"
+readonly KE_PATH_EBUILD_FILE_SRC="${PATH_VAR_DB_REPOS_GENTOO}/${KE_NAME_PACKAGE_SRC}/${KE_NAME_EBUILD_FILE_SRC}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"
+readonly KE_PATH_EBUILD_FILE_DST="${KE_PATH_WORK_EBUILD}/${KE_NAME_EBUILD_FILE_DST}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"
+readonly KE_PATH_EBUILD_FILE_DISTFILES_TAR="${KE_PATH_WORK_EBUILD}/${KE_NAME_EBUILD_FILE_DST}-files-${KE_PACKAGE_VERSION_SELECTED}.tar.xz"
+
+# List of files and directories compressed into distfiles tarball for overlay distfiles repository.
+readonly KE_LIST_DISTFILES=(
+    "${KE_NAME_FILE_CONF_DIFFS}" # Not needed, but kept for tracking changes between versions.
+    "${KE_NAME_FILE_CONF_DEFCONF}" # Updated ps3_defconfig that will replace the original one.
+    "${KE_NAME_FOLDER_PATCHES}" # PS3 specific patches to be applied to kernel. Snapshot created with ebuild.
+)

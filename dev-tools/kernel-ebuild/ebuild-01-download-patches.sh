@@ -1,14 +1,11 @@
 #!/bin/bash
 
+# Load environment.
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
-register_failure_handler clean_download_patches_on_failure
-register_usage "$0 [package_version]"
 
-clean_download_patches_on_failure() {
-    rm -rf "${KE_PATH_PATCHES_SAVETO}" || echo "Failed to cleanup ${KE_PATH_PATCHES_SAVETO}"
-}
-
+# Prepare additional error handling and cleanup before start.
+register_failure_handler 'rm -rf "${KE_PATH_PATCHES_SAVETO}";'
 empty_directory "${KE_PATH_PATCHES_SAVETO}"
 
 # Load URL of patches to download.

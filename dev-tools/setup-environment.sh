@@ -126,7 +126,7 @@ failure() {
     # Execute failure handler if added
     local failure_handler_name="\$(basename \"\${BASH_SOURCE[1]}\")"
     local failure_handler=\${FAILURE_HANDLERS[\$failure_handler_name]}
-    [ -n "\$failure_handler" ] && \${failure_handler}
+    [[ -n "\${failure_handler}" ]] && eval "\${failure_handler}"
 
     exit 1
 }

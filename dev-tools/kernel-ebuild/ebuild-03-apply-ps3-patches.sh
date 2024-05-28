@@ -1,19 +1,19 @@
 #!/bin/bash
 
+# Load environment.
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
-register_usage "$0 [package_version]"
 
-# Apply patches.
+# Apply PS3 patches.
 echo "Applying patches from ${KE_PATH_PATCHES_SELECTED} in ${KE_PATH_WORK_SRC_LINUX}"
 for PATCH in "${KE_PATH_PATCHES_SELECTED}"/*.patch; do
     echo "Apply patch ${PATCH}:"
     patch --batch --force -p1 -i "${PATCH}" -d "${KE_PATH_WORK_SRC_LINUX}"
 done
 
-# Save patches if needed.
-if [ "${KE_PATH_PATCHES_SELECTED}" != "${KE_PATH_PATCHES_VERSIONED}" ]; then
-    if [ ${KE_FLAG_SAVE} ]; then
+# Save used patches if used default patches folder.
+if [[ "${KE_PATH_PATCHES_SELECTED}" != "${KE_PATH_PATCHES_VERSIONED}" ]]; then
+    if [[ ${KE_FLAG_SAVE} ]]; then
         echo "Saving default patches to ${KE_PATH_PATCHES_VERSIONED}"
         empty_directory "${KE_PATH_PATCHES_VERSIONED}"
         cp "${KE_PATH_PATCHES_SELECTED}"/*.patch "${KE_PATH_PATCHES_VERSIONED}"/

@@ -1,75 +1,39 @@
 #!/bin/bash
 
+# Load environment.
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
-register_failure_handler cleanup_create_ps3_ebuild
-register_usage "$0 [package_version] [--edit] [--default] [--pretend]"
 
-cleanup_create_ps3_ebuild() {
-    echo "CLEANUP"
-#    [ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || echo "Failed to remove tmp directory ${PATH_WORK}"
-    # TODO
-}
+# Validate values.
+[[ -d "${KE_PATH_PATCHES_VERSIONED}" ]] || failure "KE_PATH_PATCHES_VERSIONED: ${KE_PATH_PATCHES_VERSIONED} does not exists"
+[[ -f "${KE_PATH_CONFIG_DIFFS_VERSIONED}" ]] || failure "KE_PATH_CONFIG_DIFFS_VERSIONED: ${KE_PATH_CONFIG_DIFFS_VERSIONED} does not exists"
+[[ -f "${KE_PATH_CONFIG_DEFCONF_VERSIONED}" ]] || failure "KE_PATH_CONFIG_DEFCONF_VERSIONED: ${KE_PATH_CONFIG_DEFCONF_VERSIONED} does not exists"
 
-readonly LIST_DISTFILES_FILES=(
-    # List of files and directories compressed into distfiles tarball for overlay distfiles repository.
-    ps3_defconfig_diffs # Not needed, but kept for tracking changes between versions.
-    ps3_gentoo_defconfig # Updated ps3_defconfig that will replace the original one.
-    ps3_patches # PS3 specific patches to be applied to kernel. Snapshot created with ebuild.
-)
+# Prepare additional error handling and cleanup before start.
+register_failure_handler 'rm -rf "${PATH_WORK_EBUILD}";'
+empty_directory "${KE_PATH_WORK_EBUILD}"
 
-#readonly PATH_VERSION_CONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/diffs"
-#readonly PATH_VERSION_DEFCONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/defconfig"
-#readonly PATH_VERSION_PATCHES="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/patches"
-#readonly PATH_EBUILD_PACTHES="${PATH_START}/data/ebuild-patches"
-#readonly PATH_PORTAGE_EBUILD_FILE="/var/db/repos/gentoo/${NAME_PACKAGE}/gentoo-kernel-${PACKAGE_VERSION}.ebuild"
-#readonly PATH_WORK="/var/tmp/ps3/gentoo-kernel-ps3/${PACKAGE_VERSION}/ebuild"
-#readonly PATH_WORK_EBUILD="${PATH_WORK}/${NAME_PACKAGE}-ps3"
-#readonly PATH_WORK_DISTFILES="${PATH_WORK}/distfiles"
-#readonly PATH_WORK_DISTFILES_TAR="${PATH_WORK_DISTFILES}/gentoo-kernel-ps3-files-${PACKAGE_VERSION}.tar.xz"
-#readonly PATH_WORK_EBUILD_FILE="${PATH_WORK_EBUILD}/gentoo-kernel-ps3-${PACKAGE_VERSION}.ebuild"
-
-# Verify required data existence - patches and configs.
-[ -d "${KE_PATH_PATCHES_VERSIONED}" ] || failure "KE_PATH_PATCHES_VERSIONED: ${KE_PATH_PATCHES_VERSIONED} does not exists"
-[ -f "${KE_PATH_CONFIG_VERSIONED}/diffs" ] || failure ""
-[ -f "${KE_PATH_CONFIG_VERSIONED}/defconfig" ] || failure
-
-echo "All good so far"
-exit
-
-# Create local working directory for distfiles and ebuild.
-[ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || die "Failed to clean work dir ${PATH_WORK}"
-mkdir -p "${PATH_WORK}" || die "Failed to create workdir ${PATH_WORK}"
-mkdir -p "${PATH_WORK_EBUILD}" || die "Failed to create workdir ${PATH_WORK_EBUILD}"
-mkdir -p "${PATH_WORK_DISTFILES}" || die "Failed to create workdir ${PATH_WORK_DISTFILES}"
-mkdir -p "${PATH_WORK_DISTFILES}/ps3_patches" || die "Failed to create workdir ${PATH_WORK_DISTFILES}/patches"
-
-# Create empty portage overlay structure.
-cp -rf "${KE_PATH_OVERLAY_DRAFT}"/* "${PATH_WORK}"/
+# Create local working directories..
+mkdir -p "${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_PATCHES}"
 
 # Geather files.
-cp -f "${PATH_VERSION_PATCHES}"/*.patch "${PATH_WORK_DISTFILES}/ps3_patches"/ || die "Failed to copy patches"
-cp -f "${PATH_VERSION_CONFIG}" "${PATH_WORK_DISTFILES}/ps3_defconfig_diffs" || die "Failed to copy config diffs"
-cp -f "${PATH_VERSION_DEFCONFIG}" "${PATH_WORK_DISTFILES}/ps3_gentoo_defconfig" || die "Failed to copy defconfig"
+cp -f "${KE_PATH_PATCHES_VERSIONED}"/*.patch "${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_PATCHES}"/
+cp -f "${KE_PATH_CONFIG_DIFFS_VERSIONED}" "${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DIFFS}"
+cp -f "${KE_PATH_CONFIG_DEFCONF_VERSIONED}" "${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DEFCONF}"
 
 # Create distfiles tarball.
 tar --sort=name --mtime="" --owner=0 --group=0 --numeric-owner --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
-    -caf "${PATH_WORK_DISTFILES_TAR}" -C "${PATH_WORK_DISTFILES}" "${LIST_DISTFILES_FILES[@]}"
-
-# Remove tmp files.
-for FILE in "${LIST_DISTFILES_FILES[@]}"; do
-    rm -rf "$PATH_WORK_DISTFILES/$FILE" || die "Failed to remove ${FILE}"
-done
+    -caf "${KE_PATH_EBUILD_FILE_DISTFILES_TAR}" -C "${KE_PATH_WORK_EBUILD}" "${KE_LIST_DISTFILES[@]}"
+rm -rf "${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_PATCHES}"
+rm -rf "${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DIFFS}"
+rm -rf "${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DEFCONF}"
 
 # Create patched ebuild file and apply patches
-cp "${PATH_PORTAGE_EBUILD_FILE}" "${PATH_WORK_EBUILD_FILE}" || die "Failed to copy original ebuild ${PATH_PORTAGE_EBUILD_FILE}"
-for PATCH in "${PATH_EBUILD_PACTHES}"/*.patch; do
+cp "${KE_PATH_EBUILD_FILE_SRC}" "${KE_PATH_EBUILD_FILE_DST}"
+for PATCH in "${KE_PATH_EBUILD_PATCHES}"/*.patch; do
     echo "Apply patch ${PATCH}:"
-    patch --batch --force -p0 -i "${PATCH}" "${PATH_WORK_EBUILD_FILE}" || die "Failed to apply patch ${PATCH} to ${PATH_WORK_EBUILD_FILE}"
+    patch --batch --force -p0 -i "${PATCH}" "${KE_PATH_EBUILD_FILE_DST}"
 done
 
 # Unmask if selected
-[ ! $UNMASK ] || sed -i 's/\(KEYWORDS=.*\)~ppc64/\1ppc64/' "${PATH_WORK_EBUILD_FILE}" || die "Failed to unmask package"
-
-echo "Gentoo-Kernel-PS3 Ebuild and distfiles generated successfully."
-exit 0
+[ ! $KE_FLAG_UNMASK ] || sed -i 's/\(KEYWORDS=.*\)~ppc64/\1ppc64/' "${PATH_WORK_EBUILD_FILE}"

@@ -18,34 +18,9 @@ cleanup_gentoo_kernel_configure_on_failure() {
 
 # --- Shared environment
 source ../../.env-shared.sh || exit 1
+source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
 trap 'cleanup_gentoo_kernel_configure_on_failure; failure' ERR
 register_usage "$0 [package_version] [--edit] [--default] [--pretend] [--savedefault]"
-
-# Read exec flags
-while [ $# -gt 0 ]; do
-    case "$1" in
-    --verbose) ;;
-    --default)
-        FORCE_DEFAULT=true
-        ;;
-    --edit)
-        CONFIGURE=true
-        ;;
-    --pretent)
-        PRETENT=true
-        ;;
-    --savedefault)
-        SAVE_DEFAULT=true
-        ;;
-    --*)
-        die "Unknown option: $1"
-        ;;
-    *)
-        PACKAGE_VERSION="$1"
-        ;;
-    esac
-    shift
-done
 
 readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
 readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"

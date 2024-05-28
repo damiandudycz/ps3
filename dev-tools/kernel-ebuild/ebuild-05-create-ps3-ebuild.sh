@@ -4,24 +4,29 @@
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
 
+echo "Version: $KE_PACKAGE_VERSION_SELECTED"
+
 # Validate values.
-[[ -d "${KE_PATH_PATCHES_VERSIONED}" ]] || failure "KE_PATH_PATCHES_VERSIONED: ${KE_PATH_PATCHES_VERSIONED} does not exists"
-[[ -f "${KE_PATH_CONFIG_DIFFS_VERSIONED}" ]] || failure "KE_PATH_CONFIG_DIFFS_VERSIONED: ${KE_PATH_CONFIG_DIFFS_VERSIONED} does not exists"
-[[ -f "${KE_PATH_CONFIG_DEFCONF_VERSIONED}" ]] || failure "KE_PATH_CONFIG_DEFCONF_VERSIONED: ${KE_PATH_CONFIG_DEFCONF_VERSIONED} does not exists"
+[[ -d "${KE_PATH_PATCHES_VERSIONED}" ]] || echo_color $COLOR_RED "WARNING! ${KE_PATH_PATCHES_VERSIONED} does not exists. Will try to use default files."
+[[ -f "${KE_PATH_CONFIG_DIFFS_VERSIONED}" ]] || echo_color $COLOR_RED "WARNING! ${KE_PATH_CONFIG_DIFFS_VERSIONED} does not exists. Will try to use default file."
+[[ -f "${KE_PATH_CONFIG_DEFCONF_VERSIONED}" ]] || echo_color $COLOR_RED "WARNING! ${KE_PATH_CONFIG_DEFCONF_VERSIONED} does not exists. Will try to use default file."
+[[ -d "${KE_PATH_PATCHES_SELECTED}" ]] || failure "KE_PATH_PATCHES_SELECTED: ${KE_PATH_PATCHES_VERSIONED} does not exists."
+[[ -f "${KE_PATH_CONFIG_DIFFS_SELECTED}" ]] || failure "KE_PATH_CONFIG_DIFFS_SELECTED: ${KE_PATH_CONFIG_DIFFS_VERSIONED} does not exists."
+[[ -f "${KE_PATH_CONFIG_DEFCONF_SELECTED}" ]] || failure "KE_PATH_CONFIG_DEFCONF_SELECTED: ${KE_PATH_CONFIG_DEFCONF_VERSIONED} does not exists."
 
 # Prepare additional error handling and cleanup before start.
 register_failure_handler 'rm -rf "${PATH_WORK_EBUILD}";'
 empty_directory "${KE_PATH_WORK_EBUILD}"
 
 # Create local working directories..
-mkdir -p "${KE_PATH_WORK_EBUILD_METADATA}"
+mkdir -p "${KE_PATH_WORK_EBUILD_PACKAGE}"
 mkdir -p "${KE_PATH_WORK_EBUILD_DISTFILES}"
 mkdir -p "${KE_PATH_WORK_EBUILD_DISTFILES_PATCHES}"
 
 # Geather files.
-cp -f "${KE_PATH_PATCHES_VERSIONED}"/*.patch "${KE_PATH_WORK_EBUILD_DISTFILES_PATCHES}"/
-cp -f "${KE_PATH_CONFIG_DIFFS_VERSIONED}" "${KE_PATH_EBUILD_FILE_DISTFILES_DIFFS}"
-cp -f "${KE_PATH_CONFIG_DEFCONF_VERSIONED}" "${KE_PATH_EBUILD_FILE_DISTFILES_DEFCONF}"
+cp -f "${KE_PATH_PATCHES_SELECTED}"/*.patch "${KE_PATH_WORK_EBUILD_DISTFILES_PATCHES}"/
+cp -f "${KE_PATH_CONFIG_DIFFS_SELECTED}" "${KE_PATH_EBUILD_FILE_DISTFILES_DIFFS}"
+cp -f "${KE_PATH_CONFIG_DEFCONF_SELECTED}" "${KE_PATH_EBUILD_FILE_DISTFILES_DEFCONF}"
 
 # Create distfiles tarball.
 tar --sort=name --mtime="" --owner=0 --group=0 --numeric-owner --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \

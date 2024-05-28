@@ -49,6 +49,7 @@ readonly KE_NAME_FOLDER_DISTFILES="distfiles"               # Directory containi
 readonly KE_NAME_FILE_CONF_DIFFS="ps3_defconfig_diffs"      # Config diffs file (data/version-storage/<version>/diffs).
 readonly KE_NAME_FILE_CONF_DEFCONF="ps3_gentoo_defconfig"   # Default config file (data/version-storage/<version>/defconf).
 readonly KE_NAME_FILE_PATCHES_CURRENT="patches-current.txt" # List of patches to download (data/patches-current.txt).
+readonly KE_NAME_FILE_MANIFEST="Manifest"                   # Manifest file in portage repository.
 
 # Names of ebuild files and variables.
 readonly KE_NAME_EBUILD_FILE_SRC="gentoo-kernel"
@@ -61,6 +62,11 @@ readonly KE_VAR_EBUILD_KEYWORD_UNSTABLE="~ppc64"
 # Package version.
 KE_PACKAGE_VERSION_DEFAULT=""; [ "${KE_SCRIPT_CURRENT}" = "${KE_SCRIPT_FIND_VERSION}" ] || KE_PACKAGE_VERSION_DEFAULT="$(source $KE_SCRIPT_FIND_VERSION)" || failure # Version of package returned by ebuild-00-find-version.sh.
 KE_PACKAGE_VERSION_SELECTED="${KE_PACKAGE_VERSION_DEFAULT}";
+
+# Names of ebuild files and variables dependant on package version.
+readonly KE_NAME_EBUILD_FILE_DISTFILES_TAR="${KE_NAME_EBUILD_FILE_DST}-files-${KE_PACKAGE_VERSION_SELECTED}.tar.xz"
+readonly KE_NAME_EBUILD_FILE_PACKAGE_SRC="${KE_NAME_EBUILD_FILE_SRC}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"
+readonly KE_NAME_EBUILD_FILE_PACKAGE_DST="${KE_NAME_EBUILD_FILE_DST}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"
 
 # Data folders and files.
 readonly KE_PATH_DATA="${PATH_DEV_TOOLS_KERNEL_EBUILD}/${KE_NAME_FOLDER_DATA}"
@@ -91,7 +97,7 @@ readonly KE_PATH_EBUILD_PATCHES="${KE_PATH_DATA}/ebuild-patches"
 readonly KE_PATH_WORK_SRC="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/src"
 readonly KE_PATH_WORK_SRC_LINUX="$(find ${KE_PATH_WORK_SRC}/portage/${KE_NAME_PACKAGE_SRC}-${KE_PACKAGE_VERSION_SELECTED}/work/ -maxdepth 1 -name linux-* -type d -print -quit 2>/dev/null)"
 readonly KE_PATH_WORK_EBUILD="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/ebuild"
-readonly KE_PATH_WORK_EBUILD_METADATA="${KE_PATH_WORK_EBUILD}/${KE_NAME_PACKAGE_DST}"
+readonly KE_PATH_WORK_EBUILD_PACKAGE="${KE_PATH_WORK_EBUILD}/${KE_NAME_PACKAGE_DST}"
 readonly KE_PATH_WORK_EBUILD_DISTFILES="${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_DISTFILES}"
 readonly KE_PATH_WORK_EBUILD_DISTFILES_PATCHES="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_FOLDER_PATCHES}"
 
@@ -101,12 +107,14 @@ readonly KE_PATH_SCRIPT_APPLY_DIFFCONFIG="${KE_PATH_SCRIPTS}/apply-diffconfig.rb
 readonly KE_PATH_SCRIPT_MERGE_CONFIG="${KE_PATH_WORK_SRC_LINUX}/scripts/kconfig/merge_config.sh"
 readonly KE_PATH_SCRIPT_DIFFCONFIG="${KE_PATH_WORK_SRC_LINUX}/scripts/diffconfig"
 
-# Other.
-readonly KE_PATH_EBUILD_FILE_SRC="${PATH_VAR_DB_REPOS_GENTOO}/${KE_NAME_PACKAGE_SRC}/${KE_NAME_EBUILD_FILE_SRC}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"
-readonly KE_PATH_EBUILD_FILE_DST="${KE_PATH_WORK_EBUILD_METADATA}/${KE_NAME_EBUILD_FILE_DST}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"
+# Work files location.
+readonly KE_PATH_EBUILD_FILE_SRC="${PATH_VAR_DB_REPOS_GENTOO}/${KE_NAME_PACKAGE_SRC}/${KE_NAME_EBUILD_FILE_PACKAGE_SRC}"
+readonly KE_PATH_EBUILD_FILE_DST="${KE_PATH_WORK_EBUILD_PACKAGE}/${KE_NAME_EBUILD_FILE_PACKAGE_DST}"
+
 readonly KE_PATH_EBUILD_FILE_DISTFILES_DIFFS="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_FILE_CONF_DIFFS}"
 readonly KE_PATH_EBUILD_FILE_DISTFILES_DEFCONF="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_FILE_CONF_DEFCONF}"
-readonly KE_PATH_EBUILD_FILE_DISTFILES_TAR="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_EBUILD_FILE_DST}-files-${KE_PACKAGE_VERSION_SELECTED}.tar.xz"
+readonly KE_PATH_EBUILD_FILE_DISTFILES_TAR="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_EBUILD_FILE_DISTFILES_TAR}"
+readonly KE_PATH_EBUILD_FILE_MANIFEST="${KE_PATH_WORK_EBUILD_PACKAGE}/${KE_NAME_FILE_MANIFEST}"
 
 # List of files and directories compressed into distfiles tarball for overlay distfiles repository.
 readonly KE_LIST_DISTFILES=(

@@ -3,13 +3,6 @@
 # This function generates partial manifest for new package and it's distfiles.
 # This information can later be merged with full overlay repository.
 
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
-
-PACKAGE_VERSION="$1"
-
 readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
 readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
 readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-00-find-version.sh"
@@ -23,10 +16,14 @@ readonly PATH_WORK_EBUILD_FILE="${PATH_WORK}/sys-kernel/gentoo-kernel-ps3/${NAME
 readonly PATH_EBUILD_MANIFEST="${PATH_WORK}/sys-kernel/gentoo-kernel-ps3/Manifest"
 
 # Verify data.
-[[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
 [ -d "${PATH_WORK}" ] || die "Workdir for version ${PACKAGE_VERSION} not found."
 [ -f "${PATH_WORK_EBUILD_FILE}" ] || die "Ebuild for version ${PACKAGE_VERSION} not found."
 [ -f "${PATH_WORK_DISTFILES_TAR}" ] || die "Distfiles for version ${PACKAGE_VERSION} not found."
+
+
+# Create empty portage overlay structure.
+#cp -rf "${KE_PATH_OVERLAY_DRAFT}"/* "${KE_PATH_WORK_EBUILD}"/
+
 
 # Clear old Manifest file if eists:
 [ ! -f "${PATH_EBUILD_MANIFEST}" ] || rm "${PATH_EBUILD_MANIFEST}" || die "Failed to remove old manifest at ${PATH_EBUILD_MANIFEST}"
@@ -51,5 +48,3 @@ done < "${PATH_EBUILD_MANIFEST}" > "${PATH_EBUILD_MANIFEST}.tmp"; then
 fi
 mv "${PATH_EBUILD_MANIFEST}.tmp" "${PATH_EBUILD_MANIFEST}"
 
-echo "Gentoo-Kernel-PS3 Ebuild manifest generated successfully. "
-exit 0

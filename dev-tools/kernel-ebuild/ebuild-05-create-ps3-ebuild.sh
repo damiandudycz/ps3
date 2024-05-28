@@ -14,19 +14,21 @@ register_failure_handler 'rm -rf "${PATH_WORK_EBUILD}";'
 empty_directory "${KE_PATH_WORK_EBUILD}"
 
 # Create local working directories..
-mkdir -p "${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_PATCHES}"
+mkdir -p "${KE_PATH_WORK_EBUILD_METADATA}"
+mkdir -p "${KE_PATH_WORK_EBUILD_DISTFILES}"
+mkdir -p "${KE_PATH_WORK_EBUILD_DISTFILES_PATCHES}"
 
 # Geather files.
-cp -f "${KE_PATH_PATCHES_VERSIONED}"/*.patch "${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_PATCHES}"/
-cp -f "${KE_PATH_CONFIG_DIFFS_VERSIONED}" "${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DIFFS}"
-cp -f "${KE_PATH_CONFIG_DEFCONF_VERSIONED}" "${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DEFCONF}"
+cp -f "${KE_PATH_PATCHES_VERSIONED}"/*.patch "${KE_PATH_WORK_EBUILD_DISTFILES_PATCHES}"/
+cp -f "${KE_PATH_CONFIG_DIFFS_VERSIONED}" "${KE_PATH_EBUILD_FILE_DISTFILES_DIFFS}"
+cp -f "${KE_PATH_CONFIG_DEFCONF_VERSIONED}" "${KE_PATH_EBUILD_FILE_DISTFILES_DEFCONF}"
 
 # Create distfiles tarball.
 tar --sort=name --mtime="" --owner=0 --group=0 --numeric-owner --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
-    -caf "${KE_PATH_EBUILD_FILE_DISTFILES_TAR}" -C "${KE_PATH_WORK_EBUILD}" "${KE_LIST_DISTFILES[@]}"
-rm -rf "${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_PATCHES}"
-rm -rf "${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DIFFS}"
-rm -rf "${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DEFCONF}"
+    -caf "${KE_PATH_EBUILD_FILE_DISTFILES_TAR}" -C "${KE_PATH_WORK_EBUILD_DISTFILES}" "${KE_LIST_DISTFILES[@]}"
+rm -rf "${KE_PATH_WORK_EBUILD_DISTFILES_PATCHES}"
+rm -rf "${KE_PATH_EBUILD_FILE_DISTFILES_DIFFS}"
+rm -rf "${KE_PATH_EBUILD_FILE_DISTFILES_DEFCONF}"
 
 # Create patched ebuild file and apply patches
 cp "${KE_PATH_EBUILD_FILE_SRC}" "${KE_PATH_EBUILD_FILE_DST}"
@@ -36,4 +38,7 @@ for PATCH in "${KE_PATH_EBUILD_PATCHES}"/*.patch; do
 done
 
 # Unmask if selected
-[ ! $KE_FLAG_UNMASK ] || sed -i 's/\(KEYWORDS=.*\)~ppc64/\1ppc64/' "${PATH_WORK_EBUILD_FILE}"
+if [[ ${KE_FLAG_UNMASK} ]]; then
+    echo "Unmasking ebuild ${KE_PATH_EBUILD_FILE_DST}"
+    sed -i 's/\(KEYWORDS=.*\)~ppc64/\1ppc64/' "${KE_PATH_EBUILD_FILE_DST}"
+fi

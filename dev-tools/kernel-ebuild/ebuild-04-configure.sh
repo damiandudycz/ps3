@@ -32,13 +32,13 @@ ARCH=powerpc make savedefconfig
 ${KE_PATH_SCRIPT_DIFFCONFIG} "arch/powerpc/configs/${KE_NAME_EBUILD_DEFCONFIG}" defconfig > diffs
 
 # Save versioned configs
-if [ ! ${KE_FLAG_PRETENT} ]; then
+if [ ${KE_FLAG_SAVE_CONFIG} ]; then
     [ ! -d "${KE_PATH_CONFIG_SAVETO}" ] && mkdir -p "${KE_PATH_CONFIG_SAVETO}"
     mv "defconfig" "${KE_PATH_CONFIG_SAVETO}"/defconfig
     mv "diffs" "${KE_PATH_CONFIG_SAVETO}"/diffs
     echo "Configuration stored in ${KE_PATH_CONFIG_SAVETO}"
 else
-    echo "Configuwarion was not stored due to --pretent flag being used"
+    echo_color ${COLOR_RED} "Configuration not stored! Please use --saveconfig flag, unless just testing."
 fi
 
 # Cleanup

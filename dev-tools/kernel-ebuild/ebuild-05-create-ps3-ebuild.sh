@@ -6,30 +6,12 @@
 
 # TODO: Allow unmasking
 
-die() {
-    echo "$*" 1>&2
-    [ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || echo "Failed to remove tmp directory ${PATH_WORK}"
-    exit 1
-}
+#die() {
+#    echo "$*" 1>&2
+#    [ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || echo "Failed to remove tmp directory ${PATH_WORK}"
+#    exit 1
+#}
 
-# Read exec flags
-while [ $# -gt 0 ]; do
-    case "$1" in
-    --unmask)
-        UNMASK=true
-        ;;
-    --*)
-        die "Unknown option: $1"
-        ;;
-    *)
-      	PACKAGE_VERSION="$1"
-        ;;
-    esac
-    shift
-done
-
-readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
-readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
 readonly LIST_DISTFILES_FILES=(
     # List of files and directories compressed into distfiles tarball for overlay distfiles repository.
     ps3_defconfig_diffs # Not needed, but kept for tracking changes between versions.
@@ -37,12 +19,6 @@ readonly LIST_DISTFILES_FILES=(
     ps3_patches # PS3 specific patches to be applied to kernel. Snapshot created with ebuild.
 )
 
-readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_VERSION_STORAGE="${PATH_START}/data/version-storage"
-readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-00-find-version.sh"
-readonly PATH_REPO_DRAFT="${PATH_START}/data/repo"
-[ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
 readonly PATH_VERSION_CONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/diffs"
 readonly PATH_VERSION_DEFCONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/defconfig"
 readonly PATH_VERSION_PATCHES="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/patches"
@@ -54,11 +30,10 @@ readonly PATH_WORK_DISTFILES="${PATH_WORK}/distfiles"
 readonly PATH_WORK_DISTFILES_TAR="${PATH_WORK_DISTFILES}/gentoo-kernel-ps3-files-${PACKAGE_VERSION}.tar.xz"
 readonly PATH_WORK_EBUILD_FILE="${PATH_WORK_EBUILD}/gentoo-kernel-ps3-${PACKAGE_VERSION}.ebuild"
 
-# Verify data.
-[[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
-[ -d "${PATH_VERSION_PATCHES}" ] || die "Patches for version ${PACKAGE_VERSION} not found. Please run ebuild-apply-kernel-patches.sh first."
-[ -f "${PATH_VERSION_DEFCONFIG}" ] || die "Defconfigs for version ${PACKAGE_VERSION} not found. Please run ebuild-configure.sh first."
-[ -f "${PATH_VERSION_CONFIG}" ] || die "Configs for version ${PACKAGE_VERSION} not found. Please run ebuild-configure.sh first."
+# Verify required data existence - patches and configs.
+[ -d "${KE_PATH_PATCHES_VERSIONED}" ] || failure
+[ -f "${KE_PATH_CONFIG_VERSIONED}/diffs" ] || failure
+[ -f "${KE_PATH_CONFIG_VERSIONED}/defconfig" ] || failure
 
 # Create local working directory for distfiles and ebuild.
 [ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || die "Failed to clean work dir ${PATH_WORK}"
@@ -68,7 +43,7 @@ mkdir -p "${PATH_WORK_DISTFILES}" || die "Failed to create workdir ${PATH_WORK_D
 mkdir -p "${PATH_WORK_DISTFILES}/ps3_patches" || die "Failed to create workdir ${PATH_WORK_DISTFILES}/patches"
 
 # Create empty portage overlay structure.
-cp -rf "${PATH_REPO_DRAFT}"/* "${PATH_WORK}"/
+cp -rf "${KE_PATH_OVERLAY_DRAFT}"/* "${PATH_WORK}"/
 
 # Geather files.
 cp -f "${PATH_VERSION_PATCHES}"/*.patch "${PATH_WORK_DISTFILES}/ps3_patches"/ || die "Failed to copy patches"

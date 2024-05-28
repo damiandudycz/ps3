@@ -22,11 +22,11 @@ done
 
 # Save patches if needed
 if [ "${KE_PATH_PATCHES_SELECTED}" != "${KE_PATH_PATCHES_VERSIONED}" ]; then
-    if [ ${KE_FLAG_SAVE_PATCHES} ]; then
+    if [ ${KE_FLAG_SAVE} ]; then
         echo "Saving default patches to ${KE_PATH_PATCHES_VERSIONED}"
         empty_directory "${KE_PATH_PATCHES_VERSIONED}"
         cp "${KE_PATH_PATCHES_SELECTED}"/*.patch "${KE_PATH_PATCHES_VERSIONED}"/
     else
-        echo_color ${COLOR_RED} "Patches not stored for current version ${KE_PACKAGE_VERSION}. Please use --savepatches flag!"
+        echo_color ${COLOR_RED} "Patches not stored for current version ${KE_PACKAGE_VERSION}. Please use --save flag!"
     fi
 fi

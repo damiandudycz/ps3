@@ -1,6 +1,6 @@
 ebuild-find-version.sh:
-    This script returns the newest available version of gentoo-kernel. If executed with --unstable it returns the latest unstable version.
-    Otherwise it returns the latest stable.
+    This script returns the newest available version of gentoo-kernel. If executed with --unmask it returns the latest unstable version.
+    Otherwise it returns the latest stable. If version is specified in arguments, it returns given version if its in correct format.
 
 ebuild-fetch-patches.sh
     This script updates patches for version specified as a parameter or default patches if run without a patameter.

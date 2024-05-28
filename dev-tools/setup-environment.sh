@@ -19,11 +19,9 @@ cat <<EOF > "${PATH_ENV_FILE}"
 readonly PS3_ENV_SHARED_LOADED=true
 readonly PROJECT_NAME="PS3_Gentoo"
 readonly CONF_CATALYST_RELEASE_NAMES=(default) # Supported release configurations, eq. LTO, CLANG, etc.
-readonly CONF_CATALYST_RELEASE_NAME_DFAULT="default" # Supported release configurations, eq. LTO, CLANG, etc.
+readonly CONF_CATALYST_RELEASE_NAME_DFAULT="default"
 readonly CONF_GITHUB_SIZE_LIMIT="100M"
 declare -A USAGE_DESCRIPTIONS
-
-# ---------- Paths.
 
 # Shared environment configuration and functionality for PS3-Gentoo project dev tools.
 readonly PATH_ROOT="${PATH_ROOT_INITIAL}"
@@ -43,12 +41,12 @@ readonly PATH_DEV_TOOLS_PS3_INSTALLER="\${PATH_DEV_TOOLS}/ps3-installer"
 readonly PATH_DEV_TOOLS_RELEASE="\${PATH_DEV_TOOLS}/release"
 readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng"
 
-# External modules:
+# External modules.
 readonly PATH_AUTOBUILDS_PS3_GENTOO="\${PATH_AUTOBUILDS}/ps3-gentoo-autobuilds" # Autobuilds.
 readonly PATH_BINHOSTS_PS3_GENTOO="\${PATH_BINHOSTS}/ps3-gentoo-binhosts"       # Binhosts.
 readonly PATH_OVERLATS_PS3_GENTOO="\${PATH_OVERLAYS}/ps3-gentoo-overlay"        # Overlays.
 
-# Various system elements:
+# Various system elements.
 readonly PATH_ETC="/etc"
 readonly PATH_USR="/usr"
 readonly PATH_VAR="/var"
@@ -63,7 +61,7 @@ readonly PATH_USR_BIN="\${PATH_USR}/bin"
 readonly PATH_VAR_DB_REPOS="\${PATH_VAR}/db/repos"
 readonly PATH_VAR_DB_REPOS_GENTOO="\${PATH_VAR_DB_REPOS}/gentoo"
 
-# Various project paths:
+# DEV Tools work directories.
 readonly PATH_WORK="\${PATH_VAR_TMP}/\${PROJECT_NAME}"
 readonly PATH_WORK_BINHOST="\${PATH_WORK}/binhost"
 readonly PATH_WORK_DISTCC_DOCKER="\${PATH_WORK}/distcc_docker"
@@ -72,6 +70,18 @@ readonly PATH_WORK_KERNEL_EBUILD="\${PATH_WORK}/kernel_ebuild"
 readonly PATH_WORK_PS3_INSTALLER="\${PATH_WORK}/ps3_installer"
 readonly PATH_WORK_RELEASE="\${PATH_WORK}/release"
 readonly PATH_WORK_RELENG="\${PATH_WORK}/releng"
+
+# DEV Tools additional environments.
+readonly PATH_EXTRA_ENV_BINHOST="\${PATH_DEV_TOOLS_BINHOST}/env.sh"
+readonly PATH_EXTRA_ENV_DISTCC_DOCKER="\${PATH_DEV_TOOLS_DISTCC_DOCKER}/env.sh"
+readonly PATH_EXTRA_ENV_ENVIRONMENT="\${PATH_DEV_TOOLS_ENVIRONMENT}/env.sh"
+readonly PATH_EXTRA_ENV_KERNEL_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/env.sh"
+readonly PATH_EXTRA_ENV_PS3_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/env.sh"
+readonly PATH_EXTRA_ENV_RELEASE="\${PATH_DEV_TOOLS_RELEASE}/env.sh"
+readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
+
+# TODO: Move some parts to sub envs
+# Various
 readonly PATH_INTERPRETER="\${PATH_USR_BIN}/qemu-ppc64"
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
 readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
@@ -81,16 +91,14 @@ readonly PATH_CATALYST_STAGES="\${PATH_CATALYST_TMP}/config/stages"
 readonly PATH_CATALYST_PACKAGES="\${PATH_CATALYST_TMP}/packages"
 readonly PATH_CATALYST_PATCH_DIR="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
 
-# ---------- URLs.
-
+# URLs
 readonly URL_GIRHUB_RAW_MAIN="https://raw.githubusercontent.com/damiandudycz"
 readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_MAIN}/ps3"
 readonly URL_GITHUB_RAW_AUTOBUILDS="\${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-autobuilds"
 readonly URL_GITHUB_RAW_BINHOSTS="\${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-binhosts"
 readonly URL_GITHUB_RAW_OVERLAY="\${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-overlay"
 
-# ---------- Shared functionality.
-
+# Shared functionality.
 readonly COLOR_RED='\033[0;31m'
 readonly COLOR_GREEN='\033[0;32m'
 readonly COLOR_TURQUOISE='\033[0;36m'

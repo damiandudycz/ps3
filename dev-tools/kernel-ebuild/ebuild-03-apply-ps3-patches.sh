@@ -15,6 +15,7 @@ trap failure ERR
 register_usage "$0 [package_version]"
 
 # Apply patches
+echo "Applying patches from ${KE_PATH_PATCHES_SELECTED} in ${KE_PATH_WORK_SRC_LINUX}"
 for PATCH in "${KE_PATH_PATCHES_SELECTED}"/*.patch; do
     echo "Apply patch ${PATCH}:"
     patch --batch --force -p1 -i "${PATCH}" -d "${KE_PATH_WORK_SRC_LINUX}"

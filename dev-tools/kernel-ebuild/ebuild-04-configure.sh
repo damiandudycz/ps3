@@ -22,6 +22,9 @@ source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_E
 trap 'cleanup_gentoo_kernel_configure_on_failure; failure' ERR
 register_usage "$0 [package_version] [--edit] [--default] [--pretend] [--savedefault]"
 
+
+
+
 readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
 readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
 
@@ -39,14 +42,10 @@ readonly PATH_SOURCES_SRC="$(find ${PATH_WORK_GENTOO_KERNEL}/portage/${NAME_PACK
 readonly PATH_SCRIPT_MERGE_CONFIG="${PATH_SOURCES_SRC}/scripts/kconfig/merge_config.sh"
 readonly PATH_SCRIPT_DIFFCONFIG="${PATH_SOURCES_SRC}/scripts/diffconfig"
 
-[[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || show_usage
-[ ! $PATH_SOURCES_SRC ] && failure "Failed to find PATH_SOURCES_SRC"
-[ -d "${PATH_WORK_GENTOO_KERNEL}" ] || failure "${PATH_WORK_GENTOO_KERNEL} not found. Please run ebuild-emerge-gentoo-sources.sh <version> first."
-[ ! ${PRETENT} ] || [ ! ${SAVE_DEFAULT} ] || failure "Cannot use --pretent and --savedefault at the same time"
+[ -d "${KE_PATH_WORK_SRC}" ] || failure "${KE_PATH_WORK_SRC} not found. Please run ebuild-emerge-gentoo-sources.sh <version> first."
 
 echo "Config used: ${PATH_USED_CONFIG}"
-
-cd "${PATH_SOURCES_SRC}"
+cd "${KE_PATH_WORK_SRC}"
 
 # Generate default PS3_Defconfig.
 ARCH=powerpc make ${NAME_PS3_DEFCONFIG}
@@ -55,7 +54,7 @@ ARCH=powerpc ${PATH_SCRIPT_MERGE_CONFIG} .config_modified
 rm .config_modified
 
 # Menuconfig.
-[ ! ${CONFIGURE} ] || ARCH=powerpc make menuconfig
+[ ! ${KE_FLAG_CONFIG} ] || ARCH=powerpc make menuconfig
 
 # Prepare new config storage directory.
 [ ! -d "${PATH_VERSION_CONFIG}" ] || rm -rf "${PATH_VERSION_CONFIG}"
@@ -72,9 +71,7 @@ cp defconfig "${PATH_NEW_DEFCONFIG}"
 rm -f defconfig .config
 
 # Update default config if used --savedefault.
-[ ! ${SAVE_DEFAULT} ] || cp "${PATH_NEW_CONFIG}" "${PATH_DEFAULT_CONFIG}"
+[ ${KE_FLAG_SAVE_DEFAULT} ] && cp "${PATH_NEW_CONFIG}" "${PATH_DEFAULT_CONFIG}"
 
 # Cleaning.
-[ ! ${PATH_NEW_CONFIG_TMP} ] || rm -f "${PATH_NEW_CONFIG_TMP}"
-
-echo "Configuration generated successfully."
+rm -f "${PATH_NEW_CONFIG_TMP}"

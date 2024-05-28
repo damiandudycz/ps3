@@ -157,7 +157,7 @@ upload_repository() {
 
 empty_directory() {
     # Remove directory if exists and create empty one
-    [ ! -d "\${1}" ] || rm -rf "\${1}"
+    rm -rf "\${1}"
     mkdir -p "\${1}"
 }
 

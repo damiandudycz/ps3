@@ -14,7 +14,7 @@ register_failure_handler clean_download_folder_on_failure
 register_usage "$0 [package_version]"
 
 clean_download_folder_on_failure() {
-    [ ! -d "${KE_PATH_WORK_SRC}" ] || rm -rf "${KE_PATH_WORK_SRC}" || echo "Failed to cleanup ${KE_PATH_WORK_SRC}"
+    rm -rf "${KE_PATH_WORK_SRC}" || echo "Failed to cleanup ${KE_PATH_WORK_SRC}"
 }
 
 empty_directory "${KE_PATH_WORK_SRC}"

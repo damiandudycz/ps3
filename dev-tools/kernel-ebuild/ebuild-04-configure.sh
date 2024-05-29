@@ -8,7 +8,8 @@ source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_E
 [[ -d "${KE_PATH_WORK_SRC}" ]] || failure "KE_PATH_WORK_SRC: ${KE_PATH_WORK_SRC} not found."
 
 # Prepare additional error handling and cleanup before start.
-register_failure_handler 'rm -f defconfig diffs .config_modified;'
+KE_EBUILD_CONFIGURE_FILES_TO_CLEAN="defconfig diffs .config_modified"
+register_failure_handler "rm -f ${KE_EBUILD_CONFIGURE_FILES_TO_CLEAN};"
 
 # Open SRC directory.
 cd "${KE_PATH_WORK_SRC_LINUX}"
@@ -44,4 +45,4 @@ else
 fi
 
 # Cleanup.
-rm -f defconfig diffs .config_modified
+rm -f ${KE_EBUILD_CONFIGURE_FILES_TO_CLEAN}

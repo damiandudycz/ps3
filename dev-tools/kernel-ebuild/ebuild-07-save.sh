@@ -5,8 +5,8 @@ source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
 
 # Verify data.
-[ -d "${KE_PATH_WORK_EBUILD_DISTFILES}" ] || failure "KE_PATH_WORK_EBUILD_DISTFILES not found at: ${KE_PATH_WORK_EBUILD_DISTFILES}"
-[ -f "${KE_PATH_EBUILD_FILE_DST}" ] || failure "KE_PATH_EBUILD_FILE_DST not found at: ${KE_PATH_EBUILD_FILE_DST}"
+[[ -d "${KE_PATH_WORK_EBUILD_DISTFILES}" ]] || failure "KE_PATH_WORK_EBUILD_DISTFILES not found at: ${KE_PATH_WORK_EBUILD_DISTFILES}"
+[[ -f "${KE_PATH_EBUILD_FILE_DST}" ]] || failure "KE_PATH_EBUILD_FILE_DST not found at: ${KE_PATH_EBUILD_FILE_DST}"
 
 readonly TMP_MANIFEST=$(mktemp)
 register_failure_handler 'rm -f ${TMP_MANIFEST}'

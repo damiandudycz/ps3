@@ -4,7 +4,6 @@
 
 # --- Shared environment
 source ../../.env-shared.sh || exit 1
-trap failure ERR
 
 readonly PATH_DELETE_SCRIPT="${PATH_DEV_TOOLS_BINHOST}/binhost-01-delete-packages.sh"
 

@@ -8,15 +8,15 @@ source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_E
 [ -f "${KE_PATH_EBUILD_FILE_DISTFILES_TAR}" ] || failure "KE_PATH_EBUILD_FILE_DISTFILES_TAR not found at ${KE_PATH_EBUILD_FILE_DISTFILES_TAR}"
 [ -f "${KE_PATH_EBUILD_FILE_DST}" ] || failure "KE_PATH_EBUILD_FILE_DST not found at ${KE_PATH_EBUILD_FILE_DST}"
 
-# Clean old data
 clear_repo_files() {
     for FILE in "${KE_PATH_OVERLAY_DRAFT}"/*; do
         FILENAME=$(basename "${FILE}")
         rm -rf "${KE_PATH_WORK_EBUILD}/${FILENAME}"
     done
 }
-clear_repo_files
 register_failure_handler clear_repo_files
+
+clear_repo_files
 rm -f "${KE_PATH_EBUILD_FILE_MANIFEST}"
 
 # Copy empty portage overlay structure.

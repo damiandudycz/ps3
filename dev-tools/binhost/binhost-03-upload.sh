@@ -6,7 +6,6 @@
 
 # --- Shared environment
 source ../../.env-shared.sh || exit 1
-trap failure ERR
 
 readonly PATH_BINHOST="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_CATALYST_RELEASE_NAME_DFAULT}"
 upload_repository "${PATH_BINHOST}" "Binhost automatic update"

@@ -45,5 +45,5 @@ done
 # Unmask if selected
 if [[ ${KE_FLAG_UNMASK} ]]; then
     echo "Unmasking ebuild ${KE_PATH_EBUILD_FILE_DST}"
-    sed -i 's/\(KEYWORDS=.*\)~ppc64/\1ppc64/' "${KE_PATH_EBUILD_FILE_DST}"
+    sed -i "s/\(KEYWORDS=.*\)${KE_VAR_EBUILD_KEYWORD_UNSTABLE}/\1${KE_VAR_EBUILD_KEYWORD_DEFAULT}/" "${KE_PATH_EBUILD_FILE_DST}"
 fi

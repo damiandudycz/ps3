@@ -1,0 +1,12 @@
+diff -Naur a/drivers/rtc/rtc-ps3.c b/drivers/rtc/rtc-ps3.c
+--- a/drivers/rtc/rtc-ps3.c	2024-03-17 19:04:42.798850991 +0700
++++ b/drivers/rtc/rtc-ps3.c	2024-03-17 19:04:43.737839196 +0700
+@@ -53,7 +53,7 @@
+ 		return PTR_ERR(rtc);
+ 
+ 	rtc->ops = &ps3_rtc_ops;
+-	rtc->range_max = U64_MAX;
++	rtc->range_max = S64_MAX;
+ 
+ 	platform_set_drvdata(dev, rtc);
+ 

@@ -4,8 +4,6 @@
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
 
-echo "Version: $KE_PACKAGE_VERSION_SELECTED"
-
 # Validate values.
 [[ -d "${KE_PATH_PATCHES_VERSIONED}" ]] || echo_color $COLOR_RED "WARNING! ${KE_PATH_PATCHES_VERSIONED} does not exists. Will try to use default files."
 [[ -f "${KE_PATH_CONFIG_DIFFS_VERSIONED}" ]] || echo_color $COLOR_RED "WARNING! ${KE_PATH_CONFIG_DIFFS_VERSIONED} does not exists. Will try to use default file."

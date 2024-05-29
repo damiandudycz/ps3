@@ -62,6 +62,8 @@ readonly PATH_USR_SHARE="\${PATH_USR}/share"
 readonly PATH_USR_BIN="\${PATH_USR}/bin"
 readonly PATH_VAR_DB_REPOS="\${PATH_VAR}/db/repos"
 readonly PATH_VAR_DB_REPOS_GENTOO="\${PATH_VAR_DB_REPOS}/gentoo"
+readonly PATH_VAR_CACHE="\${PATH_VAR}/cache"
+readonly PATH_VAR_CACHE_DISTFILES="\${PATH_VAR_CACHE}/distfiles"
 
 # DEV Tools work directories.
 readonly PATH_WORK="\${PATH_VAR_TMP}/\${PROJECT_NAME}"

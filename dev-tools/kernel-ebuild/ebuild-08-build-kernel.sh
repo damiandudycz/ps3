@@ -3,49 +3,12 @@
 source ../../.env-shared.sh --silent || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
 
-# 1. Make sure ebuild files are stored in overlay and distfiles - compare with diff
-# 2. Copy distfiles to /var/cache/distfiles
-# 3. powerpc64-emerge with buildpkg only
+# Check if latest files are stored.
+readonly EBUILD_FILES_DIFF=$(diff "${KE_PATH_EBUILD_FILE_DST}" "${KE_PATH_OVERLAY_EBUILD_FILE_PACKAGE}" 2> /dev/null) || failure "Files ${KE_PATH_EBUILD_FILE_DST} ${KE_PATH_OVERLAY_EBUILD_FILE_PACKAGE} differ"
+[[ ! ${EBUILD_FILES_DIFF} ]] || failure "Current version of ebuild not stored in overlay."
 
-readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
-readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
-readonly DRACUT_FLAGS="--xz --no-hostonly -a dmsquash-live -a mdraid -o btrfs -o crypt -o i18n -o usrmount -o lunmask -o qemu -o qemu-net -o nvdimm -o multipath -o resume";
-readonly MAKE_JOBS=8
+# Copy distfiles, so that they can be used by emerge without uploading to github.
+cp "${KE_PATH_WORK_EBUILD_DISTFILES}"/* "${PATH_VAR_CACHE_DISTFILES}"/
 
-readonly PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine script directory."
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die "Failed to determine root directory."
-readonly PATH_VERSION_STORAGE="${PATH_START}/data/version-storage"
-readonly PATH_DEFAULT_CONFIG="${PATH_VERSION_STORAGE}/default/config"
-readonly PATH_VERSION_SCRIPT="${PATH_START}/ebuild-00-find-version.sh"
-[ ! -z "${PACKAGE_VERSION}" ] || PACKAGE_VERSION=$($PATH_VERSION_SCRIPT) || die "Failed to get default version of package"
-readonly PATH_WORK="/var/tmp/ps3/gentoo-kernel-ps3/${PACKAGE_VERSION}/linux"
-readonly PATH_SOURCES="/var/tmp/ps3/gentoo-kernel-ps3/${PACKAGE_VERSION}/src"
-readonly PATH_VERSION_CONFIG="${PATH_VERSION_STORAGE}/${PACKAGE_VERSION}/config/defconfig"
-readonly PATH_SOURCES_SRC="$(find ${PATH_SOURCES}/portage/${NAME_PACKAGE}-${PACKAGE_VERSION}/work/ -maxdepth 1 -name linux-* -type d -print -quit)"
-readonly PATH_SOURCES_DEFCONFIG="${PATH_SOURCES_SRC}/arch/powerpc/configs/${NAME_PS3_DEFCONFIG}"
-
-[[ "${PACKAGE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([0-9]+)?$ ]] || die "Please provide valid version number, ie. $0 6.6.30"
-[ ! $PATH_SOURCES_SRC ] && die "Failed to find PATH_SOURCES_SRC"
-[ -d "${PATH_SOURCES}" ] || die "${PATH_SOURCES} not found. Please run ebuild-emerge-gentoo-sources.sh <version> first."
-[ -f "${PATH_VERSION_CONFIG}" ] || die "${PATH_VERSION_CONFIG} not found."
-
-# Prepare workdir.
-[ ! -d "${PATH_WORK}" ] || rm -rf "${PATH_WORK}" || die "Failed to clean previous files in ${PATH_WORK}"
-mkdir -p "${PATH_WORK}" || die "Failed to create local working directory"
-
-echo "Config used: ${PATH_VERSION_CONFIG}"
-
-cd "${PATH_SOURCES_SRC}" || die "Failed to open directory ${PATH_SOURCES_SRC}"
-
-# Overwrite PS3_Defcongig
-cp "${PATH_VERSION_CONFIG}" "${PATH_SOURCES_DEFCONFIG}" || die "Failed to overwrite ${NAME_PS3_DEFCONFIG}"
-
-# Generate liunx and initramfs.
-ARCH=powerpc make ${NAME_PS3_DEFCONFIG} || die "Failed to generate PS3 Defconfig"
-ARCH=powerpc make -j${MAKE_JOBS} || die "Failed to build kernel"
-ARCH=powerpc make modules_install INSTALL_MOD_PATH="${PATH_WORK}" || die "Failed to install modules"
-# This would strip symbols from modules, but might not work on another architecture
-#ARCH=powerpc make modules_install INSTALL_MOD_STRIP=1 INSTALL_MOD_PATH="${PATH_WORK}" || die "Failed to install modules"
-cp "${PATH_SOURCES_SRC}/vmlinux" "${PATH_WORK}"/ || die "Failed to copy vmlinux"
-# // Dracut requires installing some special tools, plus it's not sure how it will behave on different host architecture
-#dracut $DRACUT_FLAGS --include . "${PATH_WORK}/initramfs.img" $(make kernelrelease) || die "Failed to generate initramfs"
+# Build package using crossdev.
+powerpc64-unknown-linux-gnu-emerge "${KE_NAME_PACKAGE_DST}"

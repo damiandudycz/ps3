@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# This script installs and configures git and git-lfs packages.
-
-# --- Shared environment
 source ../../.env-shared.sh || exit 1
 trap failure ERR
 

@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# This script configures portage, enabling binpkg packages usage.
-
-# --- Shared environment
 source ../../.env-shared.sh || exit 1
 trap failure ERR
 
@@ -16,7 +13,6 @@ if ! grep -q "^FEATURES=\"[^\"]* ${CONF_FEATURES}" "${PATH_ETC_PORTAGE_MAKE_CONF
     fi
 fi
 
-# Update the system.
-# Synchronizes emerge only once a day
+# Update the system. Synchronizes emerge only once a day.
 [[ "$(stat -c %Y /var/db/repos/gentoo/metadata/timestamp.chk)" -lt "$(date -d 'today 00:00' +%s)" ]] && emerge --sync
 emerge --newuse --update --deep @world

@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# This script emerges git-lfs and adds hooks,
-# that makes files larger than 100MB upload using LFS functionality.
-
-# --- Shared environment
 source ../../.env-shared.sh || exit 1
 trap failure ERR
 

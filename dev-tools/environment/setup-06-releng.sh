@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# This script clones and configures releng for the PS3 Gentoo project.
-
-# --- Shared environment
 source ../../.env-shared.sh || exit 1
 trap failure ERR
 

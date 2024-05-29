@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# This file creates additional environment variables for kernel-ebuild scripts.
-
-# Variants: _DEFAULT:   Constant or automatically determined
-#           _SPECIFIED: Selected by the user with argument
-#           _SELECTED:  Currently being used
-
 [ ! ${KE_ENV_LOADED} ] || return 0
 readonly KE_ENV_LOADED=true
 

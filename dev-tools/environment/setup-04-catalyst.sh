@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# This script emerges, patches and configures catalyst.
-
-# --- Shared environment
 source ../../.env-shared.sh || exit 1
 trap failure ERR
 

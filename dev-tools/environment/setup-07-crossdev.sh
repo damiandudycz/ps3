@@ -8,6 +8,7 @@ trap failure ERR
 
 # Constants
 readonly PATH_CROSSDEV="/usr/share/crossdev"
+#readonly PATH_OVERLAY="${}"
 
 # Exit if crossdev is already set up
 if [ -d "${PATH_CROSSDEV}" ]; then
@@ -33,6 +34,6 @@ echo 'masters = gentoo' >> "/etc/portage/repos.conf/crossdev.conf" || die "Faile
 echo 'auto-sync = no' >> "/etc/portage/repos.conf/crossdev.conf" || die "Failed to update crossdev config"
 
 # Setup crossdev environment
-crossdev --b '2.41-r3' --g '13.2.1_p20240113-r1' --k '6.6' --l '2.37-r7' -t powerpc64-unknown-linux-gnu -t powerpc64-unknown-linux-gnu --abis altivec || die "Failed to setup crossdev environment"
+crossdev --b '2.41-r3' --g '13.2.1_p20240113-r1' --k '6.9' --l '2.37-r7' -t powerpc64-unknown-linux-gnu --abis altivec
 
 exit 0

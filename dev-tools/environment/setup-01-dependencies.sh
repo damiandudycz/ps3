@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source ../../.env-shared.sh || exit 1
-trap failure ERR
+source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
-readonly PACKAGES_DEPENDENCIES=(gentoolkit ruby pkgdev crossdev)
-emerge --newuse --update --deep "${PACKAGES_DEPENDENCIES[@]}"
+emerge --newuse --update --deep "${EN_PACKAGES_DEPENDENCIES[@]}"

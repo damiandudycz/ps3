@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source ../../.env-shared.sh || exit 1
-trap failure ERR
+source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
 [ "$(uname -m)" != "ppc64" ] && FLAG_QEMU="-qemu"
 readonly PATH_PORTAGE_CONFDIR_STAGES="${PATH_RELENG}/releases/portage/stages${FLAG_QEMU}"

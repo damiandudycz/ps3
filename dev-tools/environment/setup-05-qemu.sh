@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source ../../.env-shared.sh || exit 1
-trap failure ERR
+source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
 # QEMU registration expression
 readonly CONF_QEMU_REGISTRATION_EXPR=':ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:'"${PATH_INTERPRETER}"':'

@@ -1,20 +1,11 @@
 #!/bin/bash
 
-# This function compiles kernel and copies vmlinux and modules
-# to local/gentoo-kernel-ps3/linux.
-# This can be used for testing configuration.
-# Can be used before creating manifest.
-# Generated linux and kernels are not stripped.
-# Currently generating initramfs is not supported.
+source ../../.env-shared.sh --silent || exit 1
+source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
 
-# TODO: ADD --clean flag.
-
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
-
-PACKAGE_VERSION="$1"
+# 1. Make sure ebuild files are stored in overlay and distfiles - compare with diff
+# 2. Copy distfiles to /var/cache/distfiles
+# 3. powerpc64-emerge with buildpkg only
 
 readonly NAME_PS3_DEFCONFIG="ps3_defconfig"
 readonly NAME_PACKAGE="sys-kernel/gentoo-kernel"
@@ -58,6 +49,3 @@ ARCH=powerpc make modules_install INSTALL_MOD_PATH="${PATH_WORK}" || die "Failed
 cp "${PATH_SOURCES_SRC}/vmlinux" "${PATH_WORK}"/ || die "Failed to copy vmlinux"
 # // Dracut requires installing some special tools, plus it's not sure how it will behave on different host architecture
 #dracut $DRACUT_FLAGS --include . "${PATH_WORK}/initramfs.img" $(make kernelrelease) || die "Failed to generate initramfs"
-
-echo "Kernel built successfully."
-exit 0

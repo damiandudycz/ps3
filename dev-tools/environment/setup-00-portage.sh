@@ -1,15 +1,14 @@
 #!/bin/bash
 
 source ../../.env-shared.sh || exit 1
-trap failure ERR
+source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
 # Append getbinpkg to features if needed.
-readonly CONF_FEATURES="getbinpkg"
-if ! grep -q "^FEATURES=\"[^\"]* ${CONF_FEATURES}" "${PATH_ETC_PORTAGE_MAKE_CONF}"; then
+if ! grep -q "^FEATURES=\"[^\"]* ${EN_MAKE_FEATURES}" "${PATH_ETC_PORTAGE_MAKE_CONF}"; then
     if grep -q "^FEATURES=" "${PATH_ETC_PORTAGE_MAKE_CONF}"; then
-        sed -i "/^FEATURES=/ s/\"\(.*\)\"/\"\1 ${CONF_FEATURES}\"/" "${PATH_ETC_PORTAGE_MAKE_CONF}"
+        sed -i "/^FEATURES=/ s/\"\(.*\)\"/\"\1 ${EN_MAKE_FEATURES}\"/" "${PATH_ETC_PORTAGE_MAKE_CONF}"
     else
-        echo "FEATURES=\"${CONF_FEATURES}\"" | tee -a "${PATH_ETC_PORTAGE_MAKE_CONF}"
+        echo "FEATURES=\"${EN_MAKE_FEATURES}\"" | tee -a "${PATH_ETC_PORTAGE_MAKE_CONF}"
     fi
 fi
 

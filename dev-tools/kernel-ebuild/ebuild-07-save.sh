@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Load environment.
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_KERNEL_EBUILD}" || failure "Failed to load env ${PATH_EXTRA_ENV_KERNEL_EBUILD}"
 

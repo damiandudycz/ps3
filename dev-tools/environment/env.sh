@@ -7,8 +7,6 @@ readonly EN_ENV_LOADED=true
 readonly EN_CONF_GIT_USER="Damian Dudycz"
 readonly EN_CONF_GIT_EMAIL="damiandudycz@yahoo.com"
 readonly EN_CONF_GIT_EDITOR="nano"
-
-# Variables.
 readonly EN_MAKE_FEATURES="getbinpkg"
 readonly EN_PACKAGES_DEPENDENCIES=(gentoolkit ruby pkgdev crossdev dev-vcs/git)
 

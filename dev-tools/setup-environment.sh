@@ -43,9 +43,10 @@ readonly PATH_DEV_TOOLS_RELEASE="\${PATH_DEV_TOOLS}/release"
 readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng"
 
 # External modules.
-readonly PATH_AUTOBUILDS_PS3_GENTOO="\${PATH_AUTOBUILDS}/ps3-gentoo-autobuilds" # Autobuilds.
-readonly PATH_BINHOSTS_PS3_GENTOO="\${PATH_BINHOSTS}/ps3-gentoo-binhosts"       # Binhosts.
-readonly PATH_OVERLAYS_PS3_GENTOO="\${PATH_OVERLAYS}/ps3-gentoo-overlay"        # Overlays.
+readonly PATH_AUTOBUILDS_PS3_GENTOO="\${PATH_AUTOBUILDS}/ps3-gentoo-autobuilds"              # Autobuilds.
+readonly PATH_BINHOSTS_PS3_GENTOO="\${PATH_BINHOSTS}/ps3-gentoo-binhosts"                    # Binhosts.
+readonly PATH_OVERLAYS_PS3_GENTOO="\${PATH_OVERLAYS}/ps3-gentoo-overlay"                     # Overlays.
+readonly PATH_OVERLAYS_PS3_GENTOO_DISTFILES="\${PATH_OVERLAYS}/ps3-gentoo-overlay.distfiles" # Distfiles
 
 # Various system elements.
 readonly PATH_ETC="/etc"

@@ -20,6 +20,7 @@ echo "Config used: ${KE_PATH_CONFIG_SELECTED}"
 ARCH=powerpc make ${KE_NAME_EBUILD_DEFCONFIG}
 
 # Apply changes from diffs.
+echo "${KE_PATH_SCRIPT_APPLY_DIFFCONFIG} ${KE_PATH_CONFIG_SELECTED}/${KE_NAME_FILE_CONF_DIFFS} ./.config > .config_modified"
 ${KE_PATH_SCRIPT_APPLY_DIFFCONFIG} ${KE_PATH_CONFIG_SELECTED}/${KE_NAME_FILE_CONF_DIFFS} ./.config > .config_modified
 
 # Merge modified config.

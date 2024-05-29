@@ -1,1 +1,1 @@
-patches-psx-place-Sombat-Tragoongoson-6.6.txt
+patches-psx-place-Sombat-Tragoongoson-6.9.txt

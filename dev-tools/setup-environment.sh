@@ -32,6 +32,7 @@ readonly CONF_TARGET_ARCHITECTURE_LONG="powerpc64"
 readonly CONF_TARGET_SUBARCHITECTURE="cell"
 readonly CONF_TARGET_KERNEL_TYPE="linux"
 readonly CONF_TARGET_TOOLCHAIN="gnu"
+readonly CONF_TARGET_COMMON_FLAGS="-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple"
 readonly CONF_GITHUB_SIZE_LIMIT="100M"
 readonly CONF_RELEASE_TYPES=(default) # Supported release configurations, eq. default, lto, clang, etc.
 readonly CONF_RELEASE_TYPE_DFAULT="default"
@@ -51,6 +52,7 @@ readonly VAL_HOST_ARCHITECTURE_PORTAGE="$(portageq envvar ARCH)"
 # Various tools --------------------------------------------------------------------------------------------------------------------
 # powerpc64-cell-linux-gnu.
 readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
+readonly VAL_QEMU_IS_NEEDED=$(expr "\${VAL_HOST_ARCHITECTURE}" != "\${CONF_TARGET_ARCHITECTURE}") # Is host architecture different than target architecture.
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # Paths ----------------------------------------------------------------------------------------------------------------------------

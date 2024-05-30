@@ -43,7 +43,7 @@ BEGIN { inside_section = 0 }
     }
     if (inside_section == 1) {
         if ($0 ~ /^COMMON_FLAGS/) {
-            print "COMMON_FLAGS = \"-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple\""
+            print "COMMON_FLAGS = \"'${CONF_TARGET_COMMON_FLAGS}'\""
         } else if ($0 ~ /^USE/) {
             print "USE = [ \"altivec\", \"ibm\", \"ps3\",]"
         } else {

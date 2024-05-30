@@ -3,7 +3,7 @@
 [ ! ${EN_ENV_LOADED} ] || return 0
 readonly EN_ENV_LOADED=true
 
-[[ "$(uname -m)" != "${CONF_TARGET_ARCHITECTURE}" ]] && EN_FLAG_QEMU="-qemu" || unset EN_FLAG_QEMU
+[[ ${VAL_QEMU_IS_NEEDED} ]] && EN_FLAG_QEMU="-qemu" || unset EN_FLAG_QEMU
 
 # Configs.
 readonly EN_CONF_GIT_USER="Damian Dudycz"

@@ -26,5 +26,5 @@ emerge --newuse --update --deep qemu
 rc-update add qemu-binfmt default
 rc-config start qemu-binfmt
 [[ -d "${PATH_QEMU_BINFMT}" ]] || modprobe binfmt_misc
-mount binfmt_misc -t binfmt_misc "${PATH_QEMU_BINFMT}" || echo "mount binfmt_misc failed, probably already mounted"
-echo "${VAL_QEMU_REGISTRATION_EXPR}" > "${PATH_QEMU_BINFMT_REGISTER}"
+mount binfmt_misc -t binfmt_misc "${PATH_QEMU_BINFMT}" || echo "WARNING! mount binfmt_misc failed, probably already mounted"
+[ ! -f "${PATH_QEMU_BINFMT_REGISTER}" ] && echo "${VAL_QEMU_REGISTRATION_EXPR}" > "${PATH_QEMU_BINFMT_REGISTER}" || echo "WARNING! ${PATH_QEMU_BINFMT_REGISTER} already exists, skipping write"

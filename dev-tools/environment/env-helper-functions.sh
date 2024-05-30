@@ -1,3 +1,5 @@
+#!/bin/bash
+
 declare -A USAGE_DESCRIPTIONS
 declare -A FAILURE_HANDLERS
 

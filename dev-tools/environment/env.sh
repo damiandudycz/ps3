@@ -5,9 +5,6 @@ readonly EN_ENV_LOADED=true
 
 [[ ${VAL_QEMU_IS_NEEDED} ]] && EN_FLAG_QEMU="-qemu" || unset EN_FLAG_QEMU
 
-# Configs.
-readonly EN_PACKAGES_DEPENDENCIES=(gentoolkit ruby pkgdev crossdev dev-vcs/git)
-
 # Helper names.
 readonly EN_KE_NAME_PACKAGE_DST="sys-kernel/gentoo-kernel-ps3" # Name of customized gentoo-kernel package.
 

@@ -21,6 +21,7 @@ echo 'masters = gentoo' >> "/etc/portage/repos.conf/crossdev.conf"
 echo 'auto-sync = no' >> "/etc/portage/repos.conf/crossdev.conf"
 
 # TODO: Move variables to env.
+# TODO: Configure crossdev environment with CELL cpu flags. Store these flags in shared env and also use with installer.
 # Setup crossdev environment
 crossdev\
     --b "2.41-r3"\

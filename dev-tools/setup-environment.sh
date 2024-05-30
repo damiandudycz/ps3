@@ -164,16 +164,18 @@ empty_directory() {
     mkdir -p "\${1}"
 }
 
-# For KEY=VALUE format.
+# TODO: Te 2 funkcje do poprawy
+
+# For KEY="VALUE" format.
 update_config_assign() {
     local KEY="\$1"
     local VALUE="\$2"
     local FILE="\$3"
 
-    if grep -q "^\${KEY}\s*=" "\${FILE}"; then
-        sed -i "/^\${KEY}\s*=/c\\\${KEY}=\${VALUE}" "\${FILE}"
+    if grep -q "^\${KEY}=\".*\"" "\${FILE}"; then
+        sed -i "/^\${KEY}=\"/c\${KEY}=\"\${VALUE}\"" "\${FILE}"
     else
-        echo "\${KEY}=\${VALUE}" >> "\${FILE}"
+        echo "\${KEY}=\\"\${VALUE}\\"" >> "\${FILE}"
     fi
 }
 
@@ -184,7 +186,7 @@ update_config_assign_space() {
     local FILE="\$3"
 
     if grep -q "^\${KEY}\s*=" "\${FILE}"; then
-        sed -i "/^\${KEY}\s*=/c\\\${KEY} = \${VALUE}" "\${FILE}"
+        sed -i "/^\${KEY}\s*=/c\${KEY} = \${VALUE}" "\${FILE}"
     else
         echo "\${KEY} = \${VALUE}" >> "\${FILE}"
     fi

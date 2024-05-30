@@ -30,3 +30,5 @@ crossdev\
     --l "2.37-r7"\
     --target "${CROSSDEV_TARGET}"\
     --abis "altivec"
+
+update_config_assign "PORTDIR_OVERLAY" "/home/gentoo/ps3/overlays/ps3-gentoo-overlay" "/usr/powerpc64-cell-linux-gnu/etc/portage/make.conf"

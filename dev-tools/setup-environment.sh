@@ -33,9 +33,18 @@ readonly CONF_TARGET_SUBARCHITECTURE="cell"
 readonly CONF_TARGET_KERNEL_TYPE="linux"
 readonly CONF_TARGET_TOOLCHAIN="gnu"
 readonly CONF_TARGET_COMMON_FLAGS="-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple"
-readonly CONF_GITHUB_SIZE_LIMIT="100M"
+readonly CONF_GIT_FILE_SIZE_LIMIT="100M"
+readonly CONF_GIT_USER="Damian Dudycz"
+readonly CONF_GIT_EMAIL="damiandudycz@yahoo.com"
+readonly CONF_GIT_EDITOR="nano"
 readonly CONF_RELEASE_TYPES=(default) # Supported release configurations, eq. default, lto, clang, etc.
 readonly CONF_RELEASE_TYPE_DFAULT="default"
+readonly CONF_QEMU_CONFIG=":ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:"
+readonly CONF_PORTAGE_FEATURES="getbinpkg"
+readonly CONF_QEMU_SECTION_START="# FOR CATALYST QEMU ---------- START"
+readonly CONF_QEMU_SECTION_END="# FOR CATALYST QEMU ---------- END"
+readonly CONF_CATALYST_JOBS="8"
+readonly CONF_CATALYST_LOAD="12.0"
 # URLs.
 readonly URL_GIRHUB_RAW_BASE="https://raw.githubusercontent.com/damiandudycz"
 readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_BASE}/ps3"
@@ -47,12 +56,6 @@ readonly URL_GITHUB_RAW_OVERLAY="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-overlay"
 # Fetch host machine details -------------------------------------------------------------------------------------------------------
 readonly VAL_HOST_ARCHITECTURE="$(uname -m)"
 readonly VAL_HOST_ARCHITECTURE_PORTAGE="$(portageq envvar ARCH)"
-# ----------------------------------------------------------------------------------------------------------------------------------
-
-# Various tools --------------------------------------------------------------------------------------------------------------------
-# powerpc64-cell-linux-gnu.
-readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
-readonly VAL_QEMU_IS_NEEDED=$(expr "\${VAL_HOST_ARCHITECTURE}" != "\${CONF_TARGET_ARCHITECTURE}") # Is host architecture different than target architecture.
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # Paths ----------------------------------------------------------------------------------------------------------------------------
@@ -119,8 +122,21 @@ readonly PATH_EXTRA_ENV_PS3_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/env.sh"
 readonly PATH_EXTRA_ENV_RELEASE="\${PATH_DEV_TOOLS_RELEASE}/env.sh"
 readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 
-# Various
+# Other.
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
+readonly PATH_QEMU_BINFMT="/proc/sys/fs/binfmt_misc"
+readonly PATH_QEMU_BINFMT_REGISTER="\${PATH_QEMU_BINFMT}/register"
+readonly PATH_ENV_HELPER_FUNCTIONS="\${PATH_DEV_TOOLS_ENVIRONMENT}/env-helper-functions.sh"
+
+# Various tools --------------------------------------------------------------------------------------------------------------------
+# powerpc64-cell-linux-gnu.
+readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
+readonly VAL_QEMU_IS_NEEDED=$(expr "\${VAL_HOST_ARCHITECTURE}" != "\${CONF_TARGET_ARCHITECTURE}") # Is host architecture different than target architecture.
+# ----------------------------------------------------------------------------------------------------------------------------------
+
+# Various calculated values and paths ----------------------------------------------------------------------------------------------
+readonly PATH_QEMU_INTERPRETER="\${PATH_USR_BIN}/qemu-\${CONF_TARGET_ARCHITECTURE}"
+readonly VAL_QEMU_REGISTRATION_EXPR="\${CONF_QEMU_CONFIG}\${PATH_QEMU_INTERPRETER}:"
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # Shared functionality.
@@ -130,111 +146,7 @@ readonly COLOR_TURQUOISE='\033[0;36m'
 readonly COLOR_TURQUOISE_BOLD='\033[1;36m'
 readonly COLOR_NC='\033[0m' # No Color
 
-declare -A USAGE_DESCRIPTIONS
-declare -A FAILURE_HANDLERS
-
-echo_color() { # Usage: echo_color COLOR MESSAGE
-    echo -e "\${1}\${2}\${COLOR_NC}"
-}
-
-# Handling errors.
-failure() {
-    local line="\${BASH_LINENO[0]}"
-    local cmd="\${BASH_COMMAND}"
-    local file="\${BASH_SOURCE[1]}"
-    local custom_message="\$1"
-    echo_color \${COLOR_RED} "[ Error at line \$line in file '\$file' ]"
-    if [[ -n "\$custom_message" ]]; then
-        echo_color \${COLOR_RED} "\$custom_message"
-    else
-        echo_color \${COLOR_RED} "Failed command: '\$cmd'"
-    fi
-
-    # Execute failure handler if added
-    local failure_handler_name="\$(basename \"\${BASH_SOURCE[1]}\")"
-    local failure_handler=\${FAILURE_HANDLERS[\$failure_handler_name]}
-    [[ -n "\${failure_handler}" ]] && eval "\${failure_handler}"
-
-    exit 1
-}
-
-register_failure_handler() {
-    local file="\$(basename \"\${BASH_SOURCE[1]}\")"
-    FAILURE_HANDLERS["\$file"]="\$1"
-}
-
-register_usage() {
-    local file="\$(basename \"\${BASH_SOURCE[1]}\")"
-    USAGE_DESCRIPTIONS["\$file"]="\$1"
-}
-
-show_usage() {
-    local file="\$(basename \"\${BASH_SOURCE[1]}\")"
-    echo "Usage: \${USAGE_DESCRIPTIONS[\$file]}"
-    exit 1
-}
-
-upload_repository() {
-    # Upload repository at given location with commit message
-    cd "\${1}"
-    git add -A
-    git commit -m "\$2"
-    git push
-}
-
-empty_directory() {
-    # Remove directory if exists and create empty one
-    rm -rf "\${1}"
-    mkdir -p "\${1}"
-}
-
-# For KEY="VALUE" format.
-update_config_assign() {
-    local KEY="\$1"
-    local VALUE="\$2"
-    local FILE="\$3"
-
-    if grep -q "^\${KEY}=\".*\"" "\${FILE}"; then
-        sed -i "/^\${KEY}=\"/c\${KEY}=\"\${VALUE}\"" "\${FILE}"
-    else
-        echo "\${KEY}=\\"\${VALUE}\\"" >> "\${FILE}"
-    fi
-}
-
-# For KEY = VALUE format.
-update_config_assign_space() {
-    local KEY="\$1"
-    local VALUE="\$2"
-    local FILE="\$3"
-
-    if grep -q "^\${KEY}\s*=" "\${FILE}"; then
-        sed -i "/^\${KEY}\s*=/c\${KEY} = \${VALUE}" "\${FILE}"
-    else
-        echo "\${KEY} = \${VALUE}" >> "\${FILE}"
-    fi
-}
-
-# Adds given line to file only if it doesn't exist yet.
-add_line_if_not_exists() {
-  local LINE="\$1"
-  local FILE="\$2"
-  grep -qxF "\${LINE}" "\${FILE}" || echo "\${LINE}" >> "\${FILE}"
-}
-
-unmask_package() {
-    local PACKAGE="\$1"
-    local KEYWORDS="\$2"
-    [[ -z "\${KEYWORDS}" ]] && KEYWORDS="~\${VAL_HOST_ARCHITECTURE_PORTAGE}" # If keywords not specified, unmask for current host architecture.
-    local UNMASK_PATH="\${PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS}/\${CONF_PROJECT_NAME}"
-    add_line_if_not_exists "\${PACKAGE} \${KEYWORDS}" "\${UNMASK_PATH}"
-}
-
-use_set_package() {
-    local PACKAGE="\$1"
-    local USE_FLAGS="\$2"
-    local USE_FLAGS_PATH="\${PATH_ETC_PORTAGE_PACKAGE_USE}/\${CONF_PROJECT_NAME}"
-    add_line_if_not_exists "\${PACKAGE} \${USE_FLAGS}" "\${USE_FLAGS_PATH}"
-}
+source "\${PATH_ENV_HELPER_FUNCTIONS}"
 
 # Print environment details.
 [ "\$1" == "--silent" ] || echo_color \${COLOR_TURQUOISE_BOLD} "[ PS3-Gentoo development environment - \${PATH_ROOT} ]"

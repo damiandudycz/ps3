@@ -45,13 +45,10 @@ PATH_PORTAGE_CONFDIR_ISOS="${PATH_RELENG}/releases/portage/isos"
 readonly URL_RELEASE_GENTOO="https://gentoo.osuosl.org/releases/ppc/autobuilds"
 readonly URL_STAGE_INFO="https://gentoo.osuosl.org/releases/ppc/autobuilds/latest-stage3-ppc64-openrc.txt"
 
-# Determine if host is PS3 or another architecture
-[ "$(uname -m)" != "ppc64" ] && use_qemu=true
-
-if [ "${use_qemu}" ]; then
+if [[ ${VAL_QEMU_IS_NEEDED} ]]; then
     PATH_PORTAGE_CONFDIR_STAGES="${PATH_PORTAGE_CONFDIR_STAGES}-qemu"
     PATH_PORTAGE_CONFDIR_ISOS="${PATH_PORTAGE_CONFDIR_ISOS}-qemu"
-    INTERPRETER="interpreter: ${PATH_INTERPRETER}"
+    INTERPRETER="interpreter: ${PATH_QEMU_INTERPRETER}"
 fi
 
 # Check if env is ready

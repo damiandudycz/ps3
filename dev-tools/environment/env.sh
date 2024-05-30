@@ -6,14 +6,6 @@ readonly EN_ENV_LOADED=true
 [[ ${VAL_QEMU_IS_NEEDED} ]] && EN_FLAG_QEMU="-qemu" || unset EN_FLAG_QEMU
 
 # Configs.
-readonly EN_CONF_GIT_USER="Damian Dudycz"
-readonly EN_CONF_GIT_EMAIL="damiandudycz@yahoo.com"
-readonly EN_CONF_GIT_EDITOR="nano"
-readonly EN_PATH_INTERPRETER="\${PATH_USR_BIN}/qemu-${CONF_TARGET_ARCHITECTURE}"
-readonly EN_CONF_QEMU_REGISTRATION_EXPR=':ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:'"${EN_PATH_INTERPRETER}"':'
-readonly EN_CONF_CATALYST_JOBS="8"
-readonly EN_CONF_CATALYST_LOAD="12.0"
-readonly EN_MAKE_FEATURES="getbinpkg"
 readonly EN_PACKAGES_DEPENDENCIES=(gentoolkit ruby pkgdev crossdev dev-vcs/git)
 
 # Helper names.
@@ -40,7 +32,3 @@ readonly EN_PATH_PATCH_PATHS="$(find ${EN_PATH_FILES_CATALYST_PATCHES} -maxdepth
 readonly EN_PATH_RELENG_PORTAGE_CONFDIR_STAGES="${PATH_RELENG}/releases/portage/stages${EN_FLAG_QEMU}"
 readonly EN_PATH_RELENG_PORTAGE_CONFDIR_ISOS="${PATH_RELENG}/releases/portage/isos${EN_FLAG_QEMU}"
 
-readonly EN_NAME_QEMU_SECTION_START="# FOR CATALYST QEMU ---------- START"
-readonly EN_NAME_QEMU_SECTION_END="# FOR CATALYST QEMU ---------- END"
-readonly EN_PATH_BINFMT="/proc/sys/fs/binfmt_misc"
-readonly EN_PATH_BINFMT_REGISTER="${PATH_BINFMT}/register"

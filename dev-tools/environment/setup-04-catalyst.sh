@@ -29,9 +29,9 @@ mkdir -p "${EN_PATH_CATALYST_STAGES}"
 
 # Configure Catalyst
 sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' "${EN_PATH_CATALYST_CONF}"
-update_config_assign jobs "${EN_CONF_CATALYST_JOBS}" "${EN_PATH_CATALYST_CONF}"
-update_config_assign load-average "${EN_CONF_CATALYST_LOAD}" "${EN_PATH_CATALYST_CONF}"
-update_config_assign binhost "${URL_GITHUB_RAW_BINHOSTS}" "${EN_PATH_CATALYST_CONF}"
+update_config_assign_space jobs "${EN_CONF_CATALYST_JOBS}" "${EN_PATH_CATALYST_CONF}"
+update_config_assign_space load-average "${EN_CONF_CATALYST_LOAD}" "${EN_PATH_CATALYST_CONF}"
+update_config_assign_space binhost "${URL_GITHUB_RAW_BINHOSTS}" "${EN_PATH_CATALYST_CONF}"
 
 # Configure CELL settings for Catalyst
 readonly AWK_PPC_TOML_EXPR='

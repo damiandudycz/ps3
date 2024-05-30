@@ -164,8 +164,21 @@ empty_directory() {
     mkdir -p "\${1}"
 }
 
-# For KEY = VALUE format.
+# For KEY=VALUE format.
 update_config_assign() {
+    local KEY="\$1"
+    local VALUE="\$2"
+    local FILE="\$3"
+
+    if grep -q "^\${KEY}\s*=" "\${FILE}"; then
+        sed -i "/^\${KEY}\s*=/c\\\${KEY}=\${VALUE}" "\${FILE}"
+    else
+        echo "\${KEY}=\${VALUE}" >> "\${FILE}"
+    fi
+}
+
+# For KEY = VALUE format.
+update_config_assign_space() {
     local KEY="\$1"
     local VALUE="\$2"
     local FILE="\$3"
@@ -176,6 +189,7 @@ update_config_assign() {
         echo "\${KEY} = \${VALUE}" >> "\${FILE}"
     fi
 }
+
 
 # Print environment details.
 [ "\$1" == "--silent" ] || echo_color \${COLOR_TURQUOISE_BOLD} "[ PS3-Gentoo development environment - \${PATH_ROOT} ]"

@@ -4,8 +4,6 @@ source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
 empty_directory "${EN_PATH_CATALYST_PATCH_DIR}"
-rm -f "${EN_PATH_ACCEPT_KEYWORDS_CATALYST}"
-rm -f "${EN_PATH_PACKAGE_USE_CATALYST}"
 
 # Apply patches to Catalyst scripts if missing
 for PATCH in ${EN_PATH_PATCH_PATHS[@]}; do
@@ -14,10 +12,9 @@ for PATCH in ${EN_PATH_PATCH_PATHS[@]}; do
 done
 
 # Install Catalyst
-echo "# Catalyst requirements" >> "${EN_PATH_ACCEPT_KEYWORDS_CATALYST}"
-echo "dev-util/catalyst **" >> "${EN_PATH_ACCEPT_KEYWORDS_CATALYST}"
-echo "sys-fs/squashfs-tools-ng ~*" >> "${EN_PATH_ACCEPT_KEYWORDS_CATALYST}"
-echo "sys-apps/util-linux python" >> "${EN_PATH_PACKAGE_USE_CATALYST}"
+unmask_package "dev-util/catalyst" "**"
+unmask_package "sys-fs/squashfs-tools-ng" "~*"
+use_set_package "sys-apps/util-linux" "python"
 emerge dev-util/catalyst --newuse --update --deep
 
 # Create working directories

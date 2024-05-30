@@ -198,6 +198,13 @@ unmask_package() {
     echo "\${PACKAGE} \${KEYWORDS}" >> "\${UNMASK_PATH}"
 }
 
+use_set_package() {
+    local PACKAGE="\$1"
+    local USE_FLAGS="\$2"
+    local USE_FLAGS_PATH="\${PATH_ETC_PORTAGE_PACKAGE_USE}/\${PROJECT_NAME}"
+    echo "\${PACKAGE} \${USE_FLAGS}" >> "\${USE_FLAGS_PATH}"
+}
+
 # Print environment details.
 [ "\$1" == "--silent" ] || echo_color \${COLOR_TURQUOISE_BOLD} "[ PS3-Gentoo development environment - \${PATH_ROOT} ]"
 

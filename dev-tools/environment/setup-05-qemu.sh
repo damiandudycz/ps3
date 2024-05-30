@@ -5,9 +5,6 @@ source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXT
 
 [[ "$(uname -m)" != "${TARGET_ARCHITECTURE}" ]] || return 0 # Qemu not needed for PPC64
 
-sed -i "/${EN_NAME_QEMU_SECTION_START}/,/${EN_NAME_QEMU_SECTION_END}/d" "${PATH_ETC_PORTAGE_MAKE_CONF}" # Clean old section in make.conf if found
-rm -f "${EN_PATH_PACKAGE_USE_QEMU}"
-
 # Configure make.conf qemu section.
 echo "${EN_NAME_QEMU_SECTION_START}" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
 echo "QEMU_SOFTMMU_TARGETS=\"${HOST_ARCHITECTURE} ${TARGET_ARCHITECTURE}\"" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
@@ -15,13 +12,11 @@ echo "QEMU_USER_TARGETS=\"${TARGET_ARCHITECTURE}\"" >> "${PATH_ETC_PORTAGE_MAKE_
 echo "${EN_NAME_QEMU_SECTION_END}" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
 
 # Configure portage qemu section.
-echo "${EN_NAME_QEMU_SECTION_START}" >> "${EN_PATH_PACKAGE_USE_QEMU}"
-echo "app-emulation/qemu static-user" >> "${EN_PATH_PACKAGE_USE_QEMU}"
-echo "dev-libs/glib static-libs" >> "${EN_PATH_PACKAGE_USE_QEMU}"
-echo "sys-libs/zlib static-libs" >> "${EN_PATH_PACKAGE_USE_QEMU}"
-echo "sys-apps/attr static-libs" >> "${EN_PATH_PACKAGE_USE_QEMU}"
-echo "dev-libs/libpcre2 static-libs" >> "${EN_PATH_PACKAGE_USE_QEMU}"
-echo "${EN_NAME_QEMU_SECTION_END}" >> "${EN_PATH_PACKAGE_USE_QEMU}"
+use_set_package "app-emulation/qemu" "static-user"
+use_set_package "dev-libs/glib" "static-libs"
+use_set_package "sys-libs/zlib" "static-libs"
+use_set_package "sys-apps/attr" "static-libs"
+use_set_package "dev-libs/libpcre2" "static-libs"
 
 emerge --newuse --update --deep qemu
 

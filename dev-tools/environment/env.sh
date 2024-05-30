@@ -21,8 +21,6 @@ readonly EN_KE_NAME_PACKAGE_DST="sys-kernel/gentoo-kernel-ps3" # Name of customi
 
 # Locations.
 readonly EN_PATH_CROSSDEV_USR="${PATH_USR_SHARE}/crossdev"
-readonly EN_PATH_GIT_LFS_USE="${PATH_ETC_PORTAGE_PACKAGE_USE}/PS3_ENV_git-lfs"
-readonly EN_PATH_GIT_LFS_ACCEPT_KEYWORDS="${PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS}/PS3_ENV_git-lfs"
 readonly EN_PATH_HOOK_AUTOBUILDS="${PATH_ROOT}/.git/modules/autobuilds/ps3-gentoo-autobuilds/pre-commit"
 
 # Overlay locations.
@@ -37,8 +35,6 @@ readonly EN_PATH_CATALYST_PATCH_DIR="${PATH_ETC_PORTAGE}/patches/dev-util/cataly
 readonly EN_PATH_CATALYST_CONFIGS="${PATH_ETC}/catalyst"
 readonly EN_PATH_CATALYST_CONF="${EN_PATH_CATALYST_CONFIGS}/catalyst.conf"
 readonly EN_PATH_CATALYST_PPC_TOML="${EN_PATH_CATALYST_USR}/arch/ppc.toml"
-readonly EN_PATH_ACCEPT_KEYWORDS_CATALYST="${PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS}/PS3_ENV_dev-util_catalyst"
-readonly EN_PATH_PACKAGE_USE_CATALYST="${PATH_ETC_PORTAGE_PACKAGE_USE}/PS3_ENV_dev-util_catalyst"
 readonly EN_PATH_FILES_CATALYST_PATCHES="${PATH_DEV_TOOLS_ENVIRONMENT}/data/catalyst-patches"
 readonly EN_PATH_PATCH_PATHS="$(find ${EN_PATH_FILES_CATALYST_PATCHES} -maxdepth 1 -type f -name '*.patch' | sort)"
 readonly EN_PATH_RELENG_PORTAGE_CONFDIR_STAGES="${PATH_RELENG}/releases/portage/stages${EN_FLAG_QEMU}"
@@ -46,6 +42,5 @@ readonly EN_PATH_RELENG_PORTAGE_CONFDIR_ISOS="${PATH_RELENG}/releases/portage/is
 
 readonly EN_NAME_QEMU_SECTION_START="# FOR CATALYST QEMU ---------- START"
 readonly EN_NAME_QEMU_SECTION_END="# FOR CATALYST QEMU ---------- END"
-readonly EN_PATH_PACKAGE_USE_QEMU="${PATH_ETC_PORTAGE_PACKAGE_USE}/PS3_ENV_qemu"
 readonly EN_PATH_BINFMT="/proc/sys/fs/binfmt_misc"
 readonly EN_PATH_BINFMT_REGISTER="${PATH_BINFMT}/register"

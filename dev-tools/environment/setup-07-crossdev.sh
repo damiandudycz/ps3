@@ -24,11 +24,12 @@ echo 'auto-sync = no' >> "/etc/portage/repos.conf/crossdev.conf"
 # TODO: Configure crossdev environment with CELL cpu flags. Store these flags in shared env and also use with installer.
 # Setup crossdev environment
 crossdev\
-    --b "2.41-r3"\
-    --g "13.2.1_p20240113-r1"\
-    --k "6.9"\
-    --l "2.37-r7"\
     --target "${CROSSDEV_TARGET}"\
-    --abis "altivec"
+    --abis "altivec"\
+    --l "2.37-r7"
+#    --b "2.41-r3"\
+#    --g "13.2.1_p20240113-r1"\
+#    --k "6.9"\
+
 
 update_config_assign "PORTDIR_OVERLAY" "/home/gentoo/ps3/overlays/ps3-gentoo-overlay" "/usr/powerpc64-cell-linux-gnu/etc/portage/make.conf"

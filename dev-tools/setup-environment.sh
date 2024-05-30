@@ -19,6 +19,7 @@ cat <<EOF > "${PATH_ENV_FILE}"
 readonly PS3_ENV_SHARED_LOADED=true
 
 readonly HOST_ARCHITECTURE="$(uname -m)"
+readonly HOST_ARCHITECTURE_PORTAGE="$(portageq envvar ARCH)"
 readonly TARGET_ARCHITECTURE="ppc64"
 readonly TARGET_ARCHITECTURE_LONG="powerpc64"
 readonly TARGET_SUBARCHITECTURE="cell"
@@ -164,8 +165,6 @@ empty_directory() {
     mkdir -p "\${1}"
 }
 
-# TODO: Te 2 funkcje do poprawy
-
 # For KEY="VALUE" format.
 update_config_assign() {
     local KEY="\$1"
@@ -192,6 +191,12 @@ update_config_assign_space() {
     fi
 }
 
+unmask_package() {
+    local PACKAGE="\$1"
+    local KEYWORDS="\$2"
+    local UNMASK_PATH="\${PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS}/\${PROJECT_NAME}"
+    echo "\${PACKAGE} \${KEYWORDS}" >> "\${UNMASK_PATH}"
+}
 
 # Print environment details.
 [ "\$1" == "--silent" ] || echo_color \${COLOR_TURQUOISE_BOLD} "[ PS3-Gentoo development environment - \${PATH_ROOT} ]"

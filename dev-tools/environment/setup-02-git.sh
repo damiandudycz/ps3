@@ -9,6 +9,6 @@ git config --global user.email "${EN_CONF_GIT_EMAIL}"
 git config --global core.editor "${EN_CONF_GIT_EDITOR}"
 
 # GIT-LFS setup.
-use_set_package ">=sys-devel/binutils-2.41-r5" "gold"
-unmask_package "dev-vcs/git-lfs" "${HOST_ARCHITECTURE_PORTAGE}"
+use_set_package "sys-devel/binutils" "gold"
+unmask_package "dev-vcs/git-lfs"
 emerge --newuse --update --deep dev-vcs/git-lfs

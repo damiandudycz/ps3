@@ -191,18 +191,26 @@ update_config_assign_space() {
     fi
 }
 
+# Adds given line to file only if it doesn't exist yet.
+add_line_if_not_exists() {
+  local LINE="\$1"
+  local FILE="\$2"
+  grep -qxF "\${LINE}" "\${FILE}" || echo "\${LINE}" >> "\${FILE}"
+}
+
 unmask_package() {
     local PACKAGE="\$1"
     local KEYWORDS="\$2"
+    [[ -z "\${KEYWORDS}" ]] && KEYWORDS="~\${HOST_ARCHITECTURE_PORTAGE}" # If keywords not specified, unmask for current host architecture.
     local UNMASK_PATH="\${PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS}/\${PROJECT_NAME}"
-    echo "\${PACKAGE} \${KEYWORDS}" >> "\${UNMASK_PATH}"
+    add_line_if_not_exists "\${PACKAGE} \${KEYWORDS}" "\${UNMASK_PATH}"
 }
 
 use_set_package() {
     local PACKAGE="\$1"
     local USE_FLAGS="\$2"
     local USE_FLAGS_PATH="\${PATH_ETC_PORTAGE_PACKAGE_USE}/\${PROJECT_NAME}"
-    echo "\${PACKAGE} \${USE_FLAGS}" >> "\${USE_FLAGS_PATH}"
+    add_line_if_not_exists "\${PACKAGE} \${USE_FLAGS}" "\${USE_FLAGS_PATH}"
 }
 
 # Print environment details.

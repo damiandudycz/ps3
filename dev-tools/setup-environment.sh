@@ -20,10 +20,15 @@ readonly PS3_ENV_SHARED_LOADED=true
 
 readonly HOST_ARCHITECTURE="$(uname -m)"
 readonly TARGET_ARCHITECTURE="ppc64"
+readonly TARGET_ARCHITECTURE_LONG="powerpc64"
+readonly TARGET_SUBARCHITECTURE="cell"
 readonly PROJECT_NAME="PS3_Gentoo"
 readonly CONF_CATALYST_RELEASE_NAMES=(default) # Supported release configurations, eq. LTO, CLANG, etc.
 readonly CONF_CATALYST_RELEASE_NAME_DFAULT="default"
 readonly CONF_GITHUB_SIZE_LIMIT="100M"
+
+readonly CROSSDEV_TARGET="\${TARGET_ARCHITECTURE_LONG}-\${TARGET_SUBARCHITECTURE}-linux-gnu"
+
 declare -A USAGE_DESCRIPTIONS
 declare -A FAILURE_HANDLERS
 

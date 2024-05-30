@@ -28,5 +28,5 @@ crossdev\
     --g "13.2.1_p20240113-r1"\
     --k "6.9"\
     --l "2.37-r7"\
-    --target "powerpc64-unknown-linux-gnu"\
+    --target "${CROSSDEV_TARGET}"\
     --abis "altivec"

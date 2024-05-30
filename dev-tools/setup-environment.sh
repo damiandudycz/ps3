@@ -9,7 +9,7 @@ readonly PATH_ROOT_INITIAL="$(realpath -m '..')"
 readonly PATH_ENV_FILE="${PATH_ROOT_INITIAL}/.env-shared.sh"
 
 # Clear old environment file if exists.
-[ ! -f "${PATH_ENV_FILE}" ] || rm "${PATH_ENV_FILE}" || exit 1
+rm -f "${PATH_ENV_FILE}" || exit 1
 
 # Below code is for creating shared environment configuration.
 # -----------------------------------------------------------------------------------------

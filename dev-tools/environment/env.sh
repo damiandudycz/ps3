@@ -3,13 +3,13 @@
 [ ! ${EN_ENV_LOADED} ] || return 0
 readonly EN_ENV_LOADED=true
 
-[[ "$(uname -m)" != "${TARGET_ARCHITECTURE}" ]] && EN_FLAG_QEMU="-qemu" || unset EN_FLAG_QEMU
+[[ "$(uname -m)" != "${CONF_TARGET_ARCHITECTURE}" ]] && EN_FLAG_QEMU="-qemu" || unset EN_FLAG_QEMU
 
 # Configs.
 readonly EN_CONF_GIT_USER="Damian Dudycz"
 readonly EN_CONF_GIT_EMAIL="damiandudycz@yahoo.com"
 readonly EN_CONF_GIT_EDITOR="nano"
-readonly EN_PATH_INTERPRETER="\${PATH_USR_BIN}/qemu-${TARGET_ARCHITECTURE}"
+readonly EN_PATH_INTERPRETER="\${PATH_USR_BIN}/qemu-${CONF_TARGET_ARCHITECTURE}"
 readonly EN_CONF_QEMU_REGISTRATION_EXPR=':ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:'"${EN_PATH_INTERPRETER}"':'
 readonly EN_CONF_CATALYST_JOBS="8"
 readonly EN_CONF_CATALYST_LOAD="12.0"

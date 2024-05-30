@@ -7,5 +7,5 @@
 # --- Shared environment
 source ../../.env-shared.sh || exit 1
 
-readonly PATH_BINHOST="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_CATALYST_RELEASE_NAME_DFAULT}"
+readonly PATH_BINHOST="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_RELEASE_TYPE_DEFAULT}"
 upload_repository "${PATH_BINHOST}" "Binhost automatic update"

@@ -1,8 +1,14 @@
 #!/bin/bash
 
-# This script prepares current machine for working with development tools for the PS3 Gentoo project.
-# Please run this script after cloning the repository.
-# It also generates a bash file that contains all the shared functionality and configuration of other scripts.
+# CONF_      - Constant values, not dependent on anything.
+# VAL_       - Constant values calculated from other values or extracted from the system.
+# VAR_       - Variable values, that can change during execution.
+# URL_       - URLs.
+# PATH_      - Paths to directories and files.
+# PATH_DIR_  - Paths to directories.
+# PATH_FILE_ - Path to file.
+# NAME_DIR_  - Names of directories.
+# NAME_FILE  - Names of files.
 
 # These variables are used only by this script itself, others will have patchs loaded from .env-shared.sh.
 readonly PATH_ROOT_INITIAL="$(realpath -m '..')"
@@ -12,28 +18,42 @@ readonly PATH_ENV_FILE="${PATH_ROOT_INITIAL}/.env-shared.sh"
 rm -f "${PATH_ENV_FILE}" || exit 1
 
 # Below code is for creating shared environment configuration.
-# -----------------------------------------------------------------------------------------
+
 cat <<EOF > "${PATH_ENV_FILE}"
-# Prevent multiple imports.
-[ ! \${PS3_ENV_SHARED_LOADED} ] || return 0
-readonly PS3_ENV_SHARED_LOADED=true
+# Prevent multiple imports ---------------------------------------------------------------------------------------------------------
+[ ! \${VAL_PS3_ENV_SHARED_LOADED} ] || return 0
+readonly VAL_PS3_ENV_SHARED_LOADED=true
+# ----------------------------------------------------------------------------------------------------------------------------------
 
-readonly HOST_ARCHITECTURE="$(uname -m)"
-readonly HOST_ARCHITECTURE_PORTAGE="$(portageq envvar ARCH)"
-readonly TARGET_ARCHITECTURE="ppc64"
-readonly TARGET_ARCHITECTURE_LONG="powerpc64"
-readonly TARGET_SUBARCHITECTURE="cell"
-readonly PROJECT_NAME="PS3_Gentoo"
-readonly CONF_CATALYST_RELEASE_NAMES=(default) # Supported release configurations, eq. LTO, CLANG, etc.
-readonly CONF_CATALYST_RELEASE_NAME_DFAULT="default"
+# Project configuration ------------------------------------------------------------------------------------------------------------
+readonly CONF_PROJECT_NAME="PS3_Gentoo"
+readonly CONF_TARGET_ARCHITECTURE="ppc64"
+readonly CONF_TARGET_ARCHITECTURE_LONG="powerpc64"
+readonly CONF_TARGET_SUBARCHITECTURE="cell"
+readonly CONF_TARGET_KERNEL_TYPE="linux"
+readonly CONF_TARGET_TOOLCHAIN="gnu"
 readonly CONF_GITHUB_SIZE_LIMIT="100M"
+readonly CONF_RELEASE_TYPES=(default) # Supported release configurations, eq. default, lto, clang, etc.
+readonly CONF_RELEASE_TYPE_DFAULT="default"
+# URLs.
+readonly URL_GIRHUB_RAW_BASE="https://raw.githubusercontent.com/damiandudycz"
+readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_BASE}/ps3"
+readonly URL_GITHUB_RAW_AUTOBUILDS="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-autobuilds"
+readonly URL_GITHUB_RAW_BINHOSTS="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-binhosts"
+readonly URL_GITHUB_RAW_OVERLAY="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-overlay"
+# ----------------------------------------------------------------------------------------------------------------------------------
 
-readonly CROSSDEV_TARGET="\${TARGET_ARCHITECTURE_LONG}-\${TARGET_SUBARCHITECTURE}-linux-gnu"
+# Fetch host machine details -------------------------------------------------------------------------------------------------------
+readonly VAL_HOST_ARCHITECTURE="$(uname -m)"
+readonly VAL_HOST_ARCHITECTURE_PORTAGE="$(portageq envvar ARCH)"
+# ----------------------------------------------------------------------------------------------------------------------------------
 
-declare -A USAGE_DESCRIPTIONS
-declare -A FAILURE_HANDLERS
+# Various tools --------------------------------------------------------------------------------------------------------------------
+# powerpc64-cell-linux-gnu.
+readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
+# ----------------------------------------------------------------------------------------------------------------------------------
 
-# Shared environment configuration and functionality for PS3-Gentoo project dev tools.
+# Paths ----------------------------------------------------------------------------------------------------------------------------
 readonly PATH_ROOT="${PATH_ROOT_INITIAL}"
 
 # Main patches at the root of repository.
@@ -49,7 +69,7 @@ readonly PATH_DEV_TOOLS_ENVIRONMENT="\${PATH_DEV_TOOLS}/environment"
 readonly PATH_DEV_TOOLS_KERNEL_EBUILD="\${PATH_DEV_TOOLS}/kernel-ebuild"
 readonly PATH_DEV_TOOLS_PS3_INSTALLER="\${PATH_DEV_TOOLS}/ps3-installer"
 readonly PATH_DEV_TOOLS_RELEASE="\${PATH_DEV_TOOLS}/release"
-readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng"
+readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng" # ??
 
 # External modules.
 readonly PATH_AUTOBUILDS_PS3_GENTOO="\${PATH_AUTOBUILDS}/ps3-gentoo-autobuilds"              # Autobuilds.
@@ -57,15 +77,13 @@ readonly PATH_BINHOSTS_PS3_GENTOO="\${PATH_BINHOSTS}/ps3-gentoo-binhosts"       
 readonly PATH_OVERLAYS_PS3_GENTOO="\${PATH_OVERLAYS}/ps3-gentoo-overlay"                     # Overlays.
 readonly PATH_OVERLAYS_PS3_GENTOO_DISTFILES="\${PATH_OVERLAYS}/ps3-gentoo-overlay.distfiles" # Distfiles.
 
-# Various system elements.
+# Main system directories elements.
 readonly PATH_ETC="/etc"
 readonly PATH_USR="/usr"
 readonly PATH_VAR="/var"
 readonly PATH_BOOT="/boot"
-readonly PATH_ETC_PORTAGE="\${PATH_ETC}/portage"
-readonly PATH_ETC_PORTAGE_MAKE_CONF="\${PATH_ETC_PORTAGE}/make.conf"
-readonly PATH_ETC_PORTAGE_PACKAGE_USE="\${PATH_ETC_PORTAGE}/package.use"
-readonly PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS="\${PATH_ETC_PORTAGE}/package.accept_keywords"
+
+# System components directories.
 readonly PATH_VAR_TMP="\${PATH_VAR}/tmp"
 readonly PATH_USR_SHARE="\${PATH_USR}/share"
 readonly PATH_USR_BIN="\${PATH_USR}/bin"
@@ -74,8 +92,14 @@ readonly PATH_VAR_DB_REPOS_GENTOO="\${PATH_VAR_DB_REPOS}/gentoo"
 readonly PATH_VAR_CACHE="\${PATH_VAR}/cache"
 readonly PATH_VAR_CACHE_DISTFILES="\${PATH_VAR_CACHE}/distfiles"
 
+# Portage paths.
+readonly PATH_ETC_PORTAGE="\${PATH_ETC}/portage"
+readonly PATH_ETC_PORTAGE_MAKE_CONF="\${PATH_ETC_PORTAGE}/make.conf"
+readonly PATH_ETC_PORTAGE_PACKAGE_USE="\${PATH_ETC_PORTAGE}/package.use"
+readonly PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS="\${PATH_ETC_PORTAGE}/package.accept_keywords"
+
 # DEV Tools work directories.
-readonly PATH_WORK="\${PATH_VAR_TMP}/\${PROJECT_NAME}"
+readonly PATH_WORK="\${PATH_VAR_TMP}/\${CONF_PROJECT_NAME}"
 readonly PATH_WORK_BINHOST="\${PATH_WORK}/binhost"
 readonly PATH_WORK_DISTCC_DOCKER="\${PATH_WORK}/distcc_docker"
 readonly PATH_WORK_ENVIRONMENT="\${PATH_WORK}/environment"
@@ -95,13 +119,7 @@ readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 
 # Various
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
-
-# URLs
-readonly URL_GIRHUB_RAW_MAIN="https://raw.githubusercontent.com/damiandudycz"
-readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_MAIN}/ps3"
-readonly URL_GITHUB_RAW_AUTOBUILDS="\${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-autobuilds"
-readonly URL_GITHUB_RAW_BINHOSTS="\${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-binhosts"
-readonly URL_GITHUB_RAW_OVERLAY="\${URL_GIRHUB_RAW_MAIN}/ps3-gentoo-overlay"
+# ----------------------------------------------------------------------------------------------------------------------------------
 
 # Shared functionality.
 readonly COLOR_RED='\033[0;31m'
@@ -109,6 +127,9 @@ readonly COLOR_GREEN='\033[0;32m'
 readonly COLOR_TURQUOISE='\033[0;36m'
 readonly COLOR_TURQUOISE_BOLD='\033[1;36m'
 readonly COLOR_NC='\033[0m' # No Color
+
+declare -A USAGE_DESCRIPTIONS
+declare -A FAILURE_HANDLERS
 
 echo_color() { # Usage: echo_color COLOR MESSAGE
     echo -e "\${1}\${2}\${COLOR_NC}"
@@ -201,15 +222,15 @@ add_line_if_not_exists() {
 unmask_package() {
     local PACKAGE="\$1"
     local KEYWORDS="\$2"
-    [[ -z "\${KEYWORDS}" ]] && KEYWORDS="~\${HOST_ARCHITECTURE_PORTAGE}" # If keywords not specified, unmask for current host architecture.
-    local UNMASK_PATH="\${PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS}/\${PROJECT_NAME}"
+    [[ -z "\${KEYWORDS}" ]] && KEYWORDS="~\${VAL_HOST_ARCHITECTURE_PORTAGE}" # If keywords not specified, unmask for current host architecture.
+    local UNMASK_PATH="\${PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS}/\${CONF_PROJECT_NAME}"
     add_line_if_not_exists "\${PACKAGE} \${KEYWORDS}" "\${UNMASK_PATH}"
 }
 
 use_set_package() {
     local PACKAGE="\$1"
     local USE_FLAGS="\$2"
-    local USE_FLAGS_PATH="\${PATH_ETC_PORTAGE_PACKAGE_USE}/\${PROJECT_NAME}"
+    local USE_FLAGS_PATH="\${PATH_ETC_PORTAGE_PACKAGE_USE}/\${CONF_PROJECT_NAME}"
     add_line_if_not_exists "\${PACKAGE} \${USE_FLAGS}" "\${USE_FLAGS_PATH}"
 }
 

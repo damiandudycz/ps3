@@ -24,7 +24,7 @@ echo 'auto-sync = no' >> "/etc/portage/repos.conf/crossdev.conf"
 # TODO: Configure crossdev environment with CELL cpu flags. Store these flags in shared env and also use with installer.
 # Setup crossdev environment
 crossdev\
-    --target "${CROSSDEV_TARGET}"\
+    --target "${VAL_CROSSDEV_TARGET}"\
     --abis "altivec"\
     --l "2.37-r7"
 #    --k "6.9"\

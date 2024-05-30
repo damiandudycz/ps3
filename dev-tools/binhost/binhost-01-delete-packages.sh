@@ -9,7 +9,7 @@
 source ../../.env-shared.sh || exit 1
 register_usage "$0 <pckage>[-version] | --if-larger <SIZE_LIMIT>"
 
-readonly PATH_BINHOST="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_CATALYST_RELEASE_NAME_DFAULT}"
+readonly PATH_BINHOST="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_RELEASE_TYPE_DFAULT}"
 readonly PATH_BINHOST_METADATA="${PATH_BINHOST}/Packages"
 
 # Parse input parameters

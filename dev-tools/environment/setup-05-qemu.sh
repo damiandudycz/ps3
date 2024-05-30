@@ -3,12 +3,14 @@
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
-[[ "$(uname -m)" != "${TARGET_ARCHITECTURE}" ]] || return 0 # Qemu not needed for PPC64
+[[ "$(uname -m)" != "${CONF_TARGET_ARCHITECTURE}" ]] || return 0 # Qemu not needed for PPC64
+
+sed -i "/${EN_NAME_QEMU_SECTION_START}/,/${EN_NAME_QEMU_SECTION_END}/d" "${PATH_ETC_PORTAGE_MAKE_CONF}" # Clean old section in make.conf if found
 
 # Configure make.conf qemu section.
 echo "${EN_NAME_QEMU_SECTION_START}" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
-echo "QEMU_SOFTMMU_TARGETS=\"${HOST_ARCHITECTURE} ${TARGET_ARCHITECTURE}\"" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
-echo "QEMU_USER_TARGETS=\"${TARGET_ARCHITECTURE}\"" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
+echo "QEMU_SOFTMMU_TARGETS=\"${VAL_HOST_ARCHITECTURE} ${CONF_TARGET_ARCHITECTURE}\"" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
+echo "QEMU_USER_TARGETS=\"${CONF_TARGET_ARCHITECTURE}\"" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
 echo "${EN_NAME_QEMU_SECTION_END}" >> "${PATH_ETC_PORTAGE_MAKE_CONF}"
 
 # Configure portage qemu section.

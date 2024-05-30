@@ -12,6 +12,7 @@ if ! grep -q "^FEATURES=\"[^\"]* ${EN_MAKE_FEATURES}" "${PATH_ETC_PORTAGE_MAKE_C
     fi
 fi
 
-# Update the system. Synchronizes emerge only once a day.
+# Update the system. Synchronizes emerge only once a day. TODO: This check doesn't always work correctly, due to timezone probably.
 [[ "$(stat -c %Y /var/db/repos/gentoo/metadata/timestamp.chk)" -lt "$(date -d 'today 00:00' +%s)" ]] && emerge --sync
 emerge --newuse --update --deep @world
+emerge --depclean

@@ -17,6 +17,9 @@ cat <<EOF > "${PATH_ENV_FILE}"
 # Prevent multiple imports.
 [ ! \${PS3_ENV_SHARED_LOADED} ] || return 0
 readonly PS3_ENV_SHARED_LOADED=true
+
+readonly HOST_ARCHITECTURE="$(uname -m)"
+readonly TARGET_ARCHITECTURE="ppc64"
 readonly PROJECT_NAME="PS3_Gentoo"
 readonly CONF_CATALYST_RELEASE_NAMES=(default) # Supported release configurations, eq. LTO, CLANG, etc.
 readonly CONF_CATALYST_RELEASE_NAME_DFAULT="default"
@@ -88,12 +91,6 @@ readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 # Various
 readonly PATH_INTERPRETER="\${PATH_USR_BIN}/qemu-ppc64"
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
-readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
-readonly PATH_CATALYST_TMP="\${PATH_VAR_TMP}/catalyst"
-readonly PATH_CATALYST_BUILDS="\${PATH_CATALYST_TMP}/builds"
-readonly PATH_CATALYST_STAGES="\${PATH_CATALYST_TMP}/config/stages"
-readonly PATH_CATALYST_PACKAGES="\${PATH_CATALYST_TMP}/packages"
-readonly PATH_CATALYST_PATCH_DIR="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
 
 # URLs
 readonly URL_GIRHUB_RAW_MAIN="https://raw.githubusercontent.com/damiandudycz"
@@ -164,6 +161,19 @@ empty_directory() {
     mkdir -p "\${1}"
 }
 
+# For KEY = VALUE format.
+update_config_assign() {
+    local KEY="\$1"
+    local VALUE="\$2"
+    local FILE="\$3"
+
+    if grep -q "^\${KEY}\s*=" "\${FILE}"; then
+        sed -i "/^\${KEY}\s*=/c\\\${KEY} = \${VALUE}" "\${FILE}"
+    else
+        echo "\${KEY} = \${VALUE}" >> "\${FILE}"
+    fi
+}
+
 # Print environment details.
 [ "\$1" == "--silent" ] || echo_color \${COLOR_TURQUOISE_BOLD} "[ PS3-Gentoo development environment - \${PATH_ROOT} ]"
 
@@ -183,7 +193,7 @@ setup_environment_failure() {
 trap setup_environment_failure ERR
 
 # Find all environment setup scripts.
-readonly SETUP_SCRIPTS="$(find ${PATH_DEV_TOOLS_ENVIRONMENT} -maxdepth 1 -type f -name '*.sh' | sort)"
+readonly SETUP_SCRIPTS="$(find ${PATH_DEV_TOOLS_ENVIRONMENT} -maxdepth 1 -type f -name 'setup*.sh' | sort)"
 
 # Run setup scripts
 for SCRIPT in ${SETUP_SCRIPTS[@]}; do

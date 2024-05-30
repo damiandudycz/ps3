@@ -3,46 +3,36 @@
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
-# Constants
-readonly CONF_JOBS="8"
-readonly CONF_LOAD="12.0"
-
-readonly PATH_CATALYST_CONFIGS="${PATH_ETC}/catalyst"
-readonly PATH_CATALYST_CONF="${PATH_CATALYST_CONFIGS}/catalyst.conf"
-readonly PATH_CATALYST_PPC_TOML="${PATH_CATALYST_USR}/arch/ppc.toml"
-readonly PATH_ACCEPT_KEYWORDS_CATALYST="${PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS}/PS3_ENV_dev-util_catalyst"
-readonly PATH_PACKAGE_USE_CATALYST="${PATH_ETC_PORTAGE_PACKAGE_USE}/PS3_ENV_dev-util_catalyst"
-readonly PATH_FILES_CATALYST_PATCHES="${PATH_DEV_TOOLS_ENVIRONMENT}/data/catalyst-patches"
+empty_directory "${EN_PATH_CATALYST_PATCH_DIR}"
+rm -f "${EN_PATH_ACCEPT_KEYWORDS_CATALYST}"
+rm -f "${EN_PATH_PACKAGE_USE_CATALYST}"
 
 # Apply patches to Catalyst scripts if missing
-mkdir -p "${PATH_CATALYST_PATCH_DIR}"
-readonly PATCH_URLS="$(find ${PATH_FILES_CATALYST_PATCHES} -maxdepth 1 -type f -name '*.patch' | sort)"
-for PATCH in ${PATCH_URLS[@]}; do
+for PATCH in ${EN_PATH_PATCH_PATHS[@]}; do
     PATCH_NAME=$(printf "%04d.patch" $((i+1)))
-    cp "${PATCH}" "${PATH_CATALYST_PATCH_DIR}/${PATCH_NAME}"
+    cp "${PATCH}" "${EN_PATH_CATALYST_PATCH_DIR}/${PATCH_NAME}"
 done
 
 # Install Catalyst
-if [ ! -f "${PATH_ACCEPT_KEYWORDS_CATALYST}" ]; then
-    echo "# Catalyst requirements" >> "${PATH_ACCEPT_KEYWORDS_CATALYST}"
-    echo "dev-util/catalyst **" >> "${PATH_ACCEPT_KEYWORDS_CATALYST}"
-    echo "sys-fs/squashfs-tools-ng ~*" >> "${PATH_ACCEPT_KEYWORDS_CATALYST}"
-    echo "sys-apps/util-linux python" >> "${PATH_PACKAGE_USE_CATALYST}"
-fi
+echo "# Catalyst requirements" >> "${EN_PATH_ACCEPT_KEYWORDS_CATALYST}"
+echo "dev-util/catalyst **" >> "${EN_PATH_ACCEPT_KEYWORDS_CATALYST}"
+echo "sys-fs/squashfs-tools-ng ~*" >> "${EN_PATH_ACCEPT_KEYWORDS_CATALYST}"
+echo "sys-apps/util-linux python" >> "${EN_PATH_PACKAGE_USE_CATALYST}"
 emerge dev-util/catalyst --newuse --update --deep
 
 # Create working directories
-for RELEASE_NAME in ${CONF_RELEASE_NAMES[@]}; do
-    mkdir -p "${PATH_CATALYST_BUILDS}/${RELEASE_NAME}"
-    mkdir -p "${PATH_CATALYST_PACKAGES}/${RELEASE_NAME}"
+for RELEASE_NAME in ${CONF_CATALYST_RELEASE_NAMES[@]}; do
+echo "MK: ${EN_PATH_CATALYST_BUILDS}/${RELEASE_NAME}"
+    mkdir -p "${EN_PATH_CATALYST_BUILDS}/${RELEASE_NAME}"
+    mkdir -p "${EN_PATH_CATALYST_PACKAGES}/${RELEASE_NAME}"
 done
-mkdir -p "${PATH_CATALYST_STAGES}"
+mkdir -p "${EN_PATH_CATALYST_STAGES}"
 
 # Configure Catalyst
-sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' "${PATH_CATALYST_CONF}"
-sed -i "/^jobs\s*=/c\jobs = ${CONF_JOBS}" "${PATH_CATALYST_CONF}" || echo "jobs = ${CONF_JOBS}" >> "${PATH_CATALYST_CONF}"
-sed -i "/^load-average\s*=/c\load-average = ${CONF_LOAD}" "${PATH_CATALYST_CONF}" || echo "load-average = ${CONF_LOAD}" >> "${PATH_CATALYST_CONF}"
-sed -i "/^binhost\s*=/c\binhost = \"${URL_BINHOST}/\"" "${PATH_CATALYST_CONF}" || echo "binhost = \"${URL_BINHOST}/\"" >> "${PATH_CATALYST_CONF}"
+sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' "${EN_PATH_CATALYST_CONF}"
+update_config_assign jobs "${EN_CONF_CATALYST_JOBS}" "${EN_PATH_CATALYST_CONF}"
+update_config_assign load-average "${EN_CONF_CATALYST_LOAD}" "${EN_PATH_CATALYST_CONF}"
+update_config_assign binhost "${URL_GITHUB_RAW_BINHOSTS}" "${EN_PATH_CATALYST_CONF}"
 
 # Configure CELL settings for Catalyst
 readonly AWK_PPC_TOML_EXPR='
@@ -68,5 +58,5 @@ BEGIN { inside_section = 0 }
     }
 }'
 readonly TEMP_FILE_TOML=$(mktemp)
-awk "${AWK_PPC_TOML_EXPR}" "${PATH_CATALYST_PPC_TOML}" > "${TEMP_FILE_TOML}"
-mv "${TEMP_FILE_TOML}" "${PATH_CATALYST_PPC_TOML}"
+awk "${AWK_PPC_TOML_EXPR}" "${EN_PATH_CATALYST_PPC_TOML}" > "${TEMP_FILE_TOML}"
+mv "${TEMP_FILE_TOML}" "${EN_PATH_CATALYST_PPC_TOML}"

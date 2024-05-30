@@ -3,7 +3,6 @@
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
-# Exit if crossdev is already set up
 [[ ! -d "${EN_PATH_CROSSDEV_USR}" ]] && failure "Crossdev not installed."
 
 [[ ! -f "/etc/portage/repos.conf/crossdev.conf" ]] || rm -f "/etc/portage/repos.conf/crossdev.conf"

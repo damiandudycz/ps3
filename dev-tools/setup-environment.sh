@@ -87,9 +87,7 @@ readonly PATH_EXTRA_ENV_PS3_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/env.sh"
 readonly PATH_EXTRA_ENV_RELEASE="\${PATH_DEV_TOOLS_RELEASE}/env.sh"
 readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 
-# TODO: Move some parts to sub envs
 # Various
-readonly PATH_INTERPRETER="\${PATH_USR_BIN}/qemu-ppc64"
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
 
 # URLs

@@ -11,4 +11,4 @@ readonly EBUILD_FILES_DIFF=$(diff "${KE_PATH_EBUILD_FILE_DST}" "${KE_PATH_OVERLA
 cp "${KE_PATH_WORK_EBUILD_DISTFILES}"/* "${PATH_VAR_CACHE_DISTFILES}"/
 
 # Build package using crossdev.
-powerpc64-unknown-linux-gnu-emerge --buildpkgonly "${KE_NAME_PACKAGE_DST}"
+powerpc64-unknown-linux-gnu-emerge --buildpkgonly "=${KE_NAME_PACKAGE_DST_VERSIONED}"

@@ -61,7 +61,7 @@ KE_PACKAGE_VERSION_SELECTED="${KE_PACKAGE_VERSION_DEFAULT}"; # Always use value 
 readonly KE_NAME_EBUILD_FILE_DISTFILES_TAR="${KE_NAME_EBUILD_FILE_DST}-files-${KE_PACKAGE_VERSION_SELECTED}.tar.xz" # Destination distfiles tarball.
 readonly KE_NAME_EBUILD_FILE_PACKAGE_SRC="${KE_NAME_EBUILD_FILE_SRC}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"         # Full source ebuild filename, without path.
 readonly KE_NAME_EBUILD_FILE_PACKAGE_DST="${KE_NAME_EBUILD_FILE_DST}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"         # Full destination ebuild filename, without path.
-readonly KE_NAME_PACKAGE_DST="${KE_NAME_EBUILD_FILE_DST}-${KE_PACKAGE_VERSION_SELECTED}"
+readonly KE_NAME_PACKAGE_DST_VERSIONED="${KE_NAME_EBUILD_FILE_DST}-${KE_PACKAGE_VERSION_SELECTED}"
 
 # Data folders and files.
 readonly KE_PATH_DATA="${PATH_DEV_TOOLS_KERNEL_EBUILD}/${KE_NAME_FOLDER_DATA}"                         # Location of data folder (./data).

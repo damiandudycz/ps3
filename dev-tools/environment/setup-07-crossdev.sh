@@ -28,5 +28,4 @@ crossdev\
     --k "6.9"\
     --l "2.37-r7"\
     --target "powerpc64-unknown-linux-gnu"\
-    --abis "altivec"\
-#    --ov-extra ${PATH_OVERLAYS_PS3_GENTOO}
+    --abis "altivec"

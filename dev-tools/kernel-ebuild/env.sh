@@ -1,7 +1,6 @@
 #!/bin/bash
 
-[ ! ${KE_ENV_LOADED} ] || return 0
-readonly KE_ENV_LOADED=true
+[ ${KE_ENV_LOADED} ] && return 0; readonly KE_ENV_LOADED=true
 
 # Input parsing.
 while [ $# -gt 0 ]; do case "$1" in

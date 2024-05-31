@@ -5,23 +5,13 @@
 # Script also updates the metadata files:
 # latest-stage3-cell-openrc.txt, latest-install-cell-minimal.txt.
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
+source ../../.env-shared.sh || exit 1
 
 # Paths
-readonly PATH_START=$(dirname "$(realpath "$0")") || die
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
-readonly PATH_ENV_READY="${PATH_ROOT}/.env_ready"
 readonly PATH_LOCAL_TMP="/var/tmp/ps3/release"
 readonly PATH_REPO_AUTOBUILDS="${PATH_ROOT}/autobuilds/ps3-gentoo-autobuilds"
 readonly PATH_CATALYST_BUILDS="/var/tmp/catalyst/builds/default"
 readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
-
-# Check if env is ready
-[ -f "${PATH_ENV_READY}" ] || die "Dev environment was not initialized. Please run dev-tools/setup-environment.sh first."
 
 # Release information
 readonly TIMESTAMP=$(cat "${PATH_RELEASE_INFO}") || die "Failed to read current release details. Please run release-prepare.sh first."

@@ -5,41 +5,34 @@
 # At the beggining it also checks if there is a need to release a new ps3-gentoo-installer
 # ebuild, and asks if you want to release it first, so that it can be used in the new build.
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
-    exit 1
-}
+source ../../.env-shared.sh || exit 1
 
 # Configuration
 readonly TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ")
-readonly CONF_JOBS="8"
-readonly CONF_LOAD="12.0"
+#readonly CONF_JOBS="8"
+#readonly CONF_LOAD="12.0"
 
 # Paths
-readonly PATH_START=$(dirname "$(realpath "$0")") || die
-readonly PATH_ROOT=$(realpath -m "${PATH_START}/../..") || die
-readonly PATH_ENV_READY="${PATH_ROOT}/.env_ready"
-readonly PATH_LOCAL_TMP="/var/tmp/ps3/release"
-readonly PATH_CATALYST_BUILDS="/var/tmp/catalyst/builds/default"
-readonly PATH_PKG_CACHE="${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default"
-readonly PATH_OVERLAY="${PATH_ROOT}/overlays/ps3-gentoo-overlay"
-readonly PATH_STAGE1="${PATH_LOCAL_TMP}/stage1-cell.$TIMESTAMP.spec"
-readonly PATH_STAGE3="${PATH_LOCAL_TMP}/stage3-cell.$TIMESTAMP.spec"
-readonly PATH_STAGE1_INSTALLCD="${PATH_LOCAL_TMP}/stage1-cell.installcd.$TIMESTAMP.spec"
-readonly PATH_STAGE2_INSTALLCD="${PATH_LOCAL_TMP}/stage2-cell.installcd.$TIMESTAMP.spec"
-readonly PATH_LIVECD_OVERLAY_ORIGINAL="${PATH_START}/data/iso_overlay"
-readonly PATH_LIVECD_OVERLAY="${PATH_LOCAL_TMP}/iso_overlay"
-readonly PATH_LIVECD_FSSCRIPT_ORIGINAL="${PATH_START}/data/iso_fsscript.sh"
-readonly PATH_LIVECD_FSSCRIPT="${PATH_LOCAL_TMP}/iso_fsscript.sh"
-readonly PATH_INTERPRETER="/usr/bin/qemu-ppc64"
-readonly PATH_SNAPSHOT_LOG="${PATH_LOCAL_TMP}/snapshot_log.txt"
-readonly PATH_RELENG="/var/tmp/ps3/releng"
-readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
-readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-installer/ps3-gentoo-installer-ebuild-updater.sh "
+#readonly PATH_LOCAL_TMP="/var/tmp/ps3/release"
+#readonly PATH_CATALYST_BUILDS="/var/tmp/catalyst/builds/default"
+#readonly PATH_PKG_CACHE="${PATH_ROOT}/binhosts/ps3-gentoo-binhosts/default"
+#readonly PATH_OVERLAY="${PATH_ROOT}/overlays/ps3-gentoo-overlay"
+#readonly PATH_STAGE1="${PATH_LOCAL_TMP}/stage1-cell.$TIMESTAMP.spec"
+#readonly PATH_STAGE3="${PATH_LOCAL_TMP}/stage3-cell.$TIMESTAMP.spec"
+#readonly PATH_STAGE1_INSTALLCD="${PATH_LOCAL_TMP}/stage1-cell.installcd.$TIMESTAMP.spec"
+#readonly PATH_STAGE2_INSTALLCD="${PATH_LOCAL_TMP}/stage2-cell.installcd.$TIMESTAMP.spec"
+#readonly PATH_LIVECD_OVERLAY_ORIGINAL="${PATH_START}/data/iso_overlay"
+#readonly PATH_LIVECD_OVERLAY="${PATH_LOCAL_TMP}/iso_overlay"
+#readonly PATH_LIVECD_FSSCRIPT_ORIGINAL="${PATH_START}/data/iso_fsscript.sh"
+#readonly PATH_LIVECD_FSSCRIPT="${PATH_LOCAL_TMP}/iso_fsscript.sh"
+#readonly PATH_INTERPRETER="/usr/bin/qemu-ppc64"
+#readonly PATH_SNAPSHOT_LOG="${PATH_LOCAL_TMP}/snapshot_log.txt"
+#readonly PATH_RELENG="/var/tmp/ps3/releng"
+#readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
+#readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-installer/ps3-gentoo-installer-ebuild-updater.sh "
 
-PATH_PORTAGE_CONFDIR_STAGES="${PATH_RELENG}/releases/portage/stages"
-PATH_PORTAGE_CONFDIR_ISOS="${PATH_RELENG}/releases/portage/isos"
+#PATH_PORTAGE_CONFDIR_STAGES="${PATH_RELENG}/releases/portage/stages"
+#PATH_PORTAGE_CONFDIR_ISOS="${PATH_RELENG}/releases/portage/isos"
 
 # URLs
 readonly URL_RELEASE_GENTOO="https://gentoo.osuosl.org/releases/ppc/autobuilds"
@@ -50,9 +43,6 @@ if [[ ${VAL_QEMU_IS_NEEDED} ]]; then
     PATH_PORTAGE_CONFDIR_ISOS="${PATH_PORTAGE_CONFDIR_ISOS}-qemu"
     INTERPRETER="interpreter: ${PATH_QEMU_INTERPRETER}"
 fi
-
-# Check if env is ready
-[ -f "${PATH_ENV_READY}" ] || die "Dev environment was not initialized. Please run dev-tools/setup-environment.sh first."
 
 # Ask if should update installer if there are any changes pending.
 $PATH_INSTALLER_UPDATER --ask || die "Failed to run installer updater."
@@ -86,10 +76,10 @@ cp "$PATH_START/data/spec/stage1-cell.installcd.spec" "$PATH_STAGE1_INSTALLCD" |
 cp "$PATH_START/data/spec/stage2-cell.installcd.spec" "$PATH_STAGE2_INSTALLCD" || die "Failed to copy stage2 installcd spec file"
 
 # Substitute placeholders with actual values in spec files
-sed -i "s|@TREEISH@|${SQUASHFS_IDENTIFIER}|g" "$PATH_STAGE1" || die "Failed to substitute TREEISH in stage1 spec file"
-sed -i "s|@TREEISH@|${SQUASHFS_IDENTIFIER}|g" "$PATH_STAGE3" || die "Failed to substitute TREEISH in stage3 spec file"
-sed -i "s|@TREEISH@|${SQUASHFS_IDENTIFIER}|g" "$PATH_STAGE1_INSTALLCD" || die "Failed to substitute TREEISH in stage1 installcd spec file"
-sed -i "s|@TREEISH@|${SQUASHFS_IDENTIFIER}|g" "$PATH_STAGE2_INSTALLCD" || die "Failed to substitute TREEISH in stage2 installcd spec file"
+sed -i "s|@TREEISH@|${SQUASHFS_IDENTIFIER}|g" "$PATH_STAGE1"
+sed -i "s|@TREEISH@|${SQUASHFS_IDENTIFIER}|g" "$PATH_STAGE3"
+sed -i "s|@TREEISH@|${SQUASHFS_IDENTIFIER}|g" "$PATH_STAGE1_INSTALLCD"
+sed -i "s|@TREEISH@|${SQUASHFS_IDENTIFIER}|g" "$PATH_STAGE2_INSTALLCD"
 sed -i "s|@SEEDTIMESTAMP@|${SEED_TIMESTAMP}|g" "$PATH_STAGE1" "$PATH_STAGE1_INSTALLCD" "$PATH_STAGE2_INSTALLCD" || die "Failed to substitute SEEDTIMESTAMP in spec files"
 sed -i "s|@TIMESTAMP@|${TIMESTAMP}|g" "$PATH_STAGE1" "$PATH_STAGE3" "$PATH_STAGE1_INSTALLCD" "$PATH_STAGE2_INSTALLCD" || die "Failed to substitute TIMESTAMP in spec files"
 sed -i "s|@PORTAGE_CONFDIR@|${PATH_PORTAGE_CONFDIR_STAGES}|g" "$PATH_STAGE1" || die "Failed to substitute PORTAGE_CONFDIR in stage1 spec file"

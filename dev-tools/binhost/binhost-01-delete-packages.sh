@@ -9,15 +9,11 @@
 source ../../.env-shared.sh || exit 1
 register_usage "$0 <pckage>[-version] | --if-larger <SIZE_LIMIT>"
 
-readonly PATH_BINHOST="${PATH_BINHOSTS_PS3_GENTOO}/${CONF_RELEASE_TYPE_DFAULT}"
-readonly PATH_BINHOST_METADATA="${PATH_BINHOST}/Packages"
-
 # Parse input parameters
 declare -a ARG_PACKAGES_TO_REMOVE
 while [[ $# -gt 0 ]]; do case "$1" in
     --verbose);; # Handled by env-shared.sh
     --if-larger|-s)
-        # Pobranie wartości dla parametru --param2
         SIZE_LIMIT=$2
         case "${SIZE_LIMIT: -1}" in
             K|k) SIZE_LIMIT=$(( ${SIZE_LIMIT%K*} * 1024 )) ;;
@@ -37,10 +33,10 @@ esac; done
 
 # Check if package parameter is provided and package exists
 [[ ! -z "${ARG_PACKAGES_TO_REMOVE}" ]] || [ ${SIZE_LIMIT} ] || show_usage
-[[ -d "${PATH_BINHOST}/${CONF_PACKAGE_NAME}" ]] || failure "Package ${CONF_PACKAGE_NAME} not found in ${PATH_BINHOST}"
+[[ -d "${PATH_BINHOST_OVERLAY_DEFAULT}/${CONF_PACKAGE_NAME}" ]] || failure "Package ${CONF_PACKAGE_NAME} not found in ${PATH_BINHOST_OVERLAY_DEFAULT}"
 
 # Process metadata file
-PACKAGES_COUNT=$(grep -oP '^PACKAGES: \K[0-9]+' "${PATH_BINHOST_METADATA}")
+PACKAGES_COUNT=$(grep -oP '^PACKAGES: \K[0-9]+' "${PATH_BINHOST_OVERLAY_DEFAULT_METADATA}")
 VAR_METADATA_NEW=""
 ENTRY=""
 unset ENTRY_DELETE
@@ -73,7 +69,7 @@ while IFS= read -r LINE || [[ -n $LINE ]]; do
             echo "Removing ${ENTRY_CPV}"
             ((PACKAGES_COUNT--))
             METADATA_MODIFIED=true
-            rm -f "${PATH_BINHOST}/${ENTRY_PATH}"
+            rm -f "${PATH_BINHOST_OVERLAY_DEFAULT}/${ENTRY_PATH}"
         else
             # Add entry if shoudn't delete it
             VAR_METADATA_NEW+="${ENTRY}\n"
@@ -91,12 +87,12 @@ while IFS= read -r LINE || [[ -n $LINE ]]; do
             ENTRY_SIZE=${LINE#* }
         fi
     fi
-done < "$PATH_BINHOST_METADATA"
+done < "${PATH_BINHOST_OVERLAY_DEFAULT_METADATA}"
 
 # Save changes
 if [ ${METADATA_MODIFIED} ]; then
-    echo -e "${VAR_METADATA_NEW}" > "${PATH_BINHOST_METADATA}"
-    sed -i "s/^PACKAGES: .*/PACKAGES: $PACKAGES_COUNT/" "${PATH_BINHOST_METADATA}"
+    echo -e "${VAR_METADATA_NEW}" > "${PATH_BINHOST_OVERLAY_DEFAULT_METADATA}"
+    sed -i "s/^PACKAGES: .*/PACKAGES: $PACKAGES_COUNT/" "${PATH_BINHOST_OVERLAY_DEFAULT_METADATA}"
 elif [ ${SIZE_LIMIT} ]; then
     echo "Packages: ${ARG_PACKAGES_TO_REMOVE[@]} larger than ${SIZE_LIMIT}B not found in repository."
 else

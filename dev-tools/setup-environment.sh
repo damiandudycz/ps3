@@ -1,14 +1,9 @@
 #!/bin/bash
 
-# CONF_      - Constant values, not dependent on anything.
-# VAL_       - Constant values calculated from other values or extracted from the system.
-# VAR_       - Variable values, that can change during execution.
-# URL_       - URLs.
-# PATH_      - Paths to directories and files.
-# PATH_DIR_  - Paths to directories.
-# PATH_FILE_ - Path to file.
-# NAME_DIR_  - Names of directories.
-# NAME_FILE  - Names of files.
+# CONF_ - Constant values, not dependent on anything.
+# VAL_  - Constant values calculated from other values or extracted from the system.
+# URL_  - URLs.
+# PATH_ - Paths to directories and files.
 
 # These variables are used only by this script itself, others will have patchs loaded from .env-shared.sh.
 readonly PATH_ROOT_INITIAL="$(realpath -m '..')"
@@ -27,6 +22,7 @@ readonly VAL_PS3_ENV_SHARED_LOADED=true
 
 # Project configuration ------------------------------------------------------------------------------------------------------------
 readonly CONF_PROJECT_NAME="PS3_Gentoo"
+readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev)
 readonly CONF_TARGET_ARCHITECTURE="ppc64"
 readonly CONF_TARGET_ARCHITECTURE_LONG="powerpc64"
 readonly CONF_TARGET_SUBARCHITECTURE="cell"
@@ -46,7 +42,11 @@ readonly CONF_QEMU_SECTION_END="# FOR CATALYST QEMU ---------- END"
 readonly CONF_CATALYST_JOBS="8"
 readonly CONF_CATALYST_LOAD="12.0"
 readonly CONF_RELENG_USE_FLAGS='"altivec", "ibm", "ps3"'
-readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev)
+readonly CONF_CROSSDEV_ABI="altivec"
+readonly CONF_CROSSDEV_L="2.37-r7"
+readonly CONF_CROSSDEV_K="6.9"
+readonly CONF_CROSSDEV_G="13.2.1_p20240113-r1"
+readonly CONF_CROSSDEV_B="2.41-r3"
 # URLs.
 readonly URL_GIRHUB_RAW_BASE="https://raw.githubusercontent.com/damiandudycz"
 readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_BASE}/ps3"
@@ -115,16 +115,16 @@ readonly PATH_WORK_ENVIRONMENT="\${PATH_WORK}/environment"
 readonly PATH_WORK_KERNEL_EBUILD="\${PATH_WORK}/kernel_ebuild"
 readonly PATH_WORK_PS3_INSTALLER="\${PATH_WORK}/ps3_installer"
 readonly PATH_WORK_RELEASE="\${PATH_WORK}/release"
-readonly PATH_WORK_RELENG="\${PATH_WORK}/releng"
+#readonly PATH_WORK_RELENG="\${PATH_WORK}/releng"
 
 # DEV Tools additional environments.
 readonly PATH_EXTRA_ENV_BINHOST="\${PATH_DEV_TOOLS_BINHOST}/env.sh"
 readonly PATH_EXTRA_ENV_DISTCC_DOCKER="\${PATH_DEV_TOOLS_DISTCC_DOCKER}/env.sh"
-readonly PATH_EXTRA_ENV_ENVIRONMENT="\${PATH_DEV_TOOLS_ENVIRONMENT}/env.sh"
+#readonly PATH_EXTRA_ENV_ENVIRONMENT="\${PATH_DEV_TOOLS_ENVIRONMENT}/env.sh"
 readonly PATH_EXTRA_ENV_KERNEL_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/env.sh"
 readonly PATH_EXTRA_ENV_PS3_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/env.sh"
 readonly PATH_EXTRA_ENV_RELEASE="\${PATH_DEV_TOOLS_RELEASE}/env.sh"
-readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
+#readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 
 # Catalyst related paths.
 readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
@@ -138,6 +138,11 @@ readonly PATH_CATALYST_PPC_TOML="\${PATH_CATALYST_USR}/arch/ppc.toml"
 readonly PATH_CATALYST_PATCHES_SRC="\${PATH_DEV_TOOLS_ENVIRONMENT}/data/catalyst-patches"
 readonly PATH_CATALYST_PATCHES_DST="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
 
+# Binhost.
+readonly PATH_BINHOST_OVERLAY_DEFAULT="\${PATH_BINHOSTS_PS3_GENTOO}/\${CONF_RELEASE_TYPE_DFAULT}"
+readonly PATH_BINHOST_CATALYST_DEFAULT="\${PATH_CATALYST_PACKAGES}/\${CONF_RELEASE_TYPE_DFAULT}"
+readonly PATH_BINHOST_OVERLAY_DEFAULT_METADATA="\${PATH_BINHOST_OVERLAY_DEFAULT}/Packages"
+
 # Releng.
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
 
@@ -148,11 +153,6 @@ readonly PATH_QEMU_BINFMT_REGISTER="\${PATH_QEMU_BINFMT}/register"
 # Crossdev.
 readonly PATH_CROSSDEV_USR="\${PATH_USR_SHARE}/crossdev"
 readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
-readonly CONF_CROSSDEV_ABI="altivec"
-readonly CONF_CROSSDEV_L="2.37-r7"
-readonly CONF_CROSSDEV_K="6.9"
-readonly CONF_CROSSDEV_G="13.2.1_p20240113-r1"
-readonly CONF_CROSSDEV_B="2.41-r3"
 
 # Other
 readonly PATH_ENV_HELPER_FUNCTIONS="\${PATH_DEV_TOOLS_ENVIRONMENT}/env-helper-functions.sh"

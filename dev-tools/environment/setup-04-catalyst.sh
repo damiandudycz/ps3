@@ -1,14 +1,11 @@
 #!/bin/bash
 
 source ../../.env-shared.sh || exit 1
-source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
-empty_directory "${EN_PATH_CATALYST_PATCH_DIR}"
-
-# Apply patches to Catalyst scripts if missing
-for PATCH in ${EN_PATH_PATCH_PATHS[@]}; do
+# Copy patches for catalyst.
+for PATCH in "${PATH_CATALYST_PATCHES_SRC}"/*.patch; do
     PATCH_NAME=$(printf "%04d.patch" $((i+1)))
-    cp "${PATCH}" "${EN_PATH_CATALYST_PATCH_DIR}/${PATCH_NAME}"
+    cp -f "${PATCH}" "${PATH_CATALYST_PATCHES_DST}/${PATCH_NAME}"
 done
 
 # Install Catalyst
@@ -19,16 +16,16 @@ emerge dev-util/catalyst --newuse --update --deep
 
 # Create working directories
 for RELEASE_NAME in ${CONF_RELEASE_TYPES[@]}; do
-    mkdir -p "${EN_PATH_CATALYST_BUILDS}/${RELEASE_NAME}"
-    mkdir -p "${EN_PATH_CATALYST_PACKAGES}/${RELEASE_NAME}"
+    mkdir -p "${PATH_CATALYST_BUILDS}/${RELEASE_NAME}"
+    mkdir -p "${PATH_CATALYST_PACKAGES}/${RELEASE_NAME}"
 done
-mkdir -p "${EN_PATH_CATALYST_STAGES}"
+mkdir -p "${PATH_CATALYST_STAGES}"
 
 # Configure Catalyst
-sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' "${EN_PATH_CATALYST_CONF}"
-update_config_assign_space jobs "${CONF_CATALYST_JOBS}" "${EN_PATH_CATALYST_CONF}"
-update_config_assign_space load-average "${CONF_CATALYST_LOAD}" "${EN_PATH_CATALYST_CONF}"
-update_config_assign_space binhost "${URL_GITHUB_RAW_BINHOSTS}" "${EN_PATH_CATALYST_CONF}"
+sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' "${PATH_CATALYST_CONF}"
+update_config_assign_space jobs "${CONF_CATALYST_JOBS}" "${PATH_CATALYST_CONF}"
+update_config_assign_space load-average "${CONF_CATALYST_LOAD}" "${PATH_CATALYST_CONF}"
+update_config_assign_space binhost "${URL_GITHUB_RAW_BINHOSTS}" "${PATH_CATALYST_CONF}"
 
 # Configure CELL settings for Catalyst
 readonly AWK_PPC_TOML_EXPR='
@@ -54,5 +51,5 @@ BEGIN { inside_section = 0 }
     }
 }'
 readonly TEMP_FILE_TOML=$(mktemp)
-awk "${AWK_PPC_TOML_EXPR}" "${EN_PATH_CATALYST_PPC_TOML}" > "${TEMP_FILE_TOML}"
-mv "${TEMP_FILE_TOML}" "${EN_PATH_CATALYST_PPC_TOML}"
+awk "${AWK_PPC_TOML_EXPR}" "${PATH_CATALYST_PPC_TOML}" > "${TEMP_FILE_TOML}"
+mv "${TEMP_FILE_TOML}" "${PATH_CATALYST_PPC_TOML}"

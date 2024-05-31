@@ -45,7 +45,7 @@ readonly CONF_QEMU_SECTION_START="# FOR CATALYST QEMU ---------- START"
 readonly CONF_QEMU_SECTION_END="# FOR CATALYST QEMU ---------- END"
 readonly CONF_CATALYST_JOBS="8"
 readonly CONF_CATALYST_LOAD="12.0"
-readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev crossdev dev-vcs/git)
+readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev dev-vcs/git)
 # URLs.
 readonly URL_GIRHUB_RAW_BASE="https://raw.githubusercontent.com/damiandudycz"
 readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_BASE}/ps3"
@@ -123,21 +123,44 @@ readonly PATH_EXTRA_ENV_PS3_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/env.sh"
 readonly PATH_EXTRA_ENV_RELEASE="\${PATH_DEV_TOOLS_RELEASE}/env.sh"
 readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 
-# Other.
+# Catalyst related paths.
+readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
+readonly PATH_CATALYST_TMP="\${PATH_VAR_TMP}/catalyst"
+readonly PATH_CATALYST_ETC="\${PATH_ETC}/catalyst"
+readonly PATH_CATALYST_BUILDS="\${PATH_CATALYST_TMP}/builds"
+readonly PATH_CATALYST_STAGES="\${PATH_CATALYST_TMP}/config/stages"
+readonly PATH_CATALYST_PACKAGES="\${PATH_CATALYST_TMP}/packages"
+readonly PATH_CATALYST_CONF="\${PATH_CATALYST_ETC}/catalyst.conf"
+readonly PATH_CATALYST_PPC_TOML="\${PATH_CATALYST_USR}/arch/ppc.toml"
+readonly PATH_CATALYST_PATCHES_SRC="\${PATH_DEV_TOOLS_ENVIRONMENT}/data/catalyst-patches"
+readonly PATH_CATALYST_PATCHES_DST="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
+
+# Releng.
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
+
+# QEMU.
 readonly PATH_QEMU_BINFMT="/proc/sys/fs/binfmt_misc"
 readonly PATH_QEMU_BINFMT_REGISTER="\${PATH_QEMU_BINFMT}/register"
+
+# Crossdev.
+readonly PATH_CROSSDEV_USR="\${PATH_USR_SHARE}/crossdev"
+
+# Other
 readonly PATH_ENV_HELPER_FUNCTIONS="\${PATH_DEV_TOOLS_ENVIRONMENT}/env-helper-functions.sh"
+readonly PATH_GIT_HOOK_AUTOBUILDS="\${PATH_ROOT}/.git/modules/autobuilds/ps3-gentoo-autobuilds/pre-commit" # TODO: Use variables for patch
 
 # Various tools --------------------------------------------------------------------------------------------------------------------
 # powerpc64-cell-linux-gnu.
 readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
 readonly VAL_QEMU_IS_NEEDED=$(expr "\${VAL_HOST_ARCHITECTURE}" != "\${CONF_TARGET_ARCHITECTURE}") # Is host architecture different than target architecture.
+readonly VAL_QEMU_RELENG_POSTFIX=\$([[ \${VAL_QEMU_IS_NEEDED} ]] && echo "-qemu")
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # Various calculated values and paths ----------------------------------------------------------------------------------------------
 readonly PATH_QEMU_INTERPRETER="\${PATH_USR_BIN}/qemu-\${CONF_TARGET_ARCHITECTURE}"
 readonly VAL_QEMU_REGISTRATION_EXPR="\${CONF_QEMU_CONFIG}\${PATH_QEMU_INTERPRETER}:"
+readonly PATH_RELENG_PORTAGE_CONFDIR_STAGES="\${PATH_RELENG}/releases/portage/stages${VAL_QEMU_RELENG_POSTFIX}"
+readonly PATH_RELENG_PORTAGE_CONFDIR_ISOS="\${PATH_RELENG}/releases/portage/isos${VAL_QEMU_RELENG_POSTFIX}"
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # Shared functionality.

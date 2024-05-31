@@ -1,9 +1,8 @@
 #!/bin/bash
 
 source ../../.env-shared.sh || exit 1
-source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
-[[ ! -d "${EN_PATH_CROSSDEV_USR}" ]] && failure "Crossdev not installed."
+[[ ! -d "${PATH_CROSSDEV_USR}" ]] && failure "Crossdev not installed."
 
 rm -f "/etc/portage/repos.conf/crossdev.conf"
 rm -rf "/var/db/repos/crossdev"
@@ -19,6 +18,8 @@ echo 'location = /var/db/repos/crossdev' >> "/etc/portage/repos.conf/crossdev.co
 echo 'priority = 10' >> "/etc/portage/repos.conf/crossdev.conf"
 echo 'masters = gentoo' >> "/etc/portage/repos.conf/crossdev.conf"
 echo 'auto-sync = no' >> "/etc/portage/repos.conf/crossdev.conf"
+
+emerge --newuse --update --deep crossdev
 
 # TODO: Move variables to env.
 # TODO: Configure crossdev environment with CELL cpu flags. Store these flags in shared env and also use with installer.

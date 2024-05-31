@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source ../../.env-shared.sh || exit 1
-source "${PATH_EXTRA_ENV_ENVIRONMENT}" || failure "Failed to load env ${PATH_EXTRA_ENV_ENVIRONMENT}"
 
 [[ ${VAL_QEMU_IS_NEEDED} ]] || return 0 # Qemu not needed for PPC64
 

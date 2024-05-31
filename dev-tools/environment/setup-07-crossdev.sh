@@ -4,32 +4,30 @@ source ../../.env-shared.sh || exit 1
 
 [[ ! -d "${PATH_CROSSDEV_USR}" ]] && failure "Crossdev not installed."
 
-rm -f "/etc/portage/repos.conf/crossdev.conf"
-rm -rf "/var/db/repos/crossdev"
+rm -f "${PATH_ETC_PORTAGE_REPOS_CONF}/crossdev.conf"
+rm -rf "${PATH_VAR_DB_REPOS_CROSSDEV}"
 
-mkdir -p "/var/db/repos/crossdev"/{profiles,metadata}
-chown -R portage:portage "/var/db/repos/crossdev"
-mkdir -p "/etc/portage/repos.conf"
+mkdir -p "${PATH_VAR_DB_REPOS_CROSSDEV}"/{profiles,metadata}
+chown -R portage:portage "${PATH_VAR_DB_REPOS_CROSSDEV}"
+mkdir -p "${PATH_ETC_PORTAGE_REPOS_CONF}"
 # Configure crossdev repo
-echo 'crossdev' >> "/var/db/repos/crossdev/profiles/repo_name"
-echo 'masters = gentoo' >> "/var/db/repos/crossdev/metadata/layout.conf"
-echo '[crossdev]' >> "/etc/portage/repos.conf/crossdev.conf"
-echo 'location = /var/db/repos/crossdev' >> "/etc/portage/repos.conf/crossdev.conf"
-echo 'priority = 10' >> "/etc/portage/repos.conf/crossdev.conf"
-echo 'masters = gentoo' >> "/etc/portage/repos.conf/crossdev.conf"
-echo 'auto-sync = no' >> "/etc/portage/repos.conf/crossdev.conf"
-
+echo 'crossdev' >> "${PATH_VAR_DB_REPOS_CROSSDEV}/profiles/repo_name"
+echo 'masters = gentoo' >> "${PATH_VAR_DB_REPOS_CROSSDEV}/metadata/layout.conf"
+echo '[crossdev]' >> "${PATH_ETC_PORTAGE_REPOS_CONF}/crossdev.conf"
+echo 'location = /var/db/repos/crossdev' >> "${PATH_ETC_PORTAGE_REPOS_CONF}/crossdev.conf"
+echo 'priority = 10' >> "${PATH_ETC_PORTAGE_REPOS_CONF}/crossdev.conf"
+echo 'masters = gentoo' >> "${PATH_ETC_PORTAGE_REPOS_CONF}/crossdev.conf"
+echo 'auto-sync = no' >> "${PATH_ETC_PORTAGE_REPOS_CONF}/crossdev.conf"
 emerge --newuse --update --deep crossdev
 
-# TODO: Move variables to env.
 # TODO: Configure crossdev environment with CELL cpu flags. Store these flags in shared env and also use with installer.
 # Setup crossdev environment
 crossdev\
     --target "${VAL_CROSSDEV_TARGET}"\
-    --abis "altivec"\
-    --l "2.37-r7"
-#    --k "6.9"\
-#    --g "13.2.1_p20240113-r1"\
-#    --b "2.41-r3"
+    --abis "${CONF_CROSSDEV_ABI}"\
+    --l "${CONF_CROSSDEV_L}"\
+    --k "${CONF_CROSSDEV_K}"\
+    --g "${CONF_CROSSDEV_G}"\
+    --b "${CONF_CROSSDEV_B}"
 
-update_config_assign "PORTDIR_OVERLAY" "/home/gentoo/ps3/overlays/ps3-gentoo-overlay" "/usr/powerpc64-cell-linux-gnu/etc/portage/make.conf"
+update_config_assign "PORTDIR_OVERLAY" "${PATH_OVERLAYS_PS3_GENTOO}" "${PATH_USR}/${VAL_CROSSDEV_TARGET}/${PATH_ETC_PORTAGE_MAKE_CONF}"

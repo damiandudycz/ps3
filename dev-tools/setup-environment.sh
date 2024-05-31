@@ -45,6 +45,7 @@ readonly CONF_QEMU_SECTION_START="# FOR CATALYST QEMU ---------- START"
 readonly CONF_QEMU_SECTION_END="# FOR CATALYST QEMU ---------- END"
 readonly CONF_CATALYST_JOBS="8"
 readonly CONF_CATALYST_LOAD="12.0"
+readonly CONF_RELENG_USE_FLAGS='"altivec", "ibm", "ps3"'
 readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev)
 # URLs.
 readonly URL_GIRHUB_RAW_BASE="https://raw.githubusercontent.com/damiandudycz"
@@ -95,6 +96,7 @@ readonly PATH_USR_SHARE="\${PATH_USR}/share"
 readonly PATH_USR_BIN="\${PATH_USR}/bin"
 readonly PATH_VAR_DB_REPOS="\${PATH_VAR}/db/repos"
 readonly PATH_VAR_DB_REPOS_GENTOO="\${PATH_VAR_DB_REPOS}/gentoo"
+readonly PATH_VAR_DB_REPOS_CROSSDEV="\${PATH_VAR_DB_REPOS}/crossdev"
 readonly PATH_VAR_CACHE="\${PATH_VAR}/cache"
 readonly PATH_VAR_CACHE_DISTFILES="\${PATH_VAR_CACHE}/distfiles"
 
@@ -103,6 +105,7 @@ readonly PATH_ETC_PORTAGE="\${PATH_ETC}/portage"
 readonly PATH_ETC_PORTAGE_MAKE_CONF="\${PATH_ETC_PORTAGE}/make.conf"
 readonly PATH_ETC_PORTAGE_PACKAGE_USE="\${PATH_ETC_PORTAGE}/package.use"
 readonly PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS="\${PATH_ETC_PORTAGE}/package.accept_keywords"
+readonly PATH_ETC_PORTAGE_REPOS_CONF="\${PATH_ETC_PORTAGE}/repos.conf"
 
 # DEV Tools work directories.
 readonly PATH_WORK="\${PATH_VAR_TMP}/\${CONF_PROJECT_NAME}"
@@ -144,14 +147,20 @@ readonly PATH_QEMU_BINFMT_REGISTER="\${PATH_QEMU_BINFMT}/register"
 
 # Crossdev.
 readonly PATH_CROSSDEV_USR="\${PATH_USR_SHARE}/crossdev"
+readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
+readonly CONF_CROSSDEV_ABI="altivec"
+readonly CONF_CROSSDEV_L="2.37-r7"
+readonly CONF_CROSSDEV_K="6.9"
+readonly CONF_CROSSDEV_G="13.2.1_p20240113-r1"
+readonly CONF_CROSSDEV_B="2.41-r3"
 
 # Other
 readonly PATH_ENV_HELPER_FUNCTIONS="\${PATH_DEV_TOOLS_ENVIRONMENT}/env-helper-functions.sh"
 readonly PATH_GIT_HOOK_AUTOBUILDS="\${PATH_ROOT}/.git/modules/autobuilds/ps3-gentoo-autobuilds/pre-commit" # TODO: Use variables for patch
+readonly PATH_PORTAGE_TIMESTAMP_CHK="\${PATH_VAR_DB_REPOS_GENTOO}/metadata/timestamp.chk"
 
 # Various tools --------------------------------------------------------------------------------------------------------------------
 # powerpc64-cell-linux-gnu.
-readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
 readonly VAL_QEMU_IS_NEEDED=$(expr "\${VAL_HOST_ARCHITECTURE}" != "\${CONF_TARGET_ARCHITECTURE}") # Is host architecture different than target architecture.
 readonly VAL_QEMU_RELENG_POSTFIX=\$([[ \${VAL_QEMU_IS_NEEDED} ]] && echo "-qemu")
 # ----------------------------------------------------------------------------------------------------------------------------------

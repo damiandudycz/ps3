@@ -105,3 +105,16 @@ use_set_package() {
     local USE_FLAGS_PATH="${PATH_ETC_PORTAGE_PACKAGE_USE}/${CONF_PROJECT_NAME}"
     add_line_if_not_exists "${PACKAGE} ${USE_FLAGS}" "${USE_FLAGS_PATH}"
 }
+
+set_if() {
+    local VAR_NAME=$1
+    local CONDITION=$2
+    local RET_TRUE=$3
+    local RET_FALSE=$4
+
+    if [[ $CONDITION ]]; then
+        eval "$VAR_NAME=\"$RET_TRUE\""
+    else
+        eval "$VAR_NAME=\"$RET_FALSE\""
+    fi
+}

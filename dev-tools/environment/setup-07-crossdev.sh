@@ -2,8 +2,6 @@
 
 source ../../.env-shared.sh || exit 1
 
-[[ ! -d "${PATH_CROSSDEV_USR}" ]] && failure "Crossdev not installed."
-
 rm -f "${PATH_ETC_PORTAGE_REPOS_CONF}/crossdev.conf"
 rm -rf "${PATH_VAR_DB_REPOS_CROSSDEV}"
 

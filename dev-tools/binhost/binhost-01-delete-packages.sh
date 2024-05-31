@@ -5,7 +5,6 @@
 # It can also remove packages larger than specified size - this functionality
 # can be used with or without specyfying package name.
 
-# --- Shared environment
 source ../../.env-shared.sh || exit 1
 register_usage "$0 <pckage>[-version] | --if-larger <SIZE_LIMIT>"
 
@@ -66,7 +65,7 @@ while IFS= read -r LINE || [[ -n $LINE ]]; do
         fi
         if [[ -n ${ENTRY_DELETE} ]]; then
             # Package was market to delete
-            echo "Removing ${ENTRY_CPV}"
+            echo "Removing ${ENTRY_CPV} [${ENTRY_PATH}]"
             ((PACKAGES_COUNT--))
             METADATA_MODIFIED=true
             rm -f "${PATH_BINHOST_OVERLAY_DEFAULT}/${ENTRY_PATH}"

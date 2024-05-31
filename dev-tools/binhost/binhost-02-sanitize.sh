@@ -4,6 +4,4 @@
 
 source ../../.env-shared.sh || exit 1
 
-readonly PATH_DELETE_SCRIPT="${PATH_DEV_TOOLS_BINHOST}/binhost-01-delete-packages.sh"
-
-source ${PATH_DELETE_SCRIPT} --if-larger ${CONF_GIT_FILE_SIZE_LIMIT}
+source ${PATH_BINHOST_SCRIPT_DELETE} --if-larger ${CONF_GIT_FILE_SIZE_LIMIT}

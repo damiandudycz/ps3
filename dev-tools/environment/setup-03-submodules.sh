@@ -9,8 +9,6 @@ git submodule foreach 'git config submodule.$name.depth 1'
 git submodule update --init --recursive
 git submodule foreach 'git checkout main'
 
-echo ${PATH_GIT_HOOK_AUTOBUILDS}
-touch ${PATH_GIT_HOOK_AUTOBUILDS}
 # Setup LFS for autobuilds
 cat <<EOF > "${PATH_GIT_HOOK_AUTOBUILDS}"
 # Find all files larger than ${CONF_GIT_FILE_SIZE_LIMIT} and track them with Git LFS

@@ -2,6 +2,8 @@
 
 source ../../.env-shared.sh || exit 1
 
+emerge --newuse --update --deep dev-vcs/git
+
 # GIT setup.
 git config --global user.name "${CONF_GIT_USER}"
 git config --global user.email "${CONF_GIT_EMAIL}"

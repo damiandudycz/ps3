@@ -18,12 +18,12 @@ use_set_package "dev-libs/glib" "static-libs"
 use_set_package "sys-libs/zlib" "static-libs"
 use_set_package "sys-apps/attr" "static-libs"
 use_set_package "dev-libs/libpcre2" "static-libs"
-
 emerge --newuse --update --deep qemu
 
 # Setup Qemu autostart and run it
 rc-update add qemu-binfmt default
-rc-config start qemu-binfmt
+rc-config stop qemu-binfmt
 [[ -d "${PATH_QEMU_BINFMT}" ]] || modprobe binfmt_misc
-mount binfmt_misc -t binfmt_misc "${PATH_QEMU_BINFMT}" || echo "WARNING! mount binfmt_misc failed, probably already mounted"
-[ ! -f "${PATH_QEMU_BINFMT_REGISTER}" ] && echo "${VAL_QEMU_REGISTRATION_EXPR}" > "${PATH_QEMU_BINFMT_REGISTER}" || echo "WARNING! ${PATH_QEMU_BINFMT_REGISTER} already exists, skipping write"
+[[ -f "${PATH_QEMU_BINFMT_REGISTER}" ]] || mount binfmt_misc -t binfmt_misc "${PATH_QEMU_BINFMT}"
+[[ -f "${PATH_QEMU_BINFMT_REGISTER}" ]] || echo "${VAL_QEMU_REGISTRATION_EXPR}" > "${PATH_QEMU_BINFMT_REGISTER}"
+rc-config start qemu-binfmt

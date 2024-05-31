@@ -45,7 +45,7 @@ readonly CONF_QEMU_SECTION_START="# FOR CATALYST QEMU ---------- START"
 readonly CONF_QEMU_SECTION_END="# FOR CATALYST QEMU ---------- END"
 readonly CONF_CATALYST_JOBS="8"
 readonly CONF_CATALYST_LOAD="12.0"
-readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev dev-vcs/git)
+readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev)
 # URLs.
 readonly URL_GIRHUB_RAW_BASE="https://raw.githubusercontent.com/damiandudycz"
 readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_BASE}/ps3"

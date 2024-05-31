@@ -2,8 +2,6 @@
 
 source ../../.env-shared.sh || exit 1
 
-[ -d "${PATH_USR}/${VAL_CROSSDEV_TARGET}" ] && echo "${PATH_USR}/${VAL_CROSSDEV_TARGET} already exists. Skipping" && return 0
-
 rm -f "${PATH_ETC_PORTAGE_REPOS_CONF}/crossdev.conf"
 rm -rf "${PATH_VAR_DB_REPOS_CROSSDEV}"
 

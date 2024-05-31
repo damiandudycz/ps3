@@ -3,6 +3,7 @@
 source ../../.env-shared.sh || exit 1
 
 # Copy patches for catalyst.
+mkdir -p "${PATH_CATALYST_PATCHES_DST}"
 for PATCH in "${PATH_CATALYST_PATCHES_SRC}"/*.patch; do
     PATCH_NAME=$(printf "%04d.patch" $((i+1)))
     cp -f "${PATCH}" "${PATH_CATALYST_PATCHES_DST}/${PATCH_NAME}"

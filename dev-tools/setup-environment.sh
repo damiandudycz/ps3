@@ -58,12 +58,13 @@ readonly URL_GITHUB_RAW_BINHOSTS="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-binhosts"
 readonly URL_GITHUB_RAW_OVERLAY="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-overlay"
 # ----------------------------------------------------------------------------------------------------------------------------------
 
-# Fetch host machine details -------------------------------------------------------------------------------------------------------
+# Host machine details and various variables ---------------------------------------------------------------------------------------
 readonly VAL_HOST_ARCHITECTURE="$(uname -m)"
 readonly VAL_HOST_ARCHITECTURE_PORTAGE="$(portageq envvar ARCH)"
+readonly VAL_SCRIPT_NAME_CALLED="$(basename $0)" # Name of script that was called by the user.
 # ----------------------------------------------------------------------------------------------------------------------------------
 
-# Paths ----------------------------------------------------------------------------------------------------------------------------
+# Paths and variables --------------------------------------------------------------------------------------------------------------
 readonly PATH_ROOT="${PATH_ROOT_INITIAL}"
 
 # Main patches at the root of repository.
@@ -79,7 +80,7 @@ readonly PATH_DEV_TOOLS_ENVIRONMENT="\${PATH_DEV_TOOLS}/environment"
 readonly PATH_DEV_TOOLS_KERNEL_EBUILD="\${PATH_DEV_TOOLS}/kernel-ebuild"
 readonly PATH_DEV_TOOLS_PS3_INSTALLER="\${PATH_DEV_TOOLS}/ps3-installer"
 readonly PATH_DEV_TOOLS_RELEASE="\${PATH_DEV_TOOLS}/release"
-readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng" # ??
+#readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng" # ??
 
 # External modules.
 readonly PATH_AUTOBUILDS_PS3_GENTOO="\${PATH_AUTOBUILDS}/ps3-gentoo-autobuilds"              # Autobuilds.
@@ -118,16 +119,9 @@ readonly PATH_WORK_ENVIRONMENT="\${PATH_WORK}/environment"
 readonly PATH_WORK_KERNEL_EBUILD="\${PATH_WORK}/kernel_ebuild"
 readonly PATH_WORK_PS3_INSTALLER="\${PATH_WORK}/ps3_installer"
 readonly PATH_WORK_RELEASE="\${PATH_WORK}/release"
-#readonly PATH_WORK_RELENG="\${PATH_WORK}/releng"
 
 # DEV Tools additional environments.
-readonly PATH_EXTRA_ENV_BINHOST="\${PATH_DEV_TOOLS_BINHOST}/env.sh"
-readonly PATH_EXTRA_ENV_DISTCC_DOCKER="\${PATH_DEV_TOOLS_DISTCC_DOCKER}/env.sh"
-#readonly PATH_EXTRA_ENV_ENVIRONMENT="\${PATH_DEV_TOOLS_ENVIRONMENT}/env.sh"
 readonly PATH_EXTRA_ENV_KERNEL_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/env.sh"
-readonly PATH_EXTRA_ENV_PS3_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/env.sh"
-readonly PATH_EXTRA_ENV_RELEASE="\${PATH_DEV_TOOLS_RELEASE}/env.sh"
-#readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 
 # Catalyst related paths.
 readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
@@ -151,13 +145,18 @@ readonly PATH_BINHOST_SCRIPT_DELETE="\${PATH_DEV_TOOLS_BINHOST}/binhost-01-delet
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
 
 # QEMU.
+readonly VAL_QEMU_IS_NEEDED=$(expr "\${VAL_HOST_ARCHITECTURE}" != "\${CONF_TARGET_ARCHITECTURE}") # Is host architecture different than target architecture.
+readonly VAL_QEMU_RELENG_POSTFIX=\$([[ \${VAL_QEMU_IS_NEEDED} ]] && echo "-qemu")
+readonly VAL_QEMU_REGISTRATION_EXPR="\${CONF_QEMU_CONFIG}\${PATH_QEMU_INTERPRETER}:"
 readonly PATH_QEMU_BINFMT="/proc/sys/fs/binfmt_misc"
 readonly PATH_QEMU_BINFMT_REGISTER="\${PATH_QEMU_BINFMT}/register"
+readonly PATH_QEMU_INTERPRETER="\${PATH_USR_BIN}/qemu-\${CONF_TARGET_ARCHITECTURE}"
 
 # Crossdev.
 readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
 readonly PATH_CROSSDEV_USR="\${PATH_USR_SHARE}/crossdev"
 readonly PATH_CROSSDEV_INSTALLATION="\${PATH_USR}/\${VAL_CROSSDEV_TARGET}"
+readonly PATH_CROSSDEV_BINPKGS="\${PATH_CROSSDEV_INSTALLATION}/\${PATH_VAR_CACHE}/binpkgs"
 
 # Other.
 readonly PATH_ENV_HELPER_FUNCTIONS="\${PATH_DEV_TOOLS_ENVIRONMENT}/env-helper-functions.sh"
@@ -168,15 +167,7 @@ readonly PATH_PORTAGE_TIMESTAMP_CHK="\${PATH_VAR_DB_REPOS_GENTOO}/metadata/times
 readonly VAL_KERNEL_PACKAGE_BASE="\${CONF_KERNEL_PACKAGE_GROUP}/\${CONF_KERNEL_PACKAGE_NAME_BASE}"
 readonly VAL_KERNEL_PACKAGE_SPECIAL="\${CONF_KERNEL_PACKAGE_GROUP}/\${CONF_KERNEL_PACKAGE_NAME_SPECIAL}"
 
-# Various tools --------------------------------------------------------------------------------------------------------------------
-# powerpc64-cell-linux-gnu.
-readonly VAL_QEMU_IS_NEEDED=$(expr "\${VAL_HOST_ARCHITECTURE}" != "\${CONF_TARGET_ARCHITECTURE}") # Is host architecture different than target architecture.
-readonly VAL_QEMU_RELENG_POSTFIX=\$([[ \${VAL_QEMU_IS_NEEDED} ]] && echo "-qemu")
-# ----------------------------------------------------------------------------------------------------------------------------------
-
-# Various calculated values and paths ----------------------------------------------------------------------------------------------
-readonly PATH_QEMU_INTERPRETER="\${PATH_USR_BIN}/qemu-\${CONF_TARGET_ARCHITECTURE}"
-readonly VAL_QEMU_REGISTRATION_EXPR="\${CONF_QEMU_CONFIG}\${PATH_QEMU_INTERPRETER}:"
+# Releng.
 readonly PATH_RELENG_PORTAGE_CONFDIR_STAGES="\${PATH_RELENG}/releases/portage/stages${VAL_QEMU_RELENG_POSTFIX}"
 readonly PATH_RELENG_PORTAGE_CONFDIR_ISOS="\${PATH_RELENG}/releases/portage/isos${VAL_QEMU_RELENG_POSTFIX}"
 # ----------------------------------------------------------------------------------------------------------------------------------

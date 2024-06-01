@@ -1,14 +1,17 @@
 #!/bin/bash
 
 [ ${KE_ENV_LOADED} ] && return 0; readonly KE_ENV_LOADED=true
+register_usage "$0 [--unmask] [--default] [--save] [--savedefault] [--edit] [--version <version>]"
 
 # Input parsing.
 while [ $# -gt 0 ]; do case "$1" in
     --unmask)         KE_FLAG_UNMASK=true;;               # Use masked ~ppc64 base ebuilds and unmask created ps3 ebuild ~ppc64 -> ppc64.
     --default)        KE_FLAG_FORCE_DEFAULT=true;;        # Force using default config and patches, even if version specific data exists.
+    --savedefault)    KE_FLAG_SAVE_DEFAULT=true;;         # Save config and patches also in defaults folder.
     --save)           KE_FLAG_SAVE=true;;                 # Save patches and configuration in versioned directory. Should always use, unless testing.
     --edit)           KE_FLAG_EDIT=true;;                 # Edit configuration in step ebuild-04-configure.sh.
     --version) shift; KE_PACKAGE_VERSION_SPECIFIED="$1";; # Ebuild version specified as the input value if any.
+    *) show_usage
 esac; shift; done
 
 # Validate input variables;
@@ -18,8 +21,7 @@ esac; shift; done
 [[ ${CONF_KERNEL_PACKAGE_AUTOUNMASK} = true ]] && KE_FLAG_UNMASK=true
 
 # Main Scripts in kernel-ebuild group.
-readonly KE_SCRIPT_CURRENT="$(basename $0)"                 # Name of script that was called by the user.
-readonly KE_SCRIPT_FIND_VERSION="ebuild-00-find-version.sh" # Finds version of gentoo-kernel - stable or unstable, depending on KE_FLAG_UNMASK.
+readonly KE_SCRIPT_NAME_FIND_VERSION="ebuild-00-find-version.sh" # Finds version of gentoo-kernel - stable or unstable, depending on KE_FLAG_UNMASK.
 
 # Names of helper files and directories.
 readonly KE_NAME_FOLDER_DATA="data"                         # Data folder (data).
@@ -41,14 +43,13 @@ readonly KE_NAME_FILE_EBUILD_DEFCONFIG="ps3_defconfig" # Name of ps3 kernel conf
 set_if   KE_VAL_EBUILD_KEYWORD_SELECTED "\${KE_FLAG_UNMASK}" "~${CONF_TARGET_ARCHITECTURE}" "${CONF_TARGET_ARCHITECTURE}"
 
 # Package version.
-set_if   KE_PACKAGE_VERSION_DEFAULT "\"${KE_SCRIPT_CURRENT}\" = \"${KE_SCRIPT_FIND_VERSION}\"" "" "$(source $KE_SCRIPT_FIND_VERSION)"
-readonly KE_PACKAGE_VERSION_SELECTED="${KE_PACKAGE_VERSION_DEFAULT}"; # Always use value returned by the ebuild-00-find-version.sh script. This script handles also specyfying versions manually as an argument.
+set_if   KE_PACKAGE_VERSION_SELECTED "\"${VAL_SCRIPT_NAME_CALLED}\" = \"${KE_SCRIPT_NAME_FIND_VERSION}\"" "" "$(source ${KE_SCRIPT_NAME_FIND_VERSION})"
 
 # Names of ebuild files and variables dependant on package version.
 readonly KE_NAME_EBUILD_FILE_DISTFILES_TAR="${CONF_KERNEL_PACKAGE_NAME_SPECIAL}-files-${KE_PACKAGE_VERSION_SELECTED}.tar.xz" # Destination distfiles tarball.
 readonly KE_NAME_EBUILD_FILE_PACKAGE_SRC="${CONF_KERNEL_PACKAGE_NAME_BASE}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"            # Full source ebuild filename, without path.
 readonly KE_NAME_EBUILD_FILE_PACKAGE_DST="${CONF_KERNEL_PACKAGE_NAME_SPECIAL}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"         # Full destination ebuild filename, without path.
-readonly KE_NAME_PACKAGE_DST_VERSIONED="${CONF_KERNEL_PACKAGE_NAME_BASE}-${KE_PACKAGE_VERSION_SELECTED}"
+readonly KE_NAME_PACKAGE_DST_VERSIONED="${CONF_KERNEL_PACKAGE_NAME_SPECIAL}-${KE_PACKAGE_VERSION_SELECTED}"
 
 # Data folders and files.
 readonly KE_PATH_DATA="${PATH_DEV_TOOLS_KERNEL_EBUILD}/${KE_NAME_FOLDER_DATA}"                         # Location of data folder (./data).
@@ -59,7 +60,7 @@ readonly KE_PATH_PATCHES_FETCH_LIST="${KE_PATH_DATA}/${KE_NAME_FILE_PATCHES_CURR
 readonly KE_PATH_PATCHES_DEFAULT="${KE_PATH_VERSION_STORAGE_DEFAULT}/${KE_NAME_FOLDER_PATCHES}"        # Location of default patches folder (./data/version-storage/default/ps3_patches).
 readonly KE_PATH_PATCHES_VERSIONED="${KE_PATH_VERSION_STORAGE_VERSIONED}/${KE_NAME_FOLDER_PATCHES}"    # Location of specified version patches folder (./data/version-storage/<version>/ps3_patches).
 set_if   KE_PATH_PATCHES_SAVETO "(\${KE_PACKAGE_VERSION_SPECIFIED} && !\${KE_FLAG_FORCE_DEFAULT})" "${KE_PATH_PATCHES_VERSIONED}" "${KE_PATH_PATCHES_DEFAULT}"
-set_if   KE_PATH_PATCHES_SELECTED "(! -d \"\${KE_PATH_PATCHES_SELECTED}\" || \${KE_FLAG_FORCE_DEFAULT})" "${KE_PATH_PATCHES_DEFAULT}" "${KE_PATH_PATCHES_VERSIONED}"
+set_if   KE_PATH_PATCHES_SELECTED "(! -d \"\${KE_PATH_PATCHES_VERSIONED}\" || \${KE_FLAG_FORCE_DEFAULT})" "${KE_PATH_PATCHES_DEFAULT}" "${KE_PATH_PATCHES_VERSIONED}"
 readonly KE_PATH_CONFIG_DEFAULT="${KE_PATH_VERSION_STORAGE_DEFAULT}/${KE_NAME_FOLDER_CONFIG}"          # Location of default configuration folder (./data/version-storage/default/config).
 readonly KE_PATH_CONFIG_VERSIONED="${KE_PATH_VERSION_STORAGE_VERSIONED}/${KE_NAME_FOLDER_CONFIG}"      # Location of specified version configuration folder (./data/version-storage/<version>/config).
 readonly KE_PATH_CONFIG_SAVETO="${KE_PATH_CONFIG_VERSIONED}";                                          # Location of where ebuild-04-configure.sh will save generated configuration (./data/version-storage/<version>/config).
@@ -108,8 +109,8 @@ readonly KE_LIST_DISTFILES=(
 # Overlay locations.
 readonly KE_PATH_OVERLAY_EBUILDS="${PATH_OVERLAYS_PS3_GENTOO}/${VAL_KERNEL_PACKAGE_SPECIAL}"
 readonly KE_PATH_OVERLAY_DISTFILES="${PATH_OVERLAYS_PS3_GENTOO_DISTFILES}/${VAL_KERNEL_PACKAGE_SPECIAL}"
-readonly KE_PATH_OVERLAY_EBUILD_FILE_PACKAGE="${KE_PATH_OVERLAY_EBUILDS}/${CONF_KERNEL_PACKAGE_NAME_SPECIAL}"
+readonly KE_PATH_OVERLAY_EBUILD_FILE_PACKAGE="${KE_PATH_OVERLAY_EBUILDS}/${CONF_KERNEL_PACKAGE_NAME_SPECIAL}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"
 readonly KE_PATH_OVERLAY_EBUILD_FILE_MANIFEST="${KE_PATH_OVERLAY_EBUILDS}/${KE_NAME_FILE_MANIFEST}"
 
 # Crossdev locations.
-readonly KE_PATH_CROSSDEV_BINPKGS="${PATH_CROSSDEV_INSTALLATION}/${PATH_VAL_CACHE}/${KE_NAME_FOLDER_BINPKGS}/${VAL_KERNEL_PACKAGE_SPECIAL}"
+readonly KE_PATH_CROSSDEV_BINPKGS_KERNEL_PACKAGE="${PATH_CROSSDEV_BINPKGS}/${VAL_KERNEL_PACKAGE_SPECIAL}"

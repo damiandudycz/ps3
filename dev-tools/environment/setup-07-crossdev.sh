@@ -29,3 +29,5 @@ crossdev\
     --b "${CONF_CROSSDEV_B}"
 
 update_config_assign "PORTDIR_OVERLAY" "${PATH_OVERLAYS_PS3_GENTOO}" "${PATH_USR}/${VAL_CROSSDEV_TARGET}/${PATH_ETC_PORTAGE_MAKE_CONF}"
+update_config_assign "CFLAGS" "${CONF_TARGET_COMMON_FLAGS}" "${PATH_USR}/${VAL_CROSSDEV_TARGET}/${PATH_ETC_PORTAGE_MAKE_CONF}"
+# TODO: Update use flags and other settings

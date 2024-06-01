@@ -37,11 +37,18 @@ ${KE_PATH_SCRIPT_DIFFCONFIG} "arch/powerpc/configs/${KE_NAME_FILE_EBUILD_DEFCONF
 # Save versioned configs.
 if [[ ${KE_FLAG_SAVE} ]]; then
     [[ ! -d "${KE_PATH_CONFIG_SAVETO}" ]] && mkdir -p "${KE_PATH_CONFIG_SAVETO}"
-    mv "defconfig" "${KE_PATH_CONFIG_DEFCONF_SAVETO}"
-    mv "diffs" "${KE_PATH_CONFIG_DIFFS_SAVETO}"
+    cp "defconfig" "${KE_PATH_CONFIG_DEFCONF_SAVETO}"
+    cp "diffs" "${KE_PATH_CONFIG_DIFFS_SAVETO}"
     echo "Configuration stored in ${KE_PATH_CONFIG_SAVETO}"
 else
-    echo_color ${COLOR_RED} "Configuration not stored! Please use --save flag, unless just testing."
+    echo_color ${COLOR_RED} "Configuration not stored for version ${KE_PACKAGE_VERSION_SELECTED}! Please use --save flag, unless just testing."
+fi
+
+if [[ ${KE_FLAG_SAVE_DEFAULT} ]]; then
+    [[ ! -d "${KE_PATH_CONFIG_DEFAULT}" ]] && mkdir -p "${KE_PATH_CONFIG_DEFAULT}"
+    cp "defconfig" "${KE_PATH_CONFIG_DEFCONF_DEFAULT}"
+    cp "diffs" "${KE_PATH_CONFIG_DIFFS_DEFAULT}"
+    echo "Configuration stored in ${KE_PATH_CONFIG_DEFAULT}"
 fi
 
 # Cleanup.

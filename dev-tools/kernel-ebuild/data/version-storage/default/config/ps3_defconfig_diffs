@@ -1,0 +1,4 @@
+-SYSVIPC y
+-TMPFS y
+-UNIX y
+-VGA_CONSOLE n

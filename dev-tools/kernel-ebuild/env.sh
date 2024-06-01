@@ -37,7 +37,7 @@ readonly KE_NAME_FILE_CONF_DIFFS="ps3_defconfig_diffs"      # Config diffs file 
 readonly KE_NAME_FILE_CONF_DEFCONF="ps3_gentoo_defconfig"   # Default config file (data/version-storage/<version>/defconf).
 readonly KE_NAME_FILE_PATCHES_CURRENT="patches-current.txt" # List of patches to download (data/patches-current.txt).
 readonly KE_NAME_FILE_MANIFEST="Manifest"                   # Manifest file in portage repository.
-readonly KE_NAME_FILE_EBUILD_DEFCONFIG="ps3_defconfig" # Name of ps3 kernel config file.
+readonly KE_NAME_FILE_EBUILD_DEFCONFIG="ps3_defconfig"      # Name of ps3 kernel config file.
 
 # Names of ebuild files and variables.
 set_if   KE_VAL_EBUILD_KEYWORD_SELECTED "\${KE_FLAG_UNMASK}" "~${CONF_TARGET_ARCHITECTURE}" "${CONF_TARGET_ARCHITECTURE}"

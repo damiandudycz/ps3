@@ -16,8 +16,7 @@ rm -f "${PATH_ENV_FILE}" || exit 1
 
 cat <<EOF > "${PATH_ENV_FILE}"
 # Prevent multiple imports ---------------------------------------------------------------------------------------------------------
-[ ! \${VAL_PS3_ENV_SHARED_LOADED} ] || return 0
-readonly VAL_PS3_ENV_SHARED_LOADED=true
+[ \${VAL_PS3_ENV_SHARED_LOADED} ] && return 0; readonly VAL_PS3_ENV_SHARED_LOADED=true
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # Project configuration ------------------------------------------------------------------------------------------------------------
@@ -47,6 +46,10 @@ readonly CONF_CROSSDEV_L="2.37-r7"
 readonly CONF_CROSSDEV_K="6.9"
 readonly CONF_CROSSDEV_G="13.2.1_p20240113-r1"
 readonly CONF_CROSSDEV_B="2.41-r3"
+readonly CONF_KERNEL_PACKAGE_GROUP="sys-kernel"
+readonly CONF_KERNEL_PACKAGE_NAME_BASE="gentoo-kernel" # Name of raw gentoo kernel package
+readonly CONF_KERNEL_PACKAGE_NAME_SPECIAL="gentoo-kernel-ps3" # Name of gentoo kernel PS3 package
+readonly CONF_KERNEL_PACKAGE_AUTOUNMASK=false # Should use ~ppc64 version of kernel by default
 # URLs.
 readonly URL_GIRHUB_RAW_BASE="https://raw.githubusercontent.com/damiandudycz"
 readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_BASE}/ps3"
@@ -152,13 +155,18 @@ readonly PATH_QEMU_BINFMT="/proc/sys/fs/binfmt_misc"
 readonly PATH_QEMU_BINFMT_REGISTER="\${PATH_QEMU_BINFMT}/register"
 
 # Crossdev.
-readonly PATH_CROSSDEV_USR="\${PATH_USR_SHARE}/crossdev"
 readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
+readonly PATH_CROSSDEV_USR="\${PATH_USR_SHARE}/crossdev"
+readonly PATH_CROSSDEV_INSTALLATION="\${PATH_USR}/\${VAL_CROSSDEV_TARGET}"
 
-# Other
+# Other.
 readonly PATH_ENV_HELPER_FUNCTIONS="\${PATH_DEV_TOOLS_ENVIRONMENT}/env-helper-functions.sh"
 readonly PATH_GIT_HOOK_AUTOBUILDS="\${PATH_ROOT}/.git/modules/autobuilds/ps3-gentoo-autobuilds/pre-commit" # TODO: Use variables for patch
 readonly PATH_PORTAGE_TIMESTAMP_CHK="\${PATH_VAR_DB_REPOS_GENTOO}/metadata/timestamp.chk"
+
+# Kernel.
+readonly VAL_KERNEL_PACKAGE_BASE="\${CONF_KERNEL_PACKAGE_GROUP}/\${CONF_KERNEL_PACKAGE_NAME_BASE}"
+readonly VAL_KERNEL_PACKAGE_SPECIAL="\${CONF_KERNEL_PACKAGE_GROUP}/\${CONF_KERNEL_PACKAGE_NAME_SPECIAL}"
 
 # Various tools --------------------------------------------------------------------------------------------------------------------
 # powerpc64-cell-linux-gnu.

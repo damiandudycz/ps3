@@ -1,7 +1,3 @@
-# This file contains the list of remote patches to download for new releases when calling
-# ebuild-fetch-patches.sh.
-
-export URL_PS3_PATCHES=(
     https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0009-ps3disk-blk_mq_queue_stopped.patch
     https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0010-ps3stor-multiple-regions.patch
     https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0011-ps3stor-send-cmd-timeout.patch
@@ -38,4 +34,3 @@ export URL_PS3_PATCHES=(
 #    https://svn.exactcode.de/t2/trunk/package/kernel/linux/hotfix-ppc64-ps3-elfabi.patch
     https://svn.exactcode.de/t2/trunk/package/kernel/linux/hotfix-ppc64-ps3-srr-clobber.patch
     https://svn.exactcode.de/t2/trunk/package/kernel/linux/ps3-partition.patch
-)

@@ -1,7 +1,3 @@
-# This file contains the list of remote patches to download for new releases when calling
-# ebuild-fetch-patches.sh.
-
-export URL_PS3_PATCHES=(
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0010-ps3stor-multiple-regions.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0020-ps3stor-send-cmd-timeout.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0035-ps3flash.patch
@@ -36,4 +32,3 @@ https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patc
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0410_mmzone.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0420_ps3av_add.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0430_ps3_gelic_wirelss_miss_kfree.patch
-)

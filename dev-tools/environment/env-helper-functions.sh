@@ -112,7 +112,7 @@ set_if() {
     local RET_TRUE=$3
     local RET_FALSE=$4
 
-    if [[ $CONDITION ]]; then
+    if eval "[[ $CONDITION ]]"; then
         eval "$VAR_NAME=\"$RET_TRUE\""
     else
         eval "$VAR_NAME=\"$RET_FALSE\""

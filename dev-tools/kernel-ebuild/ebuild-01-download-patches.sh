@@ -8,7 +8,7 @@ register_failure_handler 'rm -rf "${KE_PATH_PATCHES_SAVETO}";'
 empty_directory "${KE_PATH_PATCHES_SAVETO}"
 
 # Load URL of patches to download.
-source "${KE_PATH_PATCHES_FETCH_LIST}"
+readarray -t URL_PS3_PATCHES < <(grep -vE '^\s*#|^\s*$' "${KE_PATH_PATCHES_FETCH_LIST}")
 
 # Download patches.
 echo "Downloading patches to ${KE_PATH_PATCHES_SAVETO}"

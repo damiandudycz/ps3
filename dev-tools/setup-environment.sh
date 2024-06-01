@@ -23,6 +23,7 @@ cat <<EOF > "${PATH_ENV_FILE}"
 readonly CONF_PROJECT_NAME="PS3_Gentoo"
 readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev)
 readonly CONF_TARGET_ARCHITECTURE="ppc64"
+readonly CONF_TARGET_ARCHITECTURE_FAMILY="ppc"
 readonly CONF_TARGET_ARCHITECTURE_LONG="powerpc64"
 readonly CONF_TARGET_SUBARCHITECTURE="cell"
 readonly CONF_TARGET_KERNEL_TYPE="linux"
@@ -50,12 +51,15 @@ readonly CONF_KERNEL_PACKAGE_GROUP="sys-kernel"
 readonly CONF_KERNEL_PACKAGE_NAME_BASE="gentoo-kernel" # Name of raw gentoo kernel package
 readonly CONF_KERNEL_PACKAGE_NAME_SPECIAL="gentoo-kernel-ps3" # Name of gentoo kernel PS3 package
 readonly CONF_KERNEL_PACKAGE_AUTOUNMASK=false # Should use ~ppc64 version of kernel by default
+
 # URLs.
 readonly URL_GIRHUB_RAW_BASE="https://raw.githubusercontent.com/damiandudycz"
 readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_BASE}/ps3"
 readonly URL_GITHUB_RAW_AUTOBUILDS="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-autobuilds"
 readonly URL_GITHUB_RAW_BINHOSTS="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-binhosts"
 readonly URL_GITHUB_RAW_OVERLAY="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-overlay"
+readonly URL_RELEASE_GENTOO="https://gentoo.osuosl.org/releases/\${CONF_TARGET_ARCHITECTURE_FAMILY}/autobuilds"
+readonly URL_STAGE3_INFO="\${URL_RELEASE_GENTOO}/latest-stage3-\${CONF_TARGET_ARCHITECTURE}-openrc.txt"
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # Host machine details and various variables ---------------------------------------------------------------------------------------

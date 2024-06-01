@@ -4,11 +4,11 @@
 
 # Input parsing.
 while [ $# -gt 0 ]; do case "$1" in
-    --unmask)  KE_FLAG_UNMASK=true;;               # Use masked ~ppc64 base ebuilds and unmask created ps3 ebuild ~ppc64 -> ppc64.
-    --default) KE_FLAG_FORCE_DEFAULT=true;;        # Force using default config and patches, even if version specific data exists.
-    --save)    KE_FLAG_SAVE=true;;                 # Save patches and configuration in versioned directory. Should always use, unless testing.
-    --edit)    KE_FLAG_EDIT=true;;                 # Edit configuration in step ebuild-04-configure.sh.
-    *)         KE_PACKAGE_VERSION_SPECIFIED="$1";; # Ebuild version specified as the input value if any.
+    --unmask)         KE_FLAG_UNMASK=true;;               # Use masked ~ppc64 base ebuilds and unmask created ps3 ebuild ~ppc64 -> ppc64.
+    --default)        KE_FLAG_FORCE_DEFAULT=true;;        # Force using default config and patches, even if version specific data exists.
+    --save)           KE_FLAG_SAVE=true;;                 # Save patches and configuration in versioned directory. Should always use, unless testing.
+    --edit)           KE_FLAG_EDIT=true;;                 # Edit configuration in step ebuild-04-configure.sh.
+    --version) shift; KE_PACKAGE_VERSION_SPECIFIED="$1";; # Ebuild version specified as the input value if any.
 esac; shift; done
 
 # Validate input variables;
@@ -35,9 +35,9 @@ readonly KE_NAME_FILE_CONF_DIFFS="ps3_defconfig_diffs"      # Config diffs file 
 readonly KE_NAME_FILE_CONF_DEFCONF="ps3_gentoo_defconfig"   # Default config file (data/version-storage/<version>/defconf).
 readonly KE_NAME_FILE_PATCHES_CURRENT="patches-current.txt" # List of patches to download (data/patches-current.txt).
 readonly KE_NAME_FILE_MANIFEST="Manifest"                   # Manifest file in portage repository.
+readonly KE_NAME_FILE_EBUILD_DEFCONFIG="ps3_defconfig" # Name of ps3 kernel config file.
 
 # Names of ebuild files and variables.
-readonly KE_NAME_EBUILD_DEFCONFIG="ps3_defconfig" # Name of ps3 kernel config file.
 set_if   KE_VAL_EBUILD_KEYWORD_SELECTED "\${KE_FLAG_UNMASK}" "~${CONF_TARGET_ARCHITECTURE}" "${CONF_TARGET_ARCHITECTURE}"
 
 # Package version.

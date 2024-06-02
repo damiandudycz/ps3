@@ -10,27 +10,27 @@ register_usage "$0 --bind | --unbind"
 case "$1" in
     --bind)
         # Check if already mounted
-        CURRENT_MOUNT=$(findmnt -nr -o SOURCE,TARGET "${PATH_BINHOST_CATALYST_DEFAULT}" || true)
+        CURRENT_MOUNT=$(findmnt -nr -o SOURCE,TARGET "${PATH_CATALYST_BINHOST_DEFAULT}" || true)
 
         if [ -n "$CURRENT_MOUNT" ]; then
             CURRENT_SOURCE=$(echo "$CURRENT_MOUNT" | awk '{print $1}')
             CURRENT_SOURCE_REALPATH=$(realpath "$(echo "$CURRENT_SOURCE" | tail -n 1 | sed -E 's|.+\[(.+)\]|\1|')" 2>/dev/null)
 
-            if [ "$CURRENT_SOURCE_REALPATH" == "${PATH_BINHOST_OVERLAY_DEFAULT}" ]; then
-                echo "${PATH_BINHOST_OVERLAY_DEFAULT} is already bound with ${PATH_BINHOST_CATALYST_DEFAULT}."
+            if [ "$CURRENT_SOURCE_REALPATH" == "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}" ]; then
+                echo "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT} is already bound with ${PATH_CATALYST_BINHOST_DEFAULT}."
             else
-                failure "${PATH_BINHOST_OVERLAY_DEFAULT} is already bound with ${CURRENT_SOURCE_REALPATH}, not ${PATH_BINHOST_CATALYST_DEFAULT}."
+                failure "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT} is already bound with ${CURRENT_SOURCE_REALPATH}, not ${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}."
             fi
         else
             # Bind binhost
-            mount -o bind "${PATH_BINHOST_OVERLAY_DEFAULT}" "${PATH_BINHOST_CATALYST_DEFAULT}"
-            echo "Successfully bounded ${PATH_BINHOST_OVERLAY_DEFAULT} to ${PATH_BINHOST_CATALYST_DEFAULT}"
+            mount -o bind "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}" "${PATH_CATALYST_BINHOST_DEFAULT}"
+            echo "Successfully bounded ${PATH_BINHOSTS_PS3_GENTOO_DEFAULT} to ${PATH_CATALYST_BINHOST_DEFAULT}"
         fi
         ;;
     --unbind)
         # Unbind binhost
-        umount "${PATH_BINHOST_CATALYST_DEFAULT}"
-        echo "Successfully unbounded ${PATH_BINHOST_CATALYST_DEFAULT}"
+        umount "${PATH_CATALYST_BINHOST_DEFAULT}"
+        echo "Successfully unbounded ${PATH_CATALYST_BINHOST_DEFAULT}"
         ;;
     *)
         # Unsupported option

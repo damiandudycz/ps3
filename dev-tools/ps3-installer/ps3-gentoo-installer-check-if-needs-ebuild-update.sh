@@ -38,8 +38,8 @@ done
 PN="ps3-gentoo-installer"
 PL="sys-apps/${PN}"
 
-PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine the script directory"
-PATH_ROOT=$(realpath -m "$PATH_START/../..") || die "Failed to determine the root directory"
+#PATH_START=$(dirname "$(realpath "$0")") || die "Failed to determine the script directory"
+#PATH_ROOT=$(realpath -m "$PATH_START/../..") || die "Failed to determine the root directory"
 PATH_TMP="/var/tmp/ps3/ps3-gentoo-installer-ebuild-updater"
 
 PATH_OVERLAY_EBUILDS="${PATH_ROOT}/overlays/ps3-gentoo-overlay"

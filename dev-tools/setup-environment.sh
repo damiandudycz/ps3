@@ -141,12 +141,11 @@ readonly PATH_CATALYST_CONF="\${PATH_CATALYST_ETC}/catalyst.conf"
 readonly PATH_CATALYST_PPC_TOML="\${PATH_CATALYST_USR}/arch/ppc.toml"
 readonly PATH_CATALYST_PATCHES_SRC="\${PATH_DEV_TOOLS_ENVIRONMENT}/data/catalyst-patches"
 readonly PATH_CATALYST_PATCHES_DST="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
+readonly PATH_CATALYST_BINHOST_DEFAULT="\${PATH_CATALYST_PACKAGES}/\${CONF_RELEASE_TYPE_DFAULT}"
 
 # Binhost.
-readonly PATH_BINHOST_OVERLAY_DEFAULT="\${PATH_BINHOSTS_PS3_GENTOO}/\${CONF_RELEASE_TYPE_DFAULT}"
-readonly PATH_BINHOST_CATALYST_DEFAULT="\${PATH_CATALYST_PACKAGES}/\${CONF_RELEASE_TYPE_DFAULT}"
-readonly PATH_BINHOST_OVERLAY_DEFAULT_METADATA="\${PATH_BINHOST_OVERLAY_DEFAULT}/Packages"
-readonly PATH_BINHOST_SCRIPT_DELETE="\${PATH_DEV_TOOLS_BINHOST}/binhost-01-delete-packages.sh"
+readonly PATH_BINHOSTS_PS3_GENTOO_DEFAULT="\${PATH_BINHOSTS_PS3_GENTOO}/\${CONF_RELEASE_TYPE_DFAULT}"
+readonly PATH_BINHOSTS_PS3_GENTOO_DEFAULT_METADATA="\${PATH_BINHOST_OVERLAY_DEFAULT}/Packages"
 
 # Releng.
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
@@ -195,6 +194,9 @@ readonly PATH_SCRIPT_KERNEL_EBUILD_SAVE_TO_OVERLAY="\${PATH_DEV_TOOLS_KERNEL_EBU
 readonly PATH_SCRIPT_KERNEL_EBUILD_BUILD_PKG="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-08-build-pkg.sh"
 # PS3 Installer
 readonly PATH_SCRIPT_PS3_INSTALLER_UPDATER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/ps3-gentoo-installer-ebuild-updater.sh"
+# Binhost
+readonly PATH_BINHOST_SCRIPT_BIND="\${PATH_DEV_TOOLS_BINHOST}/binhost-00-bind.sh"
+readonly PATH_BINHOST_SCRIPT_DELETE="\${PATH_DEV_TOOLS_BINHOST}/binhost-01-delete-packages.sh"
 # TODO: Add paths to other scripts.
 
 # ----------------------------------------------------------------------------------------------------------------------------------

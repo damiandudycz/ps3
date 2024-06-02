@@ -41,16 +41,17 @@ BEGIN { inside_section = 0 }
     }
     if (inside_section == 1) {
         if ($0 ~ /^COMMON_FLAGS/) {
-            print "COMMON_FLAGS = \"'${CONF_TARGET_COMMON_FLAGS}'\""
+            print "COMMON_FLAGS = \"" common_flags "\""
         } else if ($0 ~ /^USE/) {
-            print "USE = [ ${CONF_RELENG_USE_FLAGS},]"
+            print "USE = [ " use_flags " ]"
         } else {
             print  # Retain any other lines within the section
         }
     } else {
         print  # Retain the original lines outside the section
     }
-}'
+}
+'
 readonly TEMP_FILE_TOML=$(mktemp)
-awk "${AWK_PPC_TOML_EXPR}" "${PATH_CATALYST_PPC_TOML}" > "${TEMP_FILE_TOML}"
+awk -v common_flags="${CONF_TARGET_COMMON_FLAGS}" -v use_flags="${CONF_RELENG_USE_FLAGS}" "${AWK_PPC_TOML_EXPR}" "${PATH_CATALYST_PPC_TOML}" > "${TEMP_FILE_TOML}"
 mv "${TEMP_FILE_TOML}" "${PATH_CATALYST_PPC_TOML}"

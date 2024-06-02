@@ -7,43 +7,30 @@
 # use and update binhost repository in the process. After finishing it unbinds binhost repository.
 
 source ../../.env-shared.sh || exit 1
-
-# Error handling and cleanup function
-cleanup() {
-    $PATH_BINHOST_BIND --unbind || echo "Failed to umount binhost."
-}
-trap cleanup EXIT
-
-# Paths
-readonly PATH_LOCAL_TMP="/var/tmp/ps3/release"
-readonly PATH_RELEASE_INFO="${PATH_LOCAL_TMP}/release_latest"
-readonly PATH_INSTALLER_UPDATER="${PATH_ROOT}/dev-tools/ps3-installer/ps3-gentoo-installer-ebuild-updater.sh"
-readonly PATH_BINHOST_BIND="${PATH_ROOT}/dev-tools/binhost/binhost-00-bind.sh"
-
-# URLs
-readonly URL_RELEASE_GENTOO="https://gentoo.osuosl.org/releases/ppc/autobuilds/current-stage3-ppc64-openrc"
-readonly URL_STAGE_INFO="https://gentoo.osuosl.org/releases/ppc/autobuilds/latest-stage3-ppc64-openrc.txt"
+source "${PATH_EXTRA_ENV_RELEASE}" || failure "Failed to load env ${PATH_EXTRA_ENV_RELEASE}"
+register_failure_handler "source ${PATH_BINHOST_SCRIPT_BIND} --unbind"
 
 # Ask if should update installer if there are any changes pending.
-$PATH_INSTALLER_UPDATER --ask || die "Failed to run installer updater"
+#source ${PATH_SCRIPT_PS3_INSTALLER_UPDATER} --ask
 
 # Release information
-readonly TIMESTAMP=$(cat "${PATH_RELEASE_INFO}") || die "Failed to read current release details. Please run release-prepare.sh first."
-[ ! -z "${TIMESTAMP}" ] || die "Failed to read current release details. Please run release-prepare.sh first."
+readonly TIMESTAMP=$(cat "${RE_PATH_RELEASE_INFO}")
+[ -z "${TIMESTAMP}" ] && failure "Failed to read current release details. Please run release-prepare.sh first."
 
 # Release files paths
-readonly PATH_STAGE1="${PATH_LOCAL_TMP}/stage1-cell.$TIMESTAMP.spec"
-readonly PATH_STAGE3="${PATH_LOCAL_TMP}/stage3-cell.$TIMESTAMP.spec"
-readonly PATH_STAGE1_INSTALLCD="${PATH_LOCAL_TMP}/stage1-cell.installcd.$TIMESTAMP.spec"
-readonly PATH_STAGE2_INSTALLCD="${PATH_LOCAL_TMP}/stage2-cell.installcd.$TIMESTAMP.spec"
+readonly PATH_STAGE1="${PATH_WORK_RELEASE}/stage1-cell.$TIMESTAMP.spec"
+readonly PATH_STAGE3="${PATH_WORK_RELEASE}/stage3-cell.$TIMESTAMP.spec"
+readonly PATH_STAGE1_INSTALLCD="${PATH_WORK_RELEASE}/stage1-cell.installcd.$TIMESTAMP.spec"
+readonly PATH_STAGE2_INSTALLCD="${PATH_WORK_RELEASE}/stage2-cell.installcd.$TIMESTAMP.spec"
 
 # Bind binhost
-$PATH_BINHOST_BIND --bind || die "Failed to bind binhost ${PATH_BINHOST_BIND}"
+source ${PATH_BINHOST_SCRIPT_BIND} --bind
 
 # Building release
-catalyst -f "${PATH_STAGE1}" || die "Failed to build stage1"
-catalyst -f "${PATH_STAGE3}" || die "Failed to build stage3"
-catalyst -f "${PATH_STAGE1_INSTALLCD}" || die "Failed o build stage1.installcd"
-catalyst -f "${PATH_STAGE2_INSTALLCD}" || die "Failed to build stage2.installcd"
+catalyst -af "${PATH_STAGE1}"
+catalyst -af "${PATH_STAGE3}"
+catalyst -af "${PATH_STAGE1_INSTALLCD}"
+catalyst -af "${PATH_STAGE2_INSTALLCD}"
 
-exit 0
+# Unbind binhost
+source ${PATH_BINHOST_SCRIPT_BIND} --unbind

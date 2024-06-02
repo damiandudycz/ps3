@@ -64,7 +64,7 @@ update_config_assign() {
     local VALUE="$2"
     local FILE="$3"
 
-    if grep -q "^${KEY}=\".*\"" "${FILE}"; then
+    if grep -q "^${KEY}=\".*\"" "${FILE}" 2>/dev/null; then
         sed -i "/^${KEY}=\"/c${KEY}=\"${VALUE}\"" "${FILE}"
     else
         echo "${KEY}=\"${VALUE}\"" >> "${FILE}"
@@ -77,7 +77,7 @@ update_config_assign_space() {
     local VALUE="$2"
     local FILE="$3"
 
-    if grep -q "^${KEY}\s*=" "${FILE}"; then
+    if grep -q "^${KEY}\s*=" "${FILE}" 2>/dev/null; then
         sed -i "/^${KEY}\s*=/c${KEY} = ${VALUE}" "${FILE}"
     else
         echo "${KEY} = ${VALUE}" >> "${FILE}"
@@ -88,7 +88,7 @@ update_config_assign_space() {
 add_line_if_not_exists() {
   local LINE="$1"
   local FILE="$2"
-  grep -qxF "${LINE}" "${FILE}" || echo "${LINE}" >> "${FILE}"
+  grep -qxF "${LINE}" "${FILE}" 2>/dev/null || echo "${LINE}" >> "${FILE}"
 }
 
 unmask_package() {

@@ -1,56 +1,18 @@
 #!/bin/bash
 
-# Define variables
-PN="ps3-gentoo-installer"
-PL="sys-apps/${PN}"
+source ../../.env-shared.sh --silent || exit 1
+source "${PATH_EXTRA_ENV_PS3_INSTALLER}" || failure "Failed to load env ${PATH_EXTRA_ENV_PS3_INSTALLER}"
 
-PATH_TMP="/var/tmp/ps3/ps3-gentoo-installer-ebuild-updater"
+# Timestamps of files to compare.
+readonly PI_VAL_TIMESTAMP_OVERLAY_EBUILD="$(stat --format=%Y ${PI_VAL_PS3_GENTOO_INSTALLER_EBUILD_LATEST})"
+readonly PI_VAL_TIMESTAMP_DEV_TOOLS_INSTALLER="$(stat --format=%Y ${PI_PATH_DEV_TOOLS_PS3_INSTALLER_INSTALLER})"
+readonly PI_VAL_TIMESTAMP_DEV_TOOLS_CONFIG="$(stat --format=%Y ${PI_PATH_DEV_TOOLS_PS3_INSTALLER_CONFIG_PS3})"
 
-PATH_OVERLAY_EBUILDS="${PATH_ROOT}/overlays/ps3-gentoo-overlay"
-PATH_OVERLAY_DISTFILES="${PATH_ROOT}/overlays/ps3-gentoo-overlay.distfiles"
-PATH_OVERLAY_EBUILDS_PACKAGE_LOCATION="${PATH_OVERLAY_EBUILDS}/${PL}"
+# Determine if update is needed.
+readonly PI_VAL_EBUILD_NEEDS_UPDATE=$((PI_VAL_TIMESTAMP_DEV_TOOLS_INSTALLER > PI_VAL_TIMESTAMP_OVERLAY_EBUILD || PI_VAL_TIMESTAMP_DEV_TOOLS_CONFIG > PI_VAL_TIMESTAMP_OVERLAY_EBUILD))
 
-PATH_INSTALLER_EBUILD_EBUILD="${PATH_START}/${PN}.ebuild"
-PATH_INSTALLER_EBUILD_INSTALLER="${PATH_START}/ps3-gentoo-installer"
-PATH_INSTALLER_EBUILD_CONFIG="${PATH_START}/config/PS3"
-
-CONF_EBUILD_VERSION_CURRENT=$(find "${PATH_OVERLAY_EBUILDS_PACKAGE_LOCATION}" -name "*.ebuild" | grep -v "9999" | sed -r 's/.*-([0-9]+(\.[0-9]+)*)\.ebuild/\1/' | sort -V | tail -n 1) || die "Failed to determine the current ebuild version"
-CONF_EBUILD_VERSION_NEW=$(echo "${CONF_EBUILD_VERSION_CURRENT}" | awk -F. -v OFS=. '{ $NF=$NF+1; print }') || die "Failed to determine the new ebuild version"
-
-PATH_DISTFILES_TAR_TMP="${PATH_TMP}/${PN}-${CONF_EBUILD_VERSION_NEW}.tar.xz"
-PATH_DISTFILES_TAR_OLD="${PATH_OVERLAY_DISTFILES}/${PL}/${PN}-${CONF_EBUILD_VERSION_CURRENT}.tar.xz"
-PATH_DISTFILES_TAR_NEW="${PATH_OVERLAY_DISTFILES}/${PL}/${PN}-${CONF_EBUILD_VERSION_NEW}.tar.xz"
-
-LIST_DISTFILES_TAR_FILES=(
-    ps3-gentoo-installer
-    config
-)
-
-empty_directory "${PATH_TMP}"
-
-echo "Checking for ps3-gentoo-installer update"
-
-# TODO: Move this functionality into create installer itself, and in this script just compare dates of existing ebuild and installer/config modification dates
-
-# Copy distfiles to tmp
-cp "${PATH_INSTALLER_EBUILD_EBUILD}" "${PATH_TMP}/${PN}-${CONF_EBUILD_VERSION_NEW}.ebuild"
-cp "${PATH_INSTALLER_EBUILD_INSTALLER}" "${PATH_TMP}/${PN}"
-cp "${PATH_INSTALLER_EBUILD_CONFIG}" "${PATH_TMP}/config"
-
-# Create tmp distfiles tar
-tar --sort=name \
-    --mtime="" \
-    --owner=0 --group=0 --numeric-owner \
-    --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
-    -caf "${PATH_DISTFILES_TAR_TMP}" \
-    -C "${PATH_TMP}" "${LIST_DISTFILES_TAR_FILES[@]}" || die "Failed to create tar file"
-
-if diff -q "$PATH_DISTFILES_TAR_TMP" "$PATH_DISTFILES_TAR_OLD" >/dev/null; then
-    echo "No changes in installer, Update is not required"
-    echo ""
-    exit 0
+if [[ "${PI_VAL_EBUILD_NEEDS_UPDATE}" ]]; then
+    echo true
 else
-    echo "Installer requires an update"
-    echo ""
-    exit 1
+    echo false
 fi

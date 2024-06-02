@@ -127,6 +127,7 @@ readonly PATH_WORK_RELEASE="\${PATH_WORK}/release"
 # DEV Tools additional environments.
 readonly PATH_EXTRA_ENV_KERNEL_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/env.sh"
 readonly PATH_EXTRA_ENV_RELEASE="\${PATH_DEV_TOOLS_RELEASE}/env.sh"
+readonly PATH_EXTRA_ENV_PS3_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/env.sh"
 
 # Catalyst related paths.
 readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
@@ -194,6 +195,7 @@ readonly PATH_SCRIPT_KERNEL_EBUILD_SAVE_TO_OVERLAY="\${PATH_DEV_TOOLS_KERNEL_EBU
 readonly PATH_SCRIPT_KERNEL_EBUILD_BUILD_PKG="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-08-build-pkg.sh"
 # PS3 Installer
 readonly PATH_SCRIPT_PS3_INSTALLER_UPDATER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/ps3-gentoo-installer-ebuild-updater.sh"
+readonly PATH_SCRIPT_PS3_INSTALLER_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/ps3-gentoo-installer"
 # Binhost
 readonly PATH_BINHOST_SCRIPT_BIND="\${PATH_DEV_TOOLS_BINHOST}/binhost-00-bind.sh"
 readonly PATH_BINHOST_SCRIPT_DELETE="\${PATH_DEV_TOOLS_BINHOST}/binhost-01-delete-packages.sh"

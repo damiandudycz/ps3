@@ -1,31 +1,20 @@
 #!/bin/bash
 
-# Error handling function
-die() {
-    echo "$*" 1>&2
-    exit -1
-}
-
-# Cleanup function
-cleanup() {
-    $PATH_CHECK_FUNCTION --cleanfiles
-}
-trap cleanup EXIT
+source ../../.env-shared.sh || exit 1
+source "${PATH_EXTRA_ENV_PS3_INSTALLER}" || failure "Failed to load env ${PATH_EXTRA_ENV_PS3_INSTALLER}"
 
 # Handle script arguments
 ASK=false
 
-for arg in "$@"; do
-    case $arg in
-        --ask)
-        ASK=true
-        shift
-	;;
-	*)
-        # Unknown option
-        ;;
-    esac
-done
+for arg in "$@"; do; case $arg in
+    --ask) ASK=true; shift;;
+esac; done
+
+
+
+
+
+
 
 # Define variables
 PN="ps3-gentoo-installer"

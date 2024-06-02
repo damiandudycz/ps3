@@ -118,3 +118,24 @@ set_if() {
         eval "$VAR_NAME=\"$RET_FALSE\""
     fi
 }
+
+# Restores modification date of repository files, based on last commit date (if file was not modified locally).
+update_git_files_timestamps() {
+    local repo_path=$1
+    cd "$repo_path"
+
+    modified_files=$(git status --porcelain | grep '^[ MADRCU]' | awk '{print $2}')
+
+    for file in $(git ls-files); do
+        if echo "$modified_files" | grep -Fxq "$file"; then
+            continue
+        fi
+
+	mtime=$(git log -1 --format="%at" -- "$file")
+        if [ -n "$mtime" ]; then
+            touch -d @$mtime "$file"
+        fi
+    done
+
+    git submodule foreach --recursive "$(declare -f update_git_files_timestamps); update_git_files_timestamps \$toplevel/\$sm_path"
+}

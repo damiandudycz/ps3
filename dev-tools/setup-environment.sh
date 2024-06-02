@@ -126,13 +126,16 @@ readonly PATH_WORK_RELEASE="\${PATH_WORK}/release"
 
 # DEV Tools additional environments.
 readonly PATH_EXTRA_ENV_KERNEL_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/env.sh"
+readonly PATH_EXTRA_ENV_RELEASE="\${PATH_DEV_TOOLS_RELEASE}/env.sh"
 
 # Catalyst related paths.
 readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
 readonly PATH_CATALYST_TMP="\${PATH_VAR_TMP}/catalyst"
 readonly PATH_CATALYST_ETC="\${PATH_ETC}/catalyst"
 readonly PATH_CATALYST_BUILDS="\${PATH_CATALYST_TMP}/builds"
+readonly PATH_CATALYST_BUILDS_DEFAULT="\${PATH_CATALYST_BUILDS}/\${CONF_RELEASE_TYPE_DFAULT}"
 readonly PATH_CATALYST_STAGES="\${PATH_CATALYST_TMP}/config/stages"
+readonly PATH_CATALYST_STAGES_DEFAULT="\${PATH_CATALYST_STAGES}/\${CONF_RELEASE_TYPE_DFAULT}"
 readonly PATH_CATALYST_PACKAGES="\${PATH_CATALYST_TMP}/packages"
 readonly PATH_CATALYST_CONF="\${PATH_CATALYST_ETC}/catalyst.conf"
 readonly PATH_CATALYST_PPC_TOML="\${PATH_CATALYST_USR}/arch/ppc.toml"
@@ -149,12 +152,12 @@ readonly PATH_BINHOST_SCRIPT_DELETE="\${PATH_DEV_TOOLS_BINHOST}/binhost-01-delet
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
 
 # QEMU.
-readonly VAL_QEMU_IS_NEEDED=$(expr "\${VAL_HOST_ARCHITECTURE}" != "\${CONF_TARGET_ARCHITECTURE}") # Is host architecture different than target architecture.
-readonly VAL_QEMU_RELENG_POSTFIX=\$([[ \${VAL_QEMU_IS_NEEDED} ]] && echo "-qemu")
-readonly VAL_QEMU_REGISTRATION_EXPR="\${CONF_QEMU_CONFIG}\${PATH_QEMU_INTERPRETER}:"
 readonly PATH_QEMU_BINFMT="/proc/sys/fs/binfmt_misc"
 readonly PATH_QEMU_BINFMT_REGISTER="\${PATH_QEMU_BINFMT}/register"
 readonly PATH_QEMU_INTERPRETER="\${PATH_USR_BIN}/qemu-\${CONF_TARGET_ARCHITECTURE}"
+readonly VAL_QEMU_IS_NEEDED=$(expr "\${VAL_HOST_ARCHITECTURE}" != "\${CONF_TARGET_ARCHITECTURE}") # Is host architecture different than target architecture.
+readonly VAL_QEMU_RELENG_POSTFIX=\$([[ \${VAL_QEMU_IS_NEEDED} ]] && echo "-qemu")
+readonly VAL_QEMU_REGISTRATION_EXPR="\${CONF_QEMU_CONFIG}\${PATH_QEMU_INTERPRETER}:"
 
 # Crossdev.
 readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
@@ -174,6 +177,26 @@ readonly VAL_KERNEL_PACKAGE_SPECIAL="\${CONF_KERNEL_PACKAGE_GROUP}/\${CONF_KERNE
 # Releng.
 readonly PATH_RELENG_PORTAGE_CONFDIR_STAGES="\${PATH_RELENG}/releases/portage/stages${VAL_QEMU_RELENG_POSTFIX}"
 readonly PATH_RELENG_PORTAGE_CONFDIR_ISOS="\${PATH_RELENG}/releases/portage/isos${VAL_QEMU_RELENG_POSTFIX}"
+
+# Release.
+readonly PATH_RELEASE_DATA="\${PATH_DEV_TOOLS_RELEASE}/data"
+readonly PATH_RELEASE_DATA_SPEC="\${PATH_RELEASE_DATA}/spec"
+
+# Paths to scripts.
+# Kernel ebuild:
+readonly PATH_SCRIPT_KERNEL_EBUILD_FIND_VERSION="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-00-find-version.sh"
+readonly PATH_SCRIPT_KERNEL_EBUILD_DOWNLOAD_PATCHES="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-01-download-patches.sh"
+readonly PATH_SCRIPT_KERNEL_EBUILD_DOWNLOAD_GENTOO_KERNEL="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-02-download-gentoo-kernel.sh"
+readonly PATH_SCRIPT_KERNEL_EBUILD_APPLY_PS3_PATCHES="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-03-apply-ps3-patches.sh"
+readonly PATH_SCRIPT_KERNEL_EBUILD_CONFIGURE="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-04-configure.sh"
+readonly PATH_SCRIPT_KERNEL_EBUILD_CREATE_PS3_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-05-create-ps3-ebuild.sh"
+readonly PATH_SCRIPT_KERNEL_EBUILD_BUILD_MANIFEST="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-06-build-manifest.sh"
+readonly PATH_SCRIPT_KERNEL_EBUILD_SAVE_TO_OVERLAY="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-07-save-to-overlay.sh"
+readonly PATH_SCRIPT_KERNEL_EBUILD_BUILD_PKG="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/ebuild-08-build-pkg.sh"
+# PS3 Installer
+readonly PATH_SCRIPT_PS3_INSTALLER_UPDATER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/ps3-gentoo-installer-ebuild-updater.sh"
+# TODO: Add paths to other scripts.
+
 # ----------------------------------------------------------------------------------------------------------------------------------
 
 # Shared functionality.

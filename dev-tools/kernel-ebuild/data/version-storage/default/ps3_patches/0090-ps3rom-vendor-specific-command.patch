@@ -1,6 +1,6 @@
 diff -Naur a/drivers/scsi/ps3rom.c b/drivers/scsi/ps3rom.c
---- a/drivers/scsi/ps3rom.c	2024-03-17 19:02:15.515700673 +0700
-+++ b/drivers/scsi/ps3rom.c	2024-03-17 19:02:16.448688958 +0700
+--- a/drivers/scsi/ps3rom.c	2024-03-17 19:51:40.161978837 +0700
++++ b/drivers/scsi/ps3rom.c	2024-03-17 19:51:41.456950760 +0700
 @@ -28,6 +28,7 @@
  
  #define PS3ROM_MAX_SECTORS		(BOUNCE_SIZE >> 9)

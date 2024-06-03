@@ -1,6 +1,6 @@
 diff -Naur a/arch/powerpc/platforms/ps3/setup.c b/arch/powerpc/platforms/ps3/setup.c
---- a/arch/powerpc/platforms/ps3/setup.c	2024-03-17 19:04:36.088935276 +0700
-+++ b/arch/powerpc/platforms/ps3/setup.c	2024-03-17 19:04:36.340932110 +0700
+--- a/arch/powerpc/platforms/ps3/setup.c	2024-03-17 19:54:17.254656400 +0700
++++ b/arch/powerpc/platforms/ps3/setup.c	2024-03-17 19:54:20.220595133 +0700
 @@ -172,6 +172,21 @@
  #define prealloc_ps3flash_bounce_buffer()	do { } while (0)
  #endif
@@ -24,8 +24,8 @@ diff -Naur a/arch/powerpc/platforms/ps3/setup.c b/arch/powerpc/platforms/ps3/set
  {
  	/* Have to set at least one bit in the DABRX */
 diff -Naur a/arch/powerpc/platforms/ps3/time.c b/arch/powerpc/platforms/ps3/time.c
---- a/arch/powerpc/platforms/ps3/time.c	2024-03-17 19:04:36.088935276 +0700
-+++ b/arch/powerpc/platforms/ps3/time.c	2024-03-17 19:04:36.340932110 +0700
+--- a/arch/powerpc/platforms/ps3/time.c	2024-03-17 19:54:17.254656400 +0700
++++ b/arch/powerpc/platforms/ps3/time.c	2024-03-17 19:54:20.220595133 +0700
 @@ -16,6 +16,8 @@
  
  #include "platform.h"
@@ -45,8 +45,8 @@ diff -Naur a/arch/powerpc/platforms/ps3/time.c b/arch/powerpc/platforms/ps3/time
  
  time64_t __init ps3_get_boot_time(void)
 diff -Naur a/drivers/rtc/rtc-ps3.c b/drivers/rtc/rtc-ps3.c
---- a/drivers/rtc/rtc-ps3.c	2024-03-17 19:04:35.442943390 +0700
-+++ b/drivers/rtc/rtc-ps3.c	2024-03-17 19:04:36.343932073 +0700
+--- a/drivers/rtc/rtc-ps3.c	2024-03-17 19:54:19.088618510 +0700
++++ b/drivers/rtc/rtc-ps3.c	2024-03-17 19:54:20.220595133 +0700
 @@ -13,6 +13,7 @@
  #include <asm/lv1call.h>
  #include <asm/ps3.h>

@@ -1,6 +1,6 @@
 diff -Naur a/arch/powerpc/include/asm/spu.h b/arch/powerpc/include/asm/spu.h
---- a/arch/powerpc/include/asm/spu.h	2024-03-17 19:02:23.468600816 +0700
-+++ b/arch/powerpc/include/asm/spu.h	2024-03-17 19:02:23.756597200 +0700
+--- a/arch/powerpc/include/asm/spu.h	2024-03-17 19:51:47.000830703 +0700
++++ b/arch/powerpc/include/asm/spu.h	2024-03-17 19:51:49.784770503 +0700
 @@ -185,6 +185,8 @@
  	atomic_t reserved_spus;
  };
@@ -11,8 +11,8 @@ diff -Naur a/arch/powerpc/include/asm/spu.h b/arch/powerpc/include/asm/spu.h
  
  void spu_init_channels(struct spu *spu);
 diff -Naur a/arch/powerpc/platforms/cell/spu_base.c b/arch/powerpc/platforms/cell/spu_base.c
---- a/arch/powerpc/platforms/cell/spu_base.c	2024-03-17 19:02:23.495600477 +0700
-+++ b/arch/powerpc/platforms/cell/spu_base.c	2024-03-17 19:02:23.759597162 +0700
+--- a/arch/powerpc/platforms/cell/spu_base.c	2024-03-17 19:51:47.028830098 +0700
++++ b/arch/powerpc/platforms/cell/spu_base.c	2024-03-17 19:51:49.784770503 +0700
 @@ -11,6 +11,7 @@
  
  #include <linux/interrupt.h>
@@ -46,8 +46,8 @@ diff -Naur a/arch/powerpc/platforms/cell/spu_base.c b/arch/powerpc/platforms/cel
  {
  	static const struct {
 diff -Naur a/arch/powerpc/platforms/ps3/spu.c b/arch/powerpc/platforms/ps3/spu.c
---- a/arch/powerpc/platforms/ps3/spu.c	2024-03-17 19:02:23.500600414 +0700
-+++ b/arch/powerpc/platforms/ps3/spu.c	2024-03-17 19:02:23.760597150 +0700
+--- a/arch/powerpc/platforms/ps3/spu.c	2024-03-17 19:51:47.035829946 +0700
++++ b/arch/powerpc/platforms/ps3/spu.c	2024-03-17 19:51:49.784770503 +0700
 @@ -404,7 +404,7 @@
  		if (result)
  			break;

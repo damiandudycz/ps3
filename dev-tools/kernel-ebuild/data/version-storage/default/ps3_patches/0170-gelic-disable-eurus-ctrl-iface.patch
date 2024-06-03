@@ -1,7 +1,7 @@
 diff -Naur a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
---- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c	2024-03-17 19:03:14.413961085 +0700
-+++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c	2024-03-17 19:03:15.533947020 +0700
-@@ -1644,12 +1644,75 @@
+--- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c	2024-03-17 19:52:46.886547932 +0700
++++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c	2024-03-17 19:52:48.422515356 +0700
+@@ -1657,12 +1657,75 @@
  {
  	struct gelic_card *card;
  	struct net_device *netdev;

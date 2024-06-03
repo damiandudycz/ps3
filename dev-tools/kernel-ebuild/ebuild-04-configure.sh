@@ -20,7 +20,7 @@ ARCH=powerpc make ${KE_NAME_FILE_EBUILD_DEFCONFIG}
 
 # Apply changes from diffs.
 echo "${KE_PATH_SCRIPT_APPLY_DIFFCONFIG} ${KE_PATH_CONFIG_SELECTED}/${KE_NAME_FILE_CONF_DIFFS} ./.config > .config_modified"
-source ${KE_PATH_SCRIPT_APPLY_DIFFCONFIG} ${KE_PATH_CONFIG_SELECTED}/${KE_NAME_FILE_CONF_DIFFS} ./.config > .config_modified
+ruby ${KE_PATH_SCRIPT_APPLY_DIFFCONFIG} ${KE_PATH_CONFIG_SELECTED}/${KE_NAME_FILE_CONF_DIFFS} ./.config > .config_modified
 
 # Merge modified config.
 ARCH=powerpc ${KE_PATH_SCRIPT_MERGE_CONFIG} .config_modified
@@ -32,7 +32,7 @@ ARCH=powerpc ${KE_PATH_SCRIPT_MERGE_CONFIG} .config_modified
 ARCH=powerpc make savedefconfig
 
 # Generate diffs from default PS3 Defconfig.
-source ${KE_PATH_SCRIPT_DIFFCONFIG} "arch/powerpc/configs/${KE_NAME_FILE_EBUILD_DEFCONFIG}" defconfig > diffs
+${KE_PATH_SCRIPT_DIFFCONFIG} "arch/powerpc/configs/${KE_NAME_FILE_EBUILD_DEFCONFIG}" defconfig > diffs
 
 # Save versioned configs.
 if [[ ${KE_FLAG_SAVE} ]]; then

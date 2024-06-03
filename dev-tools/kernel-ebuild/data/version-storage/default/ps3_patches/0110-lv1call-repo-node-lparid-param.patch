@@ -1,6 +1,6 @@
 diff -Naur a/arch/powerpc/include/asm/lv1call.h b/arch/powerpc/include/asm/lv1call.h
---- a/arch/powerpc/include/asm/lv1call.h	2024-03-17 19:02:30.856508051 +0700
-+++ b/arch/powerpc/include/asm/lv1call.h	2024-03-17 19:02:31.149504372 +0700
+--- a/arch/powerpc/include/asm/lv1call.h	2024-03-17 19:51:55.230652903 +0700
++++ b/arch/powerpc/include/asm/lv1call.h	2024-03-17 19:51:58.029592547 +0700
 @@ -251,10 +251,10 @@
  LV1_CALL(configure_execution_time_variable,             1, 0,  77 )
  LV1_CALL(get_spe_irq_outlet,                            2, 1,  78 )

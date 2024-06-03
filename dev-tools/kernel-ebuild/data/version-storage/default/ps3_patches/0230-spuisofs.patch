@@ -1,7 +1,7 @@
 diff -Naur a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kconfig
---- a/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:03:59.282397582 +0700
-+++ b/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:03:59.537394379 +0700
-@@ -208,6 +208,13 @@
+--- a/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:53:35.571522742 +0700
++++ b/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:53:38.326465169 +0700
+@@ -209,6 +209,13 @@
  	  This support is required to access the PS3 ENCDEC device.
  	  In general, all users will say Y or M.
  
@@ -16,8 +16,8 @@ diff -Naur a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kco
  	tristate "PS3 Logical Performance Monitor support"
  	depends on PPC_PS3
 diff -Naur a/arch/powerpc/platforms/ps3/Makefile b/arch/powerpc/platforms/ps3/Makefile
---- a/arch/powerpc/platforms/ps3/Makefile	2024-03-17 19:03:59.282397582 +0700
-+++ b/arch/powerpc/platforms/ps3/Makefile	2024-03-17 19:03:59.537394379 +0700
+--- a/arch/powerpc/platforms/ps3/Makefile	2024-03-17 19:53:35.571522742 +0700
++++ b/arch/powerpc/platforms/ps3/Makefile	2024-03-17 19:53:38.327465148 +0700
 @@ -7,3 +7,5 @@
  obj-$(CONFIG_SMP) += smp.o
  obj-$(CONFIG_SPU_BASE) += spu.o
@@ -26,8 +26,8 @@ diff -Naur a/arch/powerpc/platforms/ps3/Makefile b/arch/powerpc/platforms/ps3/Ma
 +obj-$(CONFIG_SPUISO_FS) += spuisofs.o
 diff -Naur a/arch/powerpc/platforms/ps3/spuisofs.c b/arch/powerpc/platforms/ps3/spuisofs.c
 --- a/arch/powerpc/platforms/ps3/spuisofs.c	1970-01-01 07:00:00.000000000 +0700
-+++ b/arch/powerpc/platforms/ps3/spuisofs.c	2024-03-17 19:03:59.537394379 +0700
-@@ -0,0 +1,1073 @@
++++ b/arch/powerpc/platforms/ps3/spuisofs.c	2024-03-17 19:53:38.405463519 +0700
+@@ -0,0 +1,1075 @@
 +
 +/*
 + * PS3 spuisofs
@@ -484,7 +484,7 @@ diff -Naur a/arch/powerpc/platforms/ps3/spuisofs.c b/arch/powerpc/platforms/ps3/
 +	inode->i_mode = mode;
 +	inode->i_uid = current_fsuid();
 +	inode->i_gid = current_fsgid();
-+	inode->i_atime = inode->i_mtime = inode->__i_ctime = current_time(inode);
++	inode->__i_atime = inode->__i_mtime = inode->__i_ctime = current_time(inode);
 +
 +	return (inode);
 +}
@@ -540,7 +540,9 @@ diff -Naur a/arch/powerpc/platforms/ps3/spuisofs.c b/arch/powerpc/platforms/ps3/
 +static int spuisofs_fill_dir(struct dentry *dir,
 +	const struct spuisofs_tree_descr *files)
 +{
-+	struct dentry *dentry, *tmp;
++	struct dentry *dentry;
++	struct hlist_node *tmp;
++	
 +	int err;
 +
 +	while (files->name && files->name[0]) {
@@ -566,8 +568,8 @@ diff -Naur a/arch/powerpc/platforms/ps3/spuisofs.c b/arch/powerpc/platforms/ps3/
 +	list_for_each_entry_safe(dentry, tmp, &dir->d_subdirs, d_u.d_child)
 +		dput(dentry);
 +#else
-+	list_for_each_entry_safe(dentry, tmp, &dir->d_subdirs, d_child)
-+		dput(dentry);
++	hlist_for_each_entry_safe(dentry, tmp, &dir->d_children, d_sib)
++		dput(dentry);	
 +#endif
 +
 +	shrink_dcache_parent(dir);

@@ -1,6 +1,6 @@
 diff -Naur a/drivers/ps3/ps3stor_lib.c b/drivers/ps3/ps3stor_lib.c
---- a/drivers/ps3/ps3stor_lib.c	2024-03-17 19:01:14.865462104 +0700
-+++ b/drivers/ps3/ps3stor_lib.c	2024-03-17 19:01:17.597427810 +0700
+--- a/drivers/ps3/ps3stor_lib.c	2024-03-17 19:50:30.722503769 +0700
++++ b/drivers/ps3/ps3stor_lib.c	2024-03-17 19:50:34.599417581 +0700
 @@ -329,8 +329,13 @@
  		return -1;
  	}

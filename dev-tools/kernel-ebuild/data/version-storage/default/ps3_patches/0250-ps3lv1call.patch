@@ -1,7 +1,7 @@
 diff -Naur a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kconfig
---- a/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:04:13.888214132 +0700
-+++ b/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:04:14.142210942 +0700
-@@ -222,6 +222,12 @@
+--- a/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:53:52.148177006 +0700
++++ b/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:53:54.944118851 +0700
+@@ -223,6 +223,12 @@
  	help
  	  The isolated SPU loader file system is used to execute isolated SPU loaders.
  
@@ -15,9 +15,9 @@ diff -Naur a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kco
  	tristate "PS3 Logical Performance Monitor support"
  	depends on PPC_PS3
 diff -Naur a/drivers/char/Makefile b/drivers/char/Makefile
---- a/drivers/char/Makefile	2024-03-17 19:04:12.125236275 +0700
-+++ b/drivers/char/Makefile	2024-03-17 19:04:14.156210766 +0700
-@@ -46,5 +46,6 @@
+--- a/drivers/char/Makefile	2024-03-17 19:53:52.367172450 +0700
++++ b/drivers/char/Makefile	2024-03-17 19:53:54.944118851 +0700
+@@ -45,5 +45,6 @@
  obj-$(CONFIG_PS3_PHYSMEM)	+= ps3physmem.o
  obj-$(CONFIG_PS3_STRGMNGR)	+= ps3strgmngr.o
  obj-$(CONFIG_PS3_ENCDEC)	+= ps3encdec.o
@@ -26,7 +26,7 @@ diff -Naur a/drivers/char/Makefile b/drivers/char/Makefile
  obj-$(CONFIG_ADI)		+= adi.o
 diff -Naur a/drivers/char/ps3lv1call/Makefile b/drivers/char/ps3lv1call/Makefile
 --- a/drivers/char/ps3lv1call/Makefile	1970-01-01 07:00:00.000000000 +0700
-+++ b/drivers/char/ps3lv1call/Makefile	2024-03-17 19:04:14.156210766 +0700
++++ b/drivers/char/ps3lv1call/Makefile	2024-03-17 19:53:54.944118851 +0700
 @@ -0,0 +1,4 @@
 +
 +ps3lv1call-y := ps3lv1call_misc.o generic_lv1call.o
@@ -34,7 +34,7 @@ diff -Naur a/drivers/char/ps3lv1call/Makefile b/drivers/char/ps3lv1call/Makefile
 +obj-$(CONFIG_PS3_LV1CALL) += ps3lv1call.o
 diff -Naur a/drivers/char/ps3lv1call/generic_lv1call.S b/drivers/char/ps3lv1call/generic_lv1call.S
 --- a/drivers/char/ps3lv1call/generic_lv1call.S	1970-01-01 07:00:00.000000000 +0700
-+++ b/drivers/char/ps3lv1call/generic_lv1call.S	2024-03-17 19:04:14.156210766 +0700
++++ b/drivers/char/ps3lv1call/generic_lv1call.S	2024-03-17 19:53:54.944118851 +0700
 @@ -0,0 +1,54 @@
 +/*
 + * PS3 Generic LV1 Call
@@ -92,7 +92,7 @@ diff -Naur a/drivers/char/ps3lv1call/generic_lv1call.S b/drivers/char/ps3lv1call
 +	blr
 diff -Naur a/drivers/char/ps3lv1call/ps3lv1call_misc.c b/drivers/char/ps3lv1call/ps3lv1call_misc.c
 --- a/drivers/char/ps3lv1call/ps3lv1call_misc.c	1970-01-01 07:00:00.000000000 +0700
-+++ b/drivers/char/ps3lv1call/ps3lv1call_misc.c	2024-03-17 19:04:14.156210766 +0700
++++ b/drivers/char/ps3lv1call/ps3lv1call_misc.c	2024-03-17 19:53:54.944118851 +0700
 @@ -0,0 +1,167 @@
 +/*
 + * PS3 LV1 Call

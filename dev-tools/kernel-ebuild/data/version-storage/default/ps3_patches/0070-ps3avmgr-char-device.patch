@@ -1,6 +1,6 @@
 diff -Naur a/drivers/ps3/ps3av.c b/drivers/ps3/ps3av.c
---- a/drivers/ps3/ps3av.c	2024-03-17 19:02:00.856884721 +0700
-+++ b/drivers/ps3/ps3av.c	2024-03-17 19:02:01.794872945 +0700
+--- a/drivers/ps3/ps3av.c	2024-03-17 19:51:23.640338170 +0700
++++ b/drivers/ps3/ps3av.c	2024-03-17 19:51:24.790313091 +0700
 @@ -12,6 +12,8 @@
  #include <linux/notifier.h>
  #include <linux/ioctl.h>

@@ -1,6 +1,6 @@
 diff -Naur a/drivers/ps3/ps3-sys-manager.c b/drivers/ps3/ps3-sys-manager.c
---- a/drivers/ps3/ps3-sys-manager.c	2024-03-17 19:01:53.549976460 +0700
-+++ b/drivers/ps3/ps3-sys-manager.c	2024-03-17 19:01:54.475964834 +0700
+--- a/drivers/ps3/ps3-sys-manager.c	2024-03-17 19:51:15.182522940 +0700
++++ b/drivers/ps3/ps3-sys-manager.c	2024-03-17 19:51:16.490494329 +0700
 @@ -11,7 +11,12 @@
  #include <linux/workqueue.h>
  #include <linux/reboot.h>

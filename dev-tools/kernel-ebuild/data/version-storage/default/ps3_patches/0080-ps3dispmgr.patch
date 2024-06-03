@@ -1,6 +1,6 @@
 diff -Naur a/arch/powerpc/include/asm/ps3.h b/arch/powerpc/include/asm/ps3.h
---- a/arch/powerpc/include/asm/ps3.h	2024-03-17 19:02:08.811784845 +0700
-+++ b/arch/powerpc/include/asm/ps3.h	2024-03-17 19:02:09.099781229 +0700
+--- a/arch/powerpc/include/asm/ps3.h	2024-03-17 19:51:30.207195095 +0700
++++ b/arch/powerpc/include/asm/ps3.h	2024-03-17 19:51:33.128131561 +0700
 @@ -316,6 +316,7 @@
  	PS3_MATCH_ID_GPU		= 10,
  	PS3_MATCH_ID_LPM		= 11,
@@ -18,9 +18,9 @@ diff -Naur a/arch/powerpc/include/asm/ps3.h b/arch/powerpc/include/asm/ps3.h
  enum ps3_system_bus_device_type {
  	PS3_DEVICE_TYPE_IOC0 = 1,
 diff -Naur a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kconfig
---- a/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:02:08.844784430 +0700
-+++ b/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:02:09.099781229 +0700
-@@ -107,6 +107,17 @@
+--- a/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:51:30.249194181 +0700
++++ b/arch/powerpc/platforms/ps3/Kconfig	2024-03-17 19:51:33.128131561 +0700
+@@ -108,6 +108,17 @@
  	  If in doubt, say N here and reduce the size of the kernel by a
  	  small amount.
  
@@ -39,8 +39,8 @@ diff -Naur a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kco
  	depends on PPC_PS3
  	tristate
 diff -Naur a/arch/powerpc/platforms/ps3/device-init.c b/arch/powerpc/platforms/ps3/device-init.c
---- a/arch/powerpc/platforms/ps3/device-init.c	2024-03-17 19:02:08.844784430 +0700
-+++ b/arch/powerpc/platforms/ps3/device-init.c	2024-03-17 19:02:09.102781191 +0700
+--- a/arch/powerpc/platforms/ps3/device-init.c	2024-03-17 19:51:30.249194181 +0700
++++ b/arch/powerpc/platforms/ps3/device-init.c	2024-03-17 19:51:33.128131561 +0700
 @@ -413,6 +413,7 @@
  {
  	int result;
@@ -78,8 +78,8 @@ diff -Naur a/arch/powerpc/platforms/ps3/device-init.c b/arch/powerpc/platforms/p
  	return result;
  }
 diff -Naur a/arch/powerpc/platforms/ps3/system-bus.c b/arch/powerpc/platforms/ps3/system-bus.c
---- a/arch/powerpc/platforms/ps3/system-bus.c	2024-03-17 19:02:08.844784430 +0700
-+++ b/arch/powerpc/platforms/ps3/system-bus.c	2024-03-17 19:02:09.114781041 +0700
+--- a/arch/powerpc/platforms/ps3/system-bus.c	2024-03-17 19:51:30.249194181 +0700
++++ b/arch/powerpc/platforms/ps3/system-bus.c	2024-03-17 19:51:33.129131540 +0700
 @@ -172,6 +172,7 @@
  
  	case PS3_MATCH_ID_AV_SETTINGS:
@@ -97,8 +97,8 @@ diff -Naur a/arch/powerpc/platforms/ps3/system-bus.c b/arch/powerpc/platforms/ps
  			__LINE__, dev->match_id);
  		pr_debug("%s:%d: bus_id: %llu\n", __func__, __LINE__,
 diff -Naur a/drivers/ps3/Makefile b/drivers/ps3/Makefile
---- a/drivers/ps3/Makefile	2024-03-17 19:02:08.170792893 +0700
-+++ b/drivers/ps3/Makefile	2024-03-17 19:02:09.116781016 +0700
+--- a/drivers/ps3/Makefile	2024-03-17 19:51:32.003156023 +0700
++++ b/drivers/ps3/Makefile	2024-03-17 19:51:33.134131431 +0700
 @@ -6,3 +6,4 @@
  obj-$(CONFIG_PS3_SYS_MANAGER) += ps3-sys-manager.o
  obj-$(CONFIG_PS3_STORAGE) += ps3stor_lib.o
@@ -106,7 +106,7 @@ diff -Naur a/drivers/ps3/Makefile b/drivers/ps3/Makefile
 +obj-$(CONFIG_PS3_DISP_MANAGER) += ps3-disp-manager.o
 diff -Naur a/drivers/ps3/ps3-disp-manager.c b/drivers/ps3/ps3-disp-manager.c
 --- a/drivers/ps3/ps3-disp-manager.c	1970-01-01 07:00:00.000000000 +0700
-+++ b/drivers/ps3/ps3-disp-manager.c	2024-03-17 19:02:09.116781016 +0700
++++ b/drivers/ps3/ps3-disp-manager.c	2024-03-17 19:51:33.134131431 +0700
 @@ -0,0 +1,196 @@
 +/*
 + *  PS3 Dispatcher Manager.
@@ -305,8 +305,8 @@ diff -Naur a/drivers/ps3/ps3-disp-manager.c b/drivers/ps3/ps3-disp-manager.c
 +MODULE_DESCRIPTION("PS3 Dispatcher Manager");
 +MODULE_ALIAS(PS3_MODULE_ALIAS_DISP_MANAGER);
 diff -Naur a/drivers/ps3/ps3-vuart.c b/drivers/ps3/ps3-vuart.c
---- a/drivers/ps3/ps3-vuart.c	2024-03-17 19:02:08.170792893 +0700
-+++ b/drivers/ps3/ps3-vuart.c	2024-03-17 19:02:09.116781016 +0700
+--- a/drivers/ps3/ps3-vuart.c	2024-03-17 19:51:32.003156023 +0700
++++ b/drivers/ps3/ps3-vuart.c	2024-03-17 19:51:33.134131431 +0700
 @@ -27,6 +27,7 @@
   * vuart - An inter-partition data link service.
   *  port 0: PS3 AV Settings.

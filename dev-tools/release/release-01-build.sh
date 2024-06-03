@@ -20,14 +20,8 @@ readonly PATH_STAGE3="${PATH_WORK_RELEASE}/stage3-cell.$TIMESTAMP.spec"
 readonly PATH_STAGE1_INSTALLCD="${PATH_WORK_RELEASE}/stage1-cell.installcd.$TIMESTAMP.spec"
 readonly PATH_STAGE2_INSTALLCD="${PATH_WORK_RELEASE}/stage2-cell.installcd.$TIMESTAMP.spec"
 
-# Bind binhost
-source ${PATH_BINHOST_SCRIPT_BIND} --bind
-
 # Building release
 catalyst -af "${PATH_STAGE1}"
 catalyst -af "${PATH_STAGE3}"
 catalyst -af "${PATH_STAGE1_INSTALLCD}"
 catalyst -af "${PATH_STAGE2_INSTALLCD}"
-
-# Unbind binhost
-source ${PATH_BINHOST_SCRIPT_BIND} --unbind

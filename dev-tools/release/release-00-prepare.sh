@@ -53,3 +53,6 @@ sed -i "s|@LIVECD_FSSCRIPT@|${RE_PATH_LIVECD_FSSCRIPT_DST}|g" "${RE_PATH_STAGE2_
 
 # Save latest release RE_VAL_TIMESTAMP
 echo "${RE_VAL_TIMESTAMP}" > "${RE_PATH_RELEASE_INFO}"
+
+# Copy everything from distfiles overlay to cache, so that it's available during emerge even if packages were not yet uploaded to git.
+find "${PATH_OVERLAYS_PS3_GENTOO_DISTFILES}" -type f ! -name ".*" -exec cp {} "${PATH_VAR_CACHE_DISTFILES}"/ \;

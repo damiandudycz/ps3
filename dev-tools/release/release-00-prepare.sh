@@ -11,7 +11,7 @@ source "${PATH_EXTRA_ENV_RELEASE}" || failure "Failed to load env ${PATH_EXTRA_E
 empty_directory "${PATH_WORK_RELEASE}"
 
 # Ask if should update installer if there are any changes pending.
-${PATH_SCRIPT_PS3_INSTALLER_UPDATER} --ask
+(source ${PATH_SCRIPT_PS3_INSTALLER_UPDATE} --ask)
 
 # Copy helper files
 cp -rf "${RE_PATH_LIVECD_OVERLAY_SRC}" "${RE_PATH_LIVECD_OVERLAY_DST}"

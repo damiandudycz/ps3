@@ -10,9 +10,6 @@ source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_RELEASE}" || failure "Failed to load env ${PATH_EXTRA_ENV_RELEASE}"
 register_failure_handler "source ${PATH_BINHOST_SCRIPT_BIND} --unbind"
 
-# Ask if should update installer if there are any changes pending.
-#source ${PATH_SCRIPT_PS3_INSTALLER_UPDATER} --ask
-
 # Release information
 readonly TIMESTAMP=$(cat "${RE_PATH_RELEASE_INFO}")
 [ -z "${TIMESTAMP}" ] && failure "Failed to read current release details. Please run release-prepare.sh first."

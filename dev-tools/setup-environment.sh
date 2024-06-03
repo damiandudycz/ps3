@@ -166,7 +166,8 @@ readonly PATH_CROSSDEV_BINPKGS="\${PATH_CROSSDEV_INSTALLATION}/\${PATH_VAR_CACHE
 
 # Other.
 readonly PATH_ENV_HELPER_FUNCTIONS="\${PATH_DEV_TOOLS_ENVIRONMENT}/env-helper-functions.sh"
-readonly PATH_GIT_HOOK_AUTOBUILDS="\${PATH_ROOT}/.git/modules/autobuilds/ps3-gentoo-autobuilds/pre-commit" # TODO: Use variables for patch
+readonly PATH_GIT_HOOK_AUTOBUILDS="\${PATH_ROOT}/.git/modules/autobuilds/ps3-gentoo-autobuilds/hooks/pre-commit" # TODO: Use variables for patch
+readonly PATH_GIT_HOOK_BINHOSTS="\${PATH_ROOT}/.git/modules/binhosts/ps3-gentoo-binhosts/hooks/pre-commit"
 readonly PATH_PORTAGE_TIMESTAMP_CHK="\${PATH_VAR_DB_REPOS_GENTOO}/metadata/timestamp.chk"
 
 # Kernel.
@@ -197,6 +198,7 @@ readonly PATH_SCRIPT_PS3_INSTALLER_UPDATE="\${PATH_DEV_TOOLS_PS3_INSTALLER}/inst
 readonly PATH_SCRIPT_PS3_INSTALLER_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/ps3-gentoo-installer"
 # Binhost
 readonly PATH_BINHOST_SCRIPT_DELETE="\${PATH_DEV_TOOLS_BINHOST}/binhost-01-delete-packages.sh"
+readonly PATH_BINHOST_SCRIPT_SANITIZE="\${PATH_DEV_TOOLS_BINHOST}/binhost-02-sanitize.sh"
 # TODO: Add paths to other scripts.
 
 # ----------------------------------------------------------------------------------------------------------------------------------

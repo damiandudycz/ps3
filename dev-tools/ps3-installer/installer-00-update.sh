@@ -41,6 +41,8 @@ tar --sort=name \
     -caf "${PI_PATH_DISTFILES_DST}" \
     -C "${PATH_WORK_PS3_INSTALLER}" "${PI_CONF_LIST_DISTFILES_TAR_FILES[@]}"
 
+# TODO: Build new manifest and merge with existing, like in kernel tools.
+
 # Copy ebuild and distfiles to overlay.
 cp "${PI_PATH_EBUILD_DST}" "${PI_PATH_EBUILD_OVERLAY}"
 cp "${PI_PATH_DISTFILES_DST}" "${PI_PATH_DISTFILES_OVERLAY}"

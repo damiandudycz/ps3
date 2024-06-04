@@ -84,7 +84,7 @@ readonly PATH_DEV_TOOLS_ENVIRONMENT="\${PATH_DEV_TOOLS}/environment"
 readonly PATH_DEV_TOOLS_KERNEL_EBUILD="\${PATH_DEV_TOOLS}/kernel-ebuild"
 readonly PATH_DEV_TOOLS_PS3_INSTALLER="\${PATH_DEV_TOOLS}/ps3-installer"
 readonly PATH_DEV_TOOLS_RELEASE="\${PATH_DEV_TOOLS}/release"
-#readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng" # ??
+readonly PATH_DEV_TOOLS_OVERLAY="\${PATH_DEV_TOOLS}/overlay"
 
 # External modules.
 readonly PATH_AUTOBUILDS_PS3_GENTOO="\${PATH_AUTOBUILDS}/ps3-gentoo-autobuilds"              # Autobuilds.
@@ -123,6 +123,7 @@ readonly PATH_WORK_ENVIRONMENT="\${PATH_WORK}/environment"
 readonly PATH_WORK_KERNEL_EBUILD="\${PATH_WORK}/kernel_ebuild"
 readonly PATH_WORK_PS3_INSTALLER="\${PATH_WORK}/ps3_installer"
 readonly PATH_WORK_RELEASE="\${PATH_WORK}/release"
+readonly PATH_WORK_OVERLAY="\${PATH_WORK}/overlay"
 
 # DEV Tools additional environments.
 readonly PATH_EXTRA_ENV_KERNEL_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/env.sh"
@@ -199,6 +200,8 @@ readonly PATH_SCRIPT_PS3_INSTALLER_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/p
 # Binhost
 readonly PATH_BINHOST_SCRIPT_DELETE="\${PATH_DEV_TOOLS_BINHOST}/binhost-01-delete-packages.sh"
 readonly PATH_BINHOST_SCRIPT_SANITIZE="\${PATH_DEV_TOOLS_BINHOST}/binhost-02-sanitize.sh"
+# Overlay
+readonly PATH_OVERLAY_SCRIPT_CREATE_PACKAGE="\${PATH_DEV_TOOLS_OVERLAY}/create-package.sh"
 # TODO: Add paths to other scripts.
 
 # ----------------------------------------------------------------------------------------------------------------------------------

@@ -23,7 +23,7 @@ EOF
 chmod +x "${PATH_GIT_HOOK_AUTOBUILDS}"
 
 cat <<EOF > "${PATH_GIT_HOOK_BINHOSTS}"
-cd "${dirname \"${PATH_BINHOST_SCRIPT_SANITIZE}\"}"
+cd "$(dirname \"${PATH_BINHOST_SCRIPT_SANITIZE}\")"
 ${PATH_BINHOST_SCRIPT_SANITIZE}
 git add -u
 EOF

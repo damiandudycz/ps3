@@ -631,10 +631,10 @@ setup_portage_repository() {
     try cp "$path_chroot/usr/share/portage/config/repos.conf" "$path_chroot/etc/portage/repos.conf/gentoo.conf"
     # Synchronize portage tree.
     # Method 1:
-    # chroot_call "emerge-webrsync $quiet_flag"
+    chroot_call "emerge-webrsync $quiet_flag"
     # method 2:
-    try wget "https://gentoo.osuosl.org/snapshots/portage-latest.tar.xz" -O "${path_chroot}/portage-latest.tar.xz"
-    try tar -xvpf "${path_chroot}/portage-latest.tar.xz" -C "${path_chroot}/var/db/repos/gentoo"
+    #try wget "https://gentoo.osuosl.org/snapshots/portage-latest.tar.xz" -O "${path_chroot}/portage-latest.tar.xz"
+    #try tar -xvpf "${path_chroot}/portage-latest.tar.xz" -C "${path_chroot}/var/db/repos/gentoo"
     # Create keys.
     chroot_call "getuto"
     chroot_call "killall dirmngr"

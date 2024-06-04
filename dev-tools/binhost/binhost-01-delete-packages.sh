@@ -68,12 +68,12 @@ while IFS= read -r LINE || [[ -n $LINE ]]; do
         ENTRY_PACKAGE_VERSIONED="${ENTRY_PACKAGE}-${ENTRY_VERSION}"
         for PACKAGE_REGEX in "${ARG_PACKAGES_TO_REMOVE_REGEX[@]}"; do
             if [[ ! ${SIZE_LIMIT} ]] || [[ ${ENTRY_SIZE} -gt ${SIZE_LIMIT} ]]; then
-                if [[ "${ENTRY_PACKAGE_VERSIONED}" =~ ${PACKAGE_REGEX} ]]; then
+                if [[ ! -z "${ENTRY_CPV}" ]] && [[ "${ENTRY_PACKAGE_VERSIONED}" =~ ${PACKAGE_REGEX} ]]; then
                     ENTRY_DELETE=true
                 fi
             fi
         done
-        if [[ -z "${ARG_PACKAGES_TO_REMOVE_REGEX}" ]] && [[ ${ENTRY_SIZE} -gt ${SIZE_LIMIT} ]]; then
+        if [[ ! -z "${ENTRY_CPV}" ]] && [[ -z "${ARG_PACKAGES_TO_REMOVE_REGEX}" ]] && [[ ${ENTRY_SIZE} -gt ${SIZE_LIMIT} ]]; then
             ENTRY_DELETE=true
         fi
         if [[ -n ${ENTRY_DELETE} ]]; then

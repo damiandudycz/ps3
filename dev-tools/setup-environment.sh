@@ -202,6 +202,7 @@ readonly PATH_BINHOST_SCRIPT_DELETE="\${PATH_DEV_TOOLS_BINHOST}/binhost-01-delet
 readonly PATH_BINHOST_SCRIPT_SANITIZE="\${PATH_DEV_TOOLS_BINHOST}/binhost-02-sanitize.sh"
 # Overlay
 readonly PATH_OVERLAY_SCRIPT_CREATE_PACKAGE="\${PATH_DEV_TOOLS_OVERLAY}/create-package.sh"
+readonly PATH_OVERLAY_SCRIPT_COPY_PS3_FILES="\${PATH_DEV_TOOLS_OVERLAY}/copy-ps3-distfiles.sh"
 # TODO: Add paths to other scripts.
 
 # ----------------------------------------------------------------------------------------------------------------------------------

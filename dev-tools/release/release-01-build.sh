@@ -10,6 +10,9 @@ source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_RELEASE}" || failure "Failed to load env ${PATH_EXTRA_ENV_RELEASE}"
 register_failure_handler "source ${PATH_BINHOST_SCRIPT_BIND} --unbind"
 
+# Copy distfiles in case they are needed during compilation (if these are not yet uploaded to the server).
+source ${PATH_OVERLAY_SCRIPT_COPY_PS3_FILES}
+
 # Release information
 readonly TIMESTAMP=$(cat "${RE_PATH_RELEASE_INFO}")
 [ -z "${TIMESTAMP}" ] && failure "Failed to read current release details. Please run release-prepare.sh first."

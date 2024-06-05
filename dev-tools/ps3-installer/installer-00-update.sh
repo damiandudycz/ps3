@@ -27,5 +27,5 @@ else
 fi
 
 # Create package
-KE_COMMAND="--category ${PI_CONF_PACKAGE_GROUP} --ebuild ${PI_PATH_EBUILD_SRC} --version-increment --distfile ${PI_PATH_CONFIG_SRC} --distfile ${PI_PATH_INSTALLER_SRC} --save"
-source ${PATH_OVERLAY_SCRIPT_CREATE_PACKAGE} ${KE_COMMAND}
+PI_COMMAND="--category ${PI_CONF_PACKAGE_GROUP} --ebuild ${PI_PATH_EBUILD_SRC} --version-increment --distfile ${PI_PATH_CONFIG_SRC} --distfile ${PI_PATH_INSTALLER_SRC} --save"
+source ${PATH_OVERLAY_SCRIPT_CREATE_PACKAGE} ${PI_COMMAND}

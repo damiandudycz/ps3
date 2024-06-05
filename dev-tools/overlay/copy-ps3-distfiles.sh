@@ -5,4 +5,4 @@
 
 source ../../.env-shared.sh || exit 1
 
-find "${PATH_OVERLAYS_PS3_GENTOO_DISTFILES}" -type f ! -name ".*" -exec cp -f {} "${PATH_VAR_CACHE_DISTFILES}"/ \;
+find "${PATH_OVERLAYS_PS3_GENTOO_DISTFILES}" -type f ! -name ".*" -exec echo "Copying: {}" \; -exec cp -f {} "${PATH_VAR_CACHE_DISTFILES}"/ \;

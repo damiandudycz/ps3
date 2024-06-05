@@ -13,6 +13,8 @@ register_usage "$1 <--ebuild <Path>> <--version <Version> | --version-increment>
 # - files (stored in overlay files directory)
 # - distdiles (stored in overlay.distfiles as tar.xz)
 
+empty_directory "${PATH_WORK_OVERLAY}"
+
 declare -a OV_FILES;
 declare -a OV_DISTFILES;
 

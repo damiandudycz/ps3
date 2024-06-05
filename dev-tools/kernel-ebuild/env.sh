@@ -29,14 +29,14 @@ readonly KE_NAME_FOLDER_VERSION_STORAGE="version-storage"   # Version storage fo
 readonly KE_NAME_FOLDER_PATCHES="ps3_patches"               # Patches folder (data/version-storage/<version>/patches).
 readonly KE_NAME_FOLDER_CONFIG="config"                     # Config folder (data/version-storage/<version>/config).
 readonly KE_NAME_FOLDER_DEFAULT="default"                   # Default storage folder (data/version-storage/default).
-readonly KE_NAME_FOLDER_REPO_DRAFT="repo"                   # Draft of empty overlay repository (data/repo).
+#readonly KE_NAME_FOLDER_REPO_DRAFT="repo"                   # Draft of empty overlay repository (data/repo).
 readonly KE_NAME_FOLDER_SCRIPTS="scripts"                   # Scripts folder (data/scripts).
-readonly KE_NAME_FOLDER_DISTFILES="distfiles"               # Directory containing all files stored in distfiles repository.
+#readonly KE_NAME_FOLDER_DISTFILES="distfiles"               # Directory containing all files stored in distfiles repository.
 readonly KE_NAME_FOLDER_BINPKGS="binpkgs"                   # Directory containing created binpkg file.
 readonly KE_NAME_FILE_CONF_DIFFS="ps3_defconfig_diffs"      # Config diffs file (data/version-storage/<version>/diffs).
 readonly KE_NAME_FILE_CONF_DEFCONF="ps3_gentoo_defconfig"   # Default config file (data/version-storage/<version>/defconf).
 readonly KE_NAME_FILE_PATCHES_CURRENT="patches-current.txt" # List of patches to download (data/patches-current.txt).
-readonly KE_NAME_FILE_MANIFEST="Manifest"                   # Manifest file in portage repository.
+#readonly KE_NAME_FILE_MANIFEST="Manifest"                   # Manifest file in portage repository.
 readonly KE_NAME_FILE_EBUILD_DEFCONFIG="ps3_defconfig"      # Name of ps3 kernel config file.
 
 # Names of ebuild files and variables.
@@ -48,7 +48,7 @@ set_if   KE_PACKAGE_VERSION_SELECTED "\"${VAL_SCRIPT_NAME_CALLED}\" = \"${KE_SCR
 # Names of ebuild files and variables dependant on package version.
 readonly KE_NAME_EBUILD_FILE_DISTFILES_TAR="${CONF_KERNEL_PACKAGE_NAME_SPECIAL}-files-${KE_PACKAGE_VERSION_SELECTED}.tar.xz" # Destination distfiles tarball.
 readonly KE_NAME_EBUILD_FILE_PACKAGE_SRC="${CONF_KERNEL_PACKAGE_NAME_BASE}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"            # Full source ebuild filename, without path.
-readonly KE_NAME_EBUILD_FILE_PACKAGE_DST="${CONF_KERNEL_PACKAGE_NAME_SPECIAL}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"         # Full destination ebuild filename, without path.
+readonly KE_NAME_EBUILD_FILE_PACKAGE_DST="${CONF_KERNEL_PACKAGE_NAME_SPECIAL}.ebuild"                                        # Full destination ebuild filename, without path.
 readonly KE_NAME_PACKAGE_DST_VERSIONED="${CONF_KERNEL_PACKAGE_NAME_SPECIAL}-${KE_PACKAGE_VERSION_SELECTED}"
 
 # Data folders and files.
@@ -73,17 +73,25 @@ readonly KE_PATH_CONFIG_DEFCONF_DEFAULT="${KE_PATH_CONFIG_DEFAULT}/${KE_NAME_FIL
 readonly KE_PATH_CONFIG_DEFCONF_VERSIONED="${KE_PATH_CONFIG_VERSIONED}/${KE_NAME_FILE_CONF_DEFCONF}"   # Location of specified version config file (./data/version-storage/<version>/config/ps3_gentoo_defconfig).
 readonly KE_PATH_CONFIG_DEFCONF_SAVETO="${KE_PATH_CONFIG_SAVETO}/${KE_NAME_FILE_CONF_DEFCONF}"         # Location where ebuild-04-configure.sh will save generated config file (./data/version-storage/<version>/config/ps3_gentoo_defconfig).
 readonly KE_PATH_CONFIG_DEFCONF_SELECTED="${KE_PATH_CONFIG_SELECTED}/${KE_NAME_FILE_CONF_DEFCONF}"     # Location of selected config file. Versioned if exists, default otherwise.
-readonly KE_PATH_OVERLAY_DRAFT="${KE_PATH_DATA}/${KE_NAME_FOLDER_REPO_DRAFT}"                          # Location of files for empty portage overlay structure files.
+#readonly KE_PATH_OVERLAY_DRAFT="${KE_PATH_DATA}/${KE_NAME_FOLDER_REPO_DRAFT}"                          # Location of files for empty portage overlay structure files.
 readonly KE_PATH_EBUILD_PATCHES="${KE_PATH_DATA}/ebuild-patches"                                       # Location of patches to be applied to generated ebuild file.
 
 # Workdirs.
 readonly KE_PATH_WORK_SRC="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/src"                           # Location of gentoo-kernel ebuild extracted files main folder.
 readonly KE_PATH_WORK_SRC_LINUX="$(find ${KE_PATH_WORK_SRC}/portage/${VAL_KERNEL_PACKAGE_BASE}-${KE_PACKAGE_VERSION_SELECTED}/work/ -maxdepth 1 -name linux-* -type d -print -quit 2>/dev/null)" # Location of linux source code from gentoo-kernel ebuild extracted package.
 readonly KE_PATH_WORK_EBUILD="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/ebuild"                     # Location of ebuild generation workdir.
-readonly KE_PATH_WORK_EBUILD_PACKAGE="${KE_PATH_WORK_EBUILD}/${VAL_KERNEL_PACKAGE_SPECIAL}"                         # Location of generated ebuild package .ebuild file.
-readonly KE_PATH_WORK_EBUILD_DISTFILES="${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_DISTFILES}"                         # Location of ebuild distfiles generation workdir.
-readonly KE_PATH_WORK_EBUILD_DISTFILES_PATCHES="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_FOLDER_PATCHES}"         # Location of ebuild distfiles patches workdir.
-readonly KE_PATH_WORK_BINPKGS="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/${KE_NAME_FOLDER_BINPKGS}" # Location of folder containing binpkg created with crossdev.
+#readonly KE_PATH_WORK_EBUILD_PACKAGE="${KE_PATH_WORK_EBUILD}/${VAL_KERNEL_PACKAGE_SPECIAL}"                         # Location of generated ebuild package .ebuild file.
+#readonly KE_PATH_WORK_EBUILD_DISTFILES="${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_DISTFILES}"                         # Location of ebuild distfiles generation workdir.
+#readonly KE_PATH_WORK_EBUILD_DISTFILES_PATCHES="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_FOLDER_PATCHES}"         # Location of ebuild distfiles patches workdir.
+#readonly KE_PATH_WORK_BINPKGS="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/${KE_NAME_FOLDER_BINPKGS}" # Location of folder containing binpkg created with crossdev.
+
+# Work files location.
+readonly KE_PATH_EBUILD_FILE_SRC="${PATH_VAR_DB_REPOS_GENTOO}/${VAL_KERNEL_PACKAGE_BASE}/${KE_NAME_EBUILD_FILE_PACKAGE_SRC}" # Location of source ebuild file.
+readonly KE_PATH_EBUILD_FILE_DST="${KE_PATH_WORK_EBUILD}/${KE_NAME_EBUILD_FILE_PACKAGE_DST}"                         # Location of destination ebuild file.
+#readonly KE_PATH_EBUILD_FILE_DISTFILES_DIFFS="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_FILE_CONF_DIFFS}"                   # Location of destination ps3_defconfig_diffs file.
+#readonly KE_PATH_EBUILD_FILE_DISTFILES_DEFCONF="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_FILE_CONF_DEFCONF}"               # Location of destination ps3_gentoo_defconfig file.
+#readonly KE_PATH_EBUILD_FILE_DISTFILES_TAR="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_EBUILD_FILE_DISTFILES_TAR}"           # Location of destination distfiles tarball file.
+#readonly KE_PATH_EBUILD_FILE_MANIFEST="${KE_PATH_WORK_EBUILD_PACKAGE}/${KE_NAME_FILE_MANIFEST}"                              # Location of destination Manifest file.
 
 # Helper scripts.
 readonly KE_PATH_SCRIPTS="${KE_PATH_DATA}/${KE_NAME_FOLDER_SCRIPTS}"                             # Location of helper scripts folder for kernel-ebuild scripts set.
@@ -91,26 +99,18 @@ readonly KE_PATH_SCRIPT_APPLY_DIFFCONFIG="${KE_PATH_SCRIPTS}/apply-diffconfig.rb
 readonly KE_PATH_SCRIPT_MERGE_CONFIG="${KE_PATH_WORK_SRC_LINUX}/scripts/kconfig/merge_config.sh" # Location of linux script inside src workdir, that merges selected config files.
 readonly KE_PATH_SCRIPT_DIFFCONFIG="${KE_PATH_WORK_SRC_LINUX}/scripts/diffconfig"                # Location of linux script inside src workdir, that generates new diffconfig file.
 
-# Work files location.
-readonly KE_PATH_EBUILD_FILE_SRC="${PATH_VAR_DB_REPOS_GENTOO}/${VAL_KERNEL_PACKAGE_BASE}/${KE_NAME_EBUILD_FILE_PACKAGE_SRC}" # Location of source ebuild file.
-readonly KE_PATH_EBUILD_FILE_DST="${KE_PATH_WORK_EBUILD_PACKAGE}/${KE_NAME_EBUILD_FILE_PACKAGE_DST}"                         # Location of destination ebuild file.
-readonly KE_PATH_EBUILD_FILE_DISTFILES_DIFFS="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_FILE_CONF_DIFFS}"                   # Location of destination ps3_defconfig_diffs file.
-readonly KE_PATH_EBUILD_FILE_DISTFILES_DEFCONF="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_FILE_CONF_DEFCONF}"               # Location of destination ps3_gentoo_defconfig file.
-readonly KE_PATH_EBUILD_FILE_DISTFILES_TAR="${KE_PATH_WORK_EBUILD_DISTFILES}/${KE_NAME_EBUILD_FILE_DISTFILES_TAR}"           # Location of destination distfiles tarball file.
-readonly KE_PATH_EBUILD_FILE_MANIFEST="${KE_PATH_WORK_EBUILD_PACKAGE}/${KE_NAME_FILE_MANIFEST}"                              # Location of destination Manifest file.
-
 # List of files and directories compressed into distfiles tarball for overlay distfiles repository.
-readonly KE_LIST_DISTFILES=(
-    "${KE_NAME_FILE_CONF_DIFFS}"   # Not needed, but kept for tracking changes between versions.
-    "${KE_NAME_FILE_CONF_DEFCONF}" # Updated ps3_defconfig that will replace the original one.
-    "${KE_NAME_FOLDER_PATCHES}"    # PS3 specific patches to be applied to kernel. Snapshot created with ebuild.
-)
+#readonly KE_LIST_DISTFILES=(
+#    "${KE_NAME_FILE_CONF_DIFFS}"   # Not needed, but kept for tracking changes between versions.
+#    "${KE_NAME_FILE_CONF_DEFCONF}" # Updated ps3_defconfig that will replace the original one.
+#    "${KE_NAME_FOLDER_PATCHES}"    # PS3 specific patches to be applied to kernel. Snapshot created with ebuild.
+#)
 
 # Overlay locations.
-readonly KE_PATH_OVERLAY_EBUILDS="${PATH_OVERLAYS_PS3_GENTOO}/${VAL_KERNEL_PACKAGE_SPECIAL}"
-readonly KE_PATH_OVERLAY_DISTFILES="${PATH_OVERLAYS_PS3_GENTOO_DISTFILES}/${VAL_KERNEL_PACKAGE_SPECIAL}"
-readonly KE_PATH_OVERLAY_EBUILD_FILE_PACKAGE="${KE_PATH_OVERLAY_EBUILDS}/${CONF_KERNEL_PACKAGE_NAME_SPECIAL}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"
-readonly KE_PATH_OVERLAY_EBUILD_FILE_MANIFEST="${KE_PATH_OVERLAY_EBUILDS}/${KE_NAME_FILE_MANIFEST}"
+#readonly KE_PATH_OVERLAY_EBUILDS="${PATH_OVERLAYS_PS3_GENTOO}/${VAL_KERNEL_PACKAGE_SPECIAL}"
+#readonly KE_PATH_OVERLAY_DISTFILES="${PATH_OVERLAYS_PS3_GENTOO_DISTFILES}/${VAL_KERNEL_PACKAGE_SPECIAL}"
+#readonly KE_PATH_OVERLAY_EBUILD_FILE_PACKAGE="${KE_PATH_OVERLAY_EBUILDS}/${CONF_KERNEL_PACKAGE_NAME_SPECIAL}-${KE_PACKAGE_VERSION_SELECTED}.ebuild"
+#readonly KE_PATH_OVERLAY_EBUILD_FILE_MANIFEST="${KE_PATH_OVERLAY_EBUILDS}/${KE_NAME_FILE_MANIFEST}"
 
 # Crossdev locations.
 readonly KE_PATH_CROSSDEV_BINPKGS_KERNEL_PACKAGE="${PATH_CROSSDEV_BINPKGS}/${VAL_KERNEL_PACKAGE_SPECIAL}"

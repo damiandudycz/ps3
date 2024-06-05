@@ -23,7 +23,7 @@
 -		https://raw.githubusercontent.com/projg2/fedora-kernel-config-for-gentoo/${CONFIG_VER}/kernel-i686-fedora.config
 -			-> kernel-i686-fedora.config.${CONFIG_VER}
 -	)
-+	https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-overlay.distfiles/main/sys-kernel/gentoo-kernel-ps3/gentoo-kernel-ps3-files-${PVR}.tar.xz
++	https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-overlay.distfiles/main/sys-kernel/gentoo-kernel-ps3/gentoo-kernel-ps3-${PVR}.tar.xz
  "
 @@ -49,8 +34,3 @@
  IUSE="debug hardened"

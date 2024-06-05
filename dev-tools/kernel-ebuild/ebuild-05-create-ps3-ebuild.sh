@@ -16,31 +16,22 @@ register_failure_handler 'rm -rf "${PATH_WORK_EBUILD}";'
 empty_directory "${KE_PATH_WORK_EBUILD}"
 
 # Create local working directories..
-mkdir -p "${KE_PATH_WORK_EBUILD_PACKAGE}"
-mkdir -p "${KE_PATH_WORK_EBUILD_DISTFILES}"
-mkdir -p "${KE_PATH_WORK_EBUILD_DISTFILES_PATCHES}"
+mkdir -p "${KE_PATH_WORK_EBUILD}"
 
-# Geather files.
-cp -f "${KE_PATH_PATCHES_SELECTED}"/*.patch "${KE_PATH_WORK_EBUILD_DISTFILES_PATCHES}"/
-cp -f "${KE_PATH_CONFIG_DIFFS_SELECTED}" "${KE_PATH_EBUILD_FILE_DISTFILES_DIFFS}"
-cp -f "${KE_PATH_CONFIG_DEFCONF_SELECTED}" "${KE_PATH_EBUILD_FILE_DISTFILES_DEFCONF}"
-
-# Create distfiles tarball.
-tar --sort=name --mtime="" --owner=0 --group=0 --numeric-owner --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
-    -caf "${KE_PATH_EBUILD_FILE_DISTFILES_TAR}" -C "${KE_PATH_WORK_EBUILD_DISTFILES}" "${KE_LIST_DISTFILES[@]}"
-rm -rf "${KE_PATH_WORK_EBUILD_DISTFILES_PATCHES}"
-rm -rf "${KE_PATH_EBUILD_FILE_DISTFILES_DIFFS}"
-rm -rf "${KE_PATH_EBUILD_FILE_DISTFILES_DEFCONF}"
-
-# Create patched ebuild file and apply patches
+# Create ebuild file and apply patches.
 cp "${KE_PATH_EBUILD_FILE_SRC}" "${KE_PATH_EBUILD_FILE_DST}"
 for PATCH in "${KE_PATH_EBUILD_PATCHES}"/*.patch; do
     echo "Apply patch ${PATCH}:"
     patch --batch --force -p0 -i "${PATCH}" "${KE_PATH_EBUILD_FILE_DST}"
 done
 
-# Unmask if selected
+# Unmask if selected.
 if [[ ${KE_FLAG_UNMASK} ]]; then
     echo "Unmasking ebuild ${KE_PATH_EBUILD_FILE_DST}"
     sed -i "s/\(KEYWORDS=.*\)~${CONF_TARGET_ARCHITECTURE}/\1${CONF_TARGET_ARCHITECTURE}/" "${KE_PATH_EBUILD_FILE_DST}"
 fi
+
+# Create package
+KE_COMMAND="--category ${VAL_KERNEL_PACKAGE_SPECIAL} --ebuild ${KE_PATH_EBUILD_FILE_DST} --version ${KE_PACKAGE_VERSION_SELECTED} --distfile ${KE_PATH_PATCHES_SELECTED} --distfile ${KE_PATH_CONFIG_DIFFS_SELECTED} --distfile ${KE_PATH_CONFIG_DEFCONF_SELECTED}"
+[[ ! -z "${KE_FLAG_SAVE}" ]] && KE_COMMAND="${KE_COMMAND} --save"
+source ${PATH_OVERLAY_SCRIPT_CREATE_PACKAGE} ${KE_COMMAND}

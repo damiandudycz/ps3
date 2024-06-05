@@ -26,25 +26,6 @@ else
     exit 0
 fi
 
-# Generate new files.
-empty_directory "${PATH_WORK_PS3_INSTALLER}"
-
-# Copy distfiles to tmp.
-cp "${PI_PATH_EBUILD_SRC}" "${PI_PATH_EBUILD_DST}"
-cp "${PI_PATH_CONFIG_SRC}" "${PI_PATH_CONFIG_DST}"
-cp "${PI_PATH_INSTALLER_SRC}" "${PI_PATH_INSTALLER_DST}"
-
-tar --sort=name \
-    --mtime="" \
-    --owner=0 --group=0 --numeric-owner \
-    --pax-option=exthdr.name=%d/PaxHeaders/%f,delete=atime,delete=ctime \
-    -caf "${PI_PATH_DISTFILES_DST}" \
-    -C "${PATH_WORK_PS3_INSTALLER}" "${PI_CONF_LIST_DISTFILES_TAR_FILES[@]}"
-
-# TODO: Build new manifest and merge with existing, like in kernel tools.
-
-# Copy ebuild and distfiles to overlay.
-cp "${PI_PATH_EBUILD_DST}" "${PI_PATH_EBUILD_OVERLAY}"
-cp "${PI_PATH_DISTFILES_DST}" "${PI_PATH_DISTFILES_OVERLAY}"
-
-echo "${PI_CONF_PACKAGE}-${PI_VAL_OVERLAY_EBUILD_NEW_VERSION} saved in overlay"
+# Create package
+KE_COMMAND="--category ${PI_CONF_PACKAGE_GROUP} --ebuild ${PI_PATH_EBUILD_SRC} --version-increment --distfile ${PI_PATH_CONFIG_SRC} --distfile ${PI_PATH_INSTALLER_SRC} --save"
+source ${PATH_OVERLAY_SCRIPT_CREATE_PACKAGE} ${KE_COMMAND}

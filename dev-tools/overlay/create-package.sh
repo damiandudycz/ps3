@@ -13,8 +13,6 @@ register_usage "$1 <--ebuild <Path>> <--version <Version> | --version-increment>
 # - files (stored in overlay files directory)
 # - distdiles (stored in overlay.distfiles as tar.xz)
 
-empty_directory "${PATH_WORK_OVERLAY}"
-
 declare -a OV_FILES;
 declare -a OV_DISTFILES;
 
@@ -77,7 +75,10 @@ if [[ ! -z "${OV_FILES}" ]]; then
     echo "Collecting files"
     mkdir -p "${OV_PATH_WORK_EBUILD_FILES}"
     for file in "${OV_FILES[@]}"; do
-        OV_PATH_WORK_FILE="${OV_PATH_WORK_EBUILD_FILES}/$(basename "${file}" .${file##*.})-${OV_VAL_EBUILD_VERSION_SELECTED}.${file##*.}"
+        filebasename=$(basename "${file}")
+        fname="${filebasename%.*}"
+        [[ "${filebasename}" == *.* ]] && fext=".${filebasename##*.}" || fext=""
+        OV_PATH_WORK_FILE="${OV_PATH_WORK_EBUILD_FILES}/${fname}-${OV_VAL_EBUILD_VERSION_SELECTED}${fext}"
         echo " - $file"
         cp -rf "${file}" "${OV_PATH_WORK_FILE}"
     done
@@ -101,11 +102,25 @@ if [[ ! -z "${OV_DISTFILES}" ]]; then
         -caf "${OV_PATH_WORK_DISTFILES_TAR}" \
         -C "${OV_PATH_WORK_DISTFILES_DIR}" "${FILES_TO_COMPRESS[@]}"
     # Clean files after compressing
-    find "${OV_PATH_WORK_DISTFILES_DIR}" -mindepth 1 ! -name "${OV_VAL_DISTFILE_NAME}" -exec rm -rf {} +
+    cd "${OV_PATH_WORK_DISTFILES_DIR}"
+    for file in "${FILES_TO_COMPRESS[@]}"; do
+        rm -rf "$file"
+    done
 fi
 
 echo "Building manifest"
+rm -f "${OV_PATH_WORK_EBUILD_MANIFEST}"
+FILES_BEFORE=("${OV_PATH_WORK_DISTFILES_DIR}"/* "${OV_PATH_WORK_DISTFILES_DIR}"/.*) # Remember files in distfiles folder before starting, to cleanup later.
 DISTDIR="${OV_PATH_WORK_DISTFILES_DIR}" ebuild "${OV_PATH_WORK_EBUILD}" manifest clean
+# Cleanup other downloaded distfiles.
+FILES_AFTER=("${OV_PATH_WORK_DISTFILES_DIR}"/* "${OV_PATH_WORK_DISTFILES_DIR}"/.*)
+for file in "${FILES_AFTER[@]}"; do
+    filebasename=$(basename "${file}")
+    if [[ "${filebasename}" != "." ]] && [[ "${filebasename}" != ".." ]] && [[ ! " ${FILES_BEFORE[@]} " =~ " ${file} " ]]; then
+        echo "- Cleaning distfile: ${file}"
+        rm -rf "${file}"
+    fi
+done
 
 echo "Package ${OV_VAL_DISTFILE_NAME} created successfully."
 
@@ -117,11 +132,15 @@ if [[ ! -z "${OV_FLAG_SAVE}" ]]; then
 
     # Copy distfiles, files and ebuild.
     mkdir -p "${OV_PATH_OVERLAY_EBUILD_DIR}"
-    mkdir -p "${OV_PATH_OVERLAY_EBUILD_FILES}"
-    mkdir -p "${OV_PATH_OVERLAY_DISTFILES_DIR}"
     cp -rf "${OV_PATH_WORK_EBUILD}" "${OV_PATH_OVERLAY_EBUILD}"
-    cp -rf "${OV_PATH_WORK_EBUILD_FILES}"/* "${OV_PATH_OVERLAY_EBUILD_FILES}"/
-    cp -rf "${OV_PATH_WORK_DISTFILES_TAR}" "${OV_PATH_OVERLAY_DISTFILES_TAR}"
+    if [[ -d "${OV_PATH_WORK_EBUILD_FILES}" ]]; then
+        mkdir -p "${OV_PATH_OVERLAY_EBUILD_FILES}"
+        cp -rf "${OV_PATH_WORK_EBUILD_FILES}"/* "${OV_PATH_OVERLAY_EBUILD_FILES}"/
+    fi
+    if [[ -f "${OV_PATH_WORK_DISTFILES_TAR}" ]]; then
+        mkdir -p "${OV_PATH_OVERLAY_DISTFILES_DIR}"
+        cp -rf "${OV_PATH_WORK_DISTFILES_TAR}" "${OV_PATH_OVERLAY_DISTFILES_TAR}"
+    fi
 
     # Merge new manifest to overlay manifest.
     if [[ -f "${OV_PATH_OVERLAY_EBUILD_MANIFEST}" ]]; then

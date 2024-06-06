@@ -56,7 +56,7 @@ readonly CONF_KERNEL_PACKAGE_AUTOUNMASK=false # Should use ~ppc64 version of ker
 readonly URL_GIRHUB_RAW_BASE="https://raw.githubusercontent.com/damiandudycz"
 readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_BASE}/ps3"
 readonly URL_GITHUB_RAW_AUTOBUILDS="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-autobuilds"
-readonly URL_GITHUB_RAW_BINHOSTS="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-binhosts"
+readonly URL_GITHUB_RAW_BINHOSTS="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-binhosts/" # Keep / at the end
 readonly URL_GITHUB_RAW_OVERLAY="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-overlay"
 readonly URL_RELEASE_GENTOO="https://gentoo.osuosl.org/releases/\${CONF_TARGET_ARCHITECTURE_FAMILY}/autobuilds"
 readonly URL_STAGE3_INFO="\${URL_RELEASE_GENTOO}/latest-stage3-\${CONF_TARGET_ARCHITECTURE}-openrc.txt"
@@ -84,6 +84,7 @@ readonly PATH_DEV_TOOLS_ENVIRONMENT="\${PATH_DEV_TOOLS}/environment"
 readonly PATH_DEV_TOOLS_KERNEL_EBUILD="\${PATH_DEV_TOOLS}/kernel-ebuild"
 readonly PATH_DEV_TOOLS_PS3_INSTALLER="\${PATH_DEV_TOOLS}/ps3-installer"
 readonly PATH_DEV_TOOLS_RELEASE="\${PATH_DEV_TOOLS}/release"
+readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng" # Might replace release tools
 readonly PATH_DEV_TOOLS_OVERLAY="\${PATH_DEV_TOOLS}/overlay"
 
 # External modules.
@@ -123,6 +124,7 @@ readonly PATH_WORK_ENVIRONMENT="\${PATH_WORK}/environment"
 readonly PATH_WORK_KERNEL_EBUILD="\${PATH_WORK}/kernel_ebuild"
 readonly PATH_WORK_PS3_INSTALLER="\${PATH_WORK}/ps3_installer"
 readonly PATH_WORK_RELEASE="\${PATH_WORK}/release"
+readonly PATH_WORK_RELENG="\${PATH_WORK}/releng" # Check if needed
 readonly PATH_WORK_OVERLAY="\${PATH_WORK}/overlay"
 
 # DEV Tools additional environments.

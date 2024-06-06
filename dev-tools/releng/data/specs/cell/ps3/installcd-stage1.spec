@@ -3,7 +3,7 @@ version_stamp: @TIMESTAMP@
 source_subpath: default/stage3-cell-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
-portage_confdir: @PORTAGE_CONFDIR@
+portage_confdir: @REPO_DIR@/releases/portage/isos@PORTAGE_CONFDIR_POSTFIX@
 pkgcache_path: @PKGCACHE_PATH@
 @INTERPRETER@
 

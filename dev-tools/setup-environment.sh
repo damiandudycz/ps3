@@ -21,7 +21,7 @@ cat <<EOF > "${PATH_ENV_FILE}"
 
 # Project configuration ------------------------------------------------------------------------------------------------------------
 readonly CONF_PROJECT_NAME="PS3_Gentoo"
-readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev)
+readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev sys-process/time net-dns/bind net-dns/bind-tools)
 readonly CONF_TARGET_ARCHITECTURE="ppc64"
 readonly CONF_TARGET_ARCHITECTURE_FAMILY="ppc"
 readonly CONF_TARGET_ARCHITECTURE_LONG="powerpc64"
@@ -33,8 +33,8 @@ readonly CONF_GIT_FILE_SIZE_LIMIT="100M"
 readonly CONF_GIT_USER="Damian Dudycz"
 readonly CONF_GIT_EMAIL="damiandudycz@yahoo.com"
 readonly CONF_GIT_EDITOR="nano"
-readonly CONF_RELEASE_TYPES=(default) # Supported release configurations, eq. default, lto, clang, etc.
-readonly CONF_RELEASE_TYPE_DFAULT="default"
+readonly CONF_RELEASE_TYPES=("23.0-default") # Supported release configurations, eq. default, lto, clang, etc.
+readonly CONF_RELEASE_TYPE_DFAULT="23.0-default"
 readonly CONF_QEMU_CONFIG=":ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:"
 readonly CONF_PORTAGE_FEATURES="getbinpkg"
 readonly CONF_QEMU_SECTION_START="# FOR CATALYST QEMU ---------- START"

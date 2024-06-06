@@ -2,7 +2,7 @@
 version_stamp: openrc-@TIMESTAMP@
 source_subpath: default/stage1-cell-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
-portage_confdir: @PORTAGE_CONFDIR@-cell
+portage_confdir: @REPO_DIR@/releases/portage/stages@PORTAGE_CONFDIR_POSTFIX@
 pkgcache_path: @PKGCACHE_PATH@
 @INTERPRETER@
 

@@ -59,9 +59,9 @@ readonly CONF_KERNEL_PACKAGE_AUTOUNMASK=false # Should use ~ppc64 version of ker
 # URLs.
 readonly URL_GIRHUB_RAW_BASE="https://raw.githubusercontent.com/damiandudycz"
 readonly URL_GITHUB_RAW_PS3="\${URL_GIRHUB_RAW_BASE}/ps3"
-readonly URL_GITHUB_RAW_AUTOBUILDS="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-autobuilds"
-readonly URL_GITHUB_RAW_BINHOSTS="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-binhosts/" # Keep / at the end
+readonly URL_GITHUB_RAW_RELEASES="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-releases"
 readonly URL_GITHUB_RAW_OVERLAY="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-overlay"
+readonly URL_GITHUB_RAW_OVERLAY_DISTFILES="\${URL_GIRHUB_RAW_BASE}/ps3-gentoo-overlay.distfiles"
 readonly URL_RELEASE_GENTOO="https://gentoo.osuosl.org/releases/\${CONF_TARGET_ARCHITECTURE_FAMILY}/autobuilds"
 readonly URL_STAGE3_INFO="\${URL_RELEASE_GENTOO}/latest-stage3-\${CONF_TARGET_ARCHITECTURE}-openrc.txt"
 # ----------------------------------------------------------------------------------------------------------------------------------
@@ -76,26 +76,23 @@ readonly VAL_SCRIPT_NAME_CALLED="$(basename $0)" # Name of script that was calle
 readonly PATH_ROOT="${PATH_ROOT_INITIAL}"
 
 # Main patches at the root of repository.
-readonly PATH_AUTOBUILDS="\${PATH_ROOT}/autobuilds"
-readonly PATH_BINHOSTS="\${PATH_ROOT}/binhosts"
 readonly PATH_DEV_TOOLS="\${PATH_ROOT}/dev-tools"
 readonly PATH_OVERLAYS="\${PATH_ROOT}/overlays"
+readonly PATH_RELEASES="\${PATH_ROOT}/releases"
 
 # Dev tools patchs.
-readonly PATH_DEV_TOOLS_BINHOST="\${PATH_DEV_TOOLS}/binhost"
-readonly PATH_DEV_TOOLS_DISTCC_DOCKER="\${PATH_DEV_TOOLS}/distcc-docker"
 readonly PATH_DEV_TOOLS_ENVIRONMENT="\${PATH_DEV_TOOLS}/environment"
-readonly PATH_DEV_TOOLS_KERNEL_EBUILD="\${PATH_DEV_TOOLS}/kernel-ebuild"
 readonly PATH_DEV_TOOLS_PS3_INSTALLER="\${PATH_DEV_TOOLS}/ps3-installer"
-readonly PATH_DEV_TOOLS_RELEASE="\${PATH_DEV_TOOLS}/release"
-readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng" # Might replace release tools
+readonly PATH_DEV_TOOLS_KERNEL_EBUILD="\${PATH_DEV_TOOLS}/kernel-ebuild"
+readonly PATH_DEV_TOOLS_DISTCC_DOCKER="\${PATH_DEV_TOOLS}/distcc-docker"
+readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng"
 readonly PATH_DEV_TOOLS_OVERLAY="\${PATH_DEV_TOOLS}/overlay"
+readonly PATH_DEV_TOOLS_BINHOST="\${PATH_DEV_TOOLS}/binhost"
 
 # External modules.
-readonly PATH_AUTOBUILDS_PS3_GENTOO="\${PATH_AUTOBUILDS}/ps3-gentoo-autobuilds"              # Autobuilds.
-readonly PATH_BINHOSTS_PS3_GENTOO="\${PATH_BINHOSTS}/ps3-gentoo-binhosts"                    # Binhosts.
 readonly PATH_OVERLAYS_PS3_GENTOO="\${PATH_OVERLAYS}/ps3-gentoo-overlay"                     # Overlays.
 readonly PATH_OVERLAYS_PS3_GENTOO_DISTFILES="\${PATH_OVERLAYS}/ps3-gentoo-overlay.distfiles" # Distfiles.
+readonly PATH_RELEASES_PS3_GENTOO="\${PATH_OVERLAYS}/ps3-gentoo-releases"                    # RELEASES.
 
 # Main system directories elements.
 readonly PATH_ETC="/etc"
@@ -122,20 +119,18 @@ readonly PATH_ETC_PORTAGE_REPOS_CONF="\${PATH_ETC_PORTAGE}/repos.conf"
 
 # DEV Tools work directories.
 readonly PATH_WORK="\${PATH_VAR_TMP}/\${CONF_PROJECT_NAME}"
-readonly PATH_WORK_BINHOST="\${PATH_WORK}/binhost"
 readonly PATH_WORK_DISTCC_DOCKER="\${PATH_WORK}/distcc_docker"
 readonly PATH_WORK_ENVIRONMENT="\${PATH_WORK}/environment"
 readonly PATH_WORK_KERNEL_EBUILD="\${PATH_WORK}/kernel_ebuild"
 readonly PATH_WORK_PS3_INSTALLER="\${PATH_WORK}/ps3_installer"
-readonly PATH_WORK_RELEASE="\${PATH_WORK}/release"
-readonly PATH_WORK_RELENG="\${PATH_WORK}/releng" # Check if needed
+readonly PATH_WORK_RELENG="\${PATH_WORK}/releng"
 readonly PATH_WORK_OVERLAY="\${PATH_WORK}/overlay"
+readonly PATH_WORK_BINHOST="\${PATH_WORK}/binhost"
 
 # DEV Tools additional environments.
-readonly PATH_EXTRA_ENV_KERNEL_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/env.sh"
-readonly PATH_EXTRA_ENV_RELEASE="\${PATH_DEV_TOOLS_RELEASE}/env.sh"
-readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 readonly PATH_EXTRA_ENV_PS3_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/env.sh"
+readonly PATH_EXTRA_ENV_KERNEL_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/env.sh"
+readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 
 # Catalyst related paths.
 readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
@@ -187,10 +182,6 @@ readonly PATH_RELENG_PORTAGE_CONFDIR_STAGES="\${PATH_RELENG}/releases/portage/st
 readonly PATH_RELENG_PORTAGE_CONFDIR_ISOS="\${PATH_RELENG}/releases/portage/isos\${VAL_QEMU_RELENG_POSTFIX}"
 readonly PATH_RELENG_DATA="\${PATH_DEV_TOOLS_RELENG}/data"
 readonly PATH_RELENG_DATA_SPECS="\${PATH_RELENG_DATA}/specs"
-
-# Release.
-readonly PATH_RELEASE_DATA="\${PATH_DEV_TOOLS_RELEASE}/data"
-readonly PATH_RELEASE_DATA_SPEC="\${PATH_RELEASE_DATA}/spec"
 
 # Paths to scripts.
 # Kernel ebuild:

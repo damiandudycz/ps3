@@ -28,8 +28,8 @@ mkdir -p "${PATH_CATALYST_STAGES}"
 sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' "${PATH_CATALYST_CONF}"
 update_config_assign_space jobs "${CONF_CATALYST_JOBS}" "${PATH_CATALYST_CONF}"
 update_config_assign_space load-average "${CONF_CATALYST_LOAD}" "${PATH_CATALYST_CONF}"
-update_config_assign_space binhost "\"${URL_GITHUB_RAW_BINHOSTS}\"" "${PATH_CATALYST_CONF}"
 update_config_assign_space var_tmpfs_portage "${CONF_CATALYST_TMPFS}" "${PATH_CATALYST_CONF}"
+#update_config_assign_space binhost "\"${URL_GITHUB_RAW_BINHOSTS}\"" "${PATH_CATALYST_CONF}"
 
 # Configure CELL settings for Catalyst
 readonly AWK_PPC_TOML_EXPR='

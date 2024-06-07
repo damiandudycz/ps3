@@ -1,7 +1,3 @@
-[submodule "binhosts/ps3-gentoo-binhosts"]
-	path = binhosts/ps3-gentoo-binhosts
-	url = git@github.com:damiandudycz/ps3-gentoo-binhosts.git
-	branch = main
 [submodule "overlays/ps3-gentoo-overlay"]
 	path = overlays/ps3-gentoo-overlay
 	url = git@github.com:damiandudycz/ps3-gentoo-overlay.git
@@ -9,8 +5,4 @@
 [submodule "overlays/ps3-gentoo-overlay.distfiles"]
 	path = overlays/ps3-gentoo-overlay.distfiles
 	url = git@github.com:damiandudycz/ps3-gentoo-overlay.distfiles.git
-	branch = main
-[submodule "autobuilds/ps3-gentoo-autobuilds"]
-	path = autobuilds/ps3-gentoo-autobuilds
-	url = git@github.com:damiandudycz/ps3-gentoo-autobuilds.git
 	branch = main

@@ -169,8 +169,7 @@ readonly PATH_CROSSDEV_BINPKGS="\${PATH_CROSSDEV_INSTALLATION}/\${PATH_VAR_CACHE
 
 # Other.
 readonly PATH_ENV_HELPER_FUNCTIONS="\${PATH_DEV_TOOLS_ENVIRONMENT}/env-helper-functions.sh"
-readonly PATH_GIT_HOOK_AUTOBUILDS="\${PATH_ROOT}/.git/modules/autobuilds/ps3-gentoo-autobuilds/hooks/pre-commit" # TODO: Use variables for patch
-readonly PATH_GIT_HOOK_BINHOSTS="\${PATH_ROOT}/.git/modules/binhosts/ps3-gentoo-binhosts/hooks/pre-commit"
+readonly PATH_GIT_HOOK_RELEASES="\${PATH_ROOT}/.git/modules/releases/hooks/pre-commit"
 readonly PATH_PORTAGE_TIMESTAMP_CHK="\${PATH_VAR_DB_REPOS_GENTOO}/metadata/timestamp.chk"
 
 # Kernel.

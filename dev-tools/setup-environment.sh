@@ -251,5 +251,5 @@ for SCRIPT in ${SETUP_SCRIPTS[@]}; do
     echo_color ${COLOR_TURQUOISE} "[ ${SCRIPT} ]"
     cd $(dirname "${SCRIPT}")
     SCRIPT_NAME=$(basename "${SCRIPT}")
-#    source "${SCRIPT_NAME}"
+    source "${SCRIPT_NAME}"
 done

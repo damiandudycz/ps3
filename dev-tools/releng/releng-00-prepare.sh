@@ -50,7 +50,7 @@ sed -i "s|@LIVECD_FSSCRIPT@|${RL_PATH_LIVECD_FSSCRIPT_DST}|g" "${RL_PATH_STAGE2_
 sed -i "s|@REPOS@|${PATH_OVERLAYS_PS3_GENTOO}|g" "${RL_PATH_STAGE1_INSTALLCD_DST}" "${RL_PATH_STAGE2_INSTALLCD_DST}"
 # TODO: Perhaps stage1 should use RL_VAL_PORTAGE_CONFDIR_POSTFIX_PPC64 (version without -cell environment additions)
 sed -i "s|@PORTAGE_CONFDIR_POSTFIX@|${RL_VAL_PORTAGE_CONFDIR_POSTFIX_CELL}|g" "${RL_PATH_STAGE1_DST}" "${RL_PATH_STAGE3_DST}" "${RL_PATH_STAGE1_INSTALLCD_DST}" "${RL_PATH_STAGE2_INSTALLCD_DST}"
-sed -i "s|@PKGCACHE_PATH@|${PATH_RELENG_PKGCACHE}|g" "${RE_PATH_STAGE1}" "${RE_PATH_STAGE3}" "${RE_PATH_STAGE1_INSTALLCD}" "${RE_PATH_STAGE2_INSTALLCD}"
+sed -i "s|@PKGCACHE_PATH@|${PATH_RELENG_PKGCACHE}|g" "${RL_PATH_STAGE1_DST}" "${RL_PATH_STAGE3_DST}" "${RL_PATH_STAGE1_INSTALLCD_DST}" "${RL_PATH_STAGE2_INSTALLCD_DST}"
 
 # Copy everything from distfiles overlay to cache, so that it's available during emerge even if packages were not yet uploaded to git.
 # TOOD: Verify if this works with catalyst-auto, as it seems to be sandboxed from the system.

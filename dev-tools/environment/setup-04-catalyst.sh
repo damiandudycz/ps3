@@ -46,7 +46,7 @@ BEGIN { inside_section = 0 }
         if ($0 ~ /^COMMON_FLAGS/) {
             print "COMMON_FLAGS = \"" common_flags "\""
         } else if ($0 ~ /^CHOST/) {
-            print "CHOST = [ \"" chost_value "\" ]"
+            print "CHOST = \"" chost_value "\""
         } else if ($0 ~ /^USE/) {
             print "USE = [ " use_flags " ]"
         } else {

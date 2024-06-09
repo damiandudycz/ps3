@@ -22,6 +22,9 @@ cat <<EOF > "${PATH_ENV_FILE}"
 # Project configuration ------------------------------------------------------------------------------------------------------------
 readonly CONF_PROJECT_NAME="PS3_Gentoo"
 readonly CONF_PROJECT_DEPENDENCIES=(gentoolkit ruby pkgdev sys-process/time net-dns/bind net-dns/bind-tools)
+
+readonly CONF_PORTAGE_FEATURES="getbinpkg"
+
 readonly CONF_TARGET_ARCHITECTURE="ppc64"
 readonly CONF_TARGET_ARCHITECTURE_FAMILY="ppc"
 readonly CONF_TARGET_ARCHITECTURE_LONG="powerpc64"
@@ -29,28 +32,34 @@ readonly CONF_TARGET_SUBARCHITECTURE="cell"
 readonly CONF_TARGET_KERNEL_TYPE="linux"
 readonly CONF_TARGET_TOOLCHAIN="gnu"
 readonly CONF_TARGET_COMMON_FLAGS="-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -mno-string -mno-update -mno-multiple"
+readonly CONF_TARGET_CHOST="powerpc64-unknown-linux-gnu"
+
 readonly CONF_GIT_FILE_SIZE_LIMIT="100M"
 readonly CONF_GIT_USER="Damian Dudycz"
 readonly CONF_GIT_EMAIL="damiandudycz@yahoo.com"
 readonly CONF_GIT_EDITOR="nano"
+
 readonly CONF_RELEASE_TYPES=("23.0-default") # Supported release configurations, eq. default, lto, clang, etc.
 readonly CONF_RELEASE_TYPE_DFAULT="23.0-default"
 readonly CONF_RELENG_EMAIL_TO="damiandudycz@yahoo.com"
 readonly CONF_RELENG_EMAIL_FROM="damiandudycz@yahoo.com"
 readonly CONF_RELENG_EMAIL_PREPEND="[cell-auto]"
+readonly CONF_RELENG_USE_FLAGS='"altivec", "ibm", "ps3"'
+
 readonly CONF_QEMU_CONFIG=":ppc64:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:"
-readonly CONF_PORTAGE_FEATURES="getbinpkg"
 readonly CONF_QEMU_SECTION_START="# FOR CATALYST QEMU ---------- START"
 readonly CONF_QEMU_SECTION_END="# FOR CATALYST QEMU ---------- END"
+
 readonly CONF_CATALYST_JOBS="8"
 readonly CONF_CATALYST_LOAD="12.0"
 readonly CONF_CATALYST_TMPFS="6" # GBs of TMPFS partition
-readonly CONF_RELENG_USE_FLAGS='"altivec", "ibm", "ps3"'
+
 readonly CONF_CROSSDEV_ABI="altivec"
 readonly CONF_CROSSDEV_L="2.37-r7"
 readonly CONF_CROSSDEV_K="6.9"
 readonly CONF_CROSSDEV_G="13.2.1_p20240113-r1"
 readonly CONF_CROSSDEV_B="2.41-r3"
+
 readonly CONF_KERNEL_PACKAGE_GROUP="sys-kernel"
 readonly CONF_KERNEL_PACKAGE_NAME_BASE="gentoo-kernel" # Name of raw gentoo kernel package
 readonly CONF_KERNEL_PACKAGE_NAME_SPECIAL="gentoo-kernel-ps3" # Name of gentoo kernel PS3 package
@@ -145,7 +154,7 @@ readonly PATH_CATALYST_CONF="\${PATH_CATALYST_ETC}/catalyst.conf"
 readonly PATH_CATALYST_PPC_TOML="\${PATH_CATALYST_USR}/arch/ppc.toml"
 readonly PATH_CATALYST_PATCHES_SRC="\${PATH_DEV_TOOLS_ENVIRONMENT}/data/catalyst-patches"
 readonly PATH_CATALYST_PATCHES_DST="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
-readonly VAL_CATALYST_CHOST="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
+readonly VAL_CATALYST_CHOST="\${CONF_TARGET_CHOST}"
 
 # Binhost.
 readonly PATH_BINHOSTS_PS3_GENTOO_DEFAULT="\${PATH_BINHOSTS_PS3_GENTOO}/\${CONF_RELEASE_TYPE_DFAULT}"
@@ -164,7 +173,7 @@ readonly VAL_QEMU_RELENG_POSTFIX=\$([[ \${VAL_QEMU_IS_NEEDED} ]] && echo "-qemu"
 readonly VAL_QEMU_REGISTRATION_EXPR="\${CONF_QEMU_CONFIG}\${PATH_QEMU_INTERPRETER}:"
 
 # Crossdev.
-readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_ARCHITECTURE_LONG}-\${CONF_TARGET_SUBARCHITECTURE}-\${CONF_TARGET_KERNEL_TYPE}-\${CONF_TARGET_TOOLCHAIN}"
+readonly VAL_CROSSDEV_TARGET="\${CONF_TARGET_CHOST}"
 readonly PATH_CROSSDEV_USR="\${PATH_USR_SHARE}/crossdev"
 readonly PATH_CROSSDEV_INSTALLATION="\${PATH_USR}/\${VAL_CROSSDEV_TARGET}"
 readonly PATH_CROSSDEV_BINPKGS="\${PATH_CROSSDEV_INSTALLATION}/\${PATH_VAR_CACHE}/binpkgs"

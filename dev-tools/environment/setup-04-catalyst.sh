@@ -29,7 +29,7 @@ sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' "${PATH_CATALYST_CONF}"
 update_config_assign_space jobs "${CONF_CATALYST_JOBS}" "${PATH_CATALYST_CONF}"
 update_config_assign_space load-average "${CONF_CATALYST_LOAD}" "${PATH_CATALYST_CONF}"
 update_config_assign_space var_tmpfs_portage "${CONF_CATALYST_TMPFS}" "${PATH_CATALYST_CONF}"
-#update_config_assign_space binhost "\"${URL_GITHUB_RAW_BINHOSTS}\"" "${PATH_CATALYST_CONF}"
+update_config_assign_space binhost "\"${URL_GITHUB_RAW_RELEASES}/\"" "${PATH_CATALYST_CONF}"
 
 # Configure CELL settings for Catalyst
 readonly AWK_PPC_TOML_EXPR='
@@ -58,5 +58,5 @@ BEGIN { inside_section = 0 }
 }
 '
 readonly TEMP_FILE_TOML=$(mktemp)
-awk -v common_flags="${CONF_TARGET_COMMON_FLAGS}" -v use_flags="${CONF_RELENG_USE_FLAGS}" -v chost_value="${VAL_CATALYST_CHOST}" "${AWK_PPC_TOML_EXPR}" "${PATH_CATALYST_PPC_TOML}" > "${TEMP_FILE_TOML}"
+awk -v common_flags="${CONF_TARGET_COMMON_FLAGS}" -v use_flags="${CONF_RELEASE_USE_FLAGS}" -v chost_value="${CONF_CATALYST_CHOST}" "${AWK_PPC_TOML_EXPR}" "${PATH_CATALYST_PPC_TOML}" > "${TEMP_FILE_TOML}"
 mv "${TEMP_FILE_TOML}" "${PATH_CATALYST_PPC_TOML}"

@@ -94,7 +94,7 @@ add_line_if_not_exists() {
 unmask_package() {
     local PACKAGE="$1"
     local KEYWORDS="$2"
-    [[ -z "${KEYWORDS}" ]] && KEYWORDS="~${VAL_HOST_ARCHITECTURE_PORTAGE}" # If keywords not specified, unmask for current host architecture.
+    [[ -z "${KEYWORDS}" ]] && KEYWORDS="~${CONF_HOST_ARCH_PORTAGE}" # If keywords not specified, unmask for current host architecture.
     local UNMASK_PATH="${PATH_ETC_PORTAGE_PACKAGE_ACCEPT_KEYWORDS}/${CONF_PROJECT_NAME}"
     add_line_if_not_exists "${PACKAGE} ${KEYWORDS}" "${UNMASK_PATH}"
 }

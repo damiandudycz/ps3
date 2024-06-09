@@ -45,6 +45,8 @@ BEGIN { inside_section = 0 }
     if (inside_section == 1) {
         if ($0 ~ /^COMMON_FLAGS/) {
             print "COMMON_FLAGS = \"" common_flags "\""
+        } else if ($0 ~ /^CHOST/) {
+            print "CHOST = [ \"" chost_value "\" ]"
         } else if ($0 ~ /^USE/) {
             print "USE = [ " use_flags " ]"
         } else {
@@ -56,5 +58,5 @@ BEGIN { inside_section = 0 }
 }
 '
 readonly TEMP_FILE_TOML=$(mktemp)
-awk -v common_flags="${CONF_TARGET_COMMON_FLAGS}" -v use_flags="${CONF_RELENG_USE_FLAGS}" "${AWK_PPC_TOML_EXPR}" "${PATH_CATALYST_PPC_TOML}" > "${TEMP_FILE_TOML}"
+awk -v common_flags="${CONF_TARGET_COMMON_FLAGS}" -v use_flags="${CONF_RELENG_USE_FLAGS}" -v chost_value="${VAL_CATALYST_CHOST}" "${AWK_PPC_TOML_EXPR}" "${PATH_CATALYST_PPC_TOML}" > "${TEMP_FILE_TOML}"
 mv "${TEMP_FILE_TOML}" "${PATH_CATALYST_PPC_TOML}"

@@ -6,15 +6,20 @@
 # can be used with or without specifying package name.
 
 source ../../.env-shared.sh || exit 1
-register_usage "$0 <package>[-version] | --if-larger <SIZE_LIMIT>"
+register_usage "$0 --pkgcache <PKG_CACHE_DIRECTORY> <package>[-version] --if-larger <SIZE_LIMIT>"
 
 # Parse input parameters
 declare -a ARG_PACKAGES_TO_REMOVE
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --verbose) ;; # Handled by env-shared.sh
+        --pkgcache|-p)
+            readonly PKGCACHE_DIR="$2"
+            shift 2
+            ;;
         --if-larger|-s)
             SIZE_LIMIT=$2
+            SIZE_LIMIT_ARG=$2
             case "${SIZE_LIMIT: -1}" in
                 K|k) SIZE_LIMIT=$(( ${SIZE_LIMIT%K*} * 1024 )) ;;
                 M|m) SIZE_LIMIT=$(( ${SIZE_LIMIT%M*} * 1024 * 1024 )) ;;
@@ -38,8 +43,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if package parameter is provided and package exists
+[[ ! -z "${PKGCACHE_DIR}" ]] || show_usage
 [[ ! -z "${ARG_PACKAGES_TO_REMOVE}" ]] || [ ${SIZE_LIMIT} ] || show_usage
-[[ -d "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}/${CONF_PACKAGE_NAME}" ]] || failure "Package ${CONF_PACKAGE_NAME} not found in ${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}"
+#[[ -d "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}/${CONF_PACKAGE_NAME}" ]] || failure "Package ${CONF_PACKAGE_NAME} not found in ${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}"
 
 # Convert wildcard to regex
 convert_to_regex() {
@@ -56,7 +62,8 @@ for PACKAGE in "${ARG_PACKAGES_TO_REMOVE[@]}"; do
 done
 
 # Process metadata file
-PACKAGES_COUNT=$(grep -oP '^PACKAGES: \K[0-9]+' "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT_METADATA}")
+PKGCACHE_METADATA="${PKGCACHE_DIR}/Packages"
+PACKAGES_COUNT=$(grep -oP '^PACKAGES: \K[0-9]+' "${PKGCACHE_METADATA}")
 VAR_METADATA_NEW=""
 ENTRY=""
 unset ENTRY_DELETE
@@ -80,7 +87,7 @@ while IFS= read -r LINE || [[ -n $LINE ]]; do
             echo "Removing ${ENTRY_CPV} [${ENTRY_PATH}]"
             ((PACKAGES_COUNT--)) || PACKAGES_COUNT=0
             METADATA_MODIFIED=true
-            rm -f "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}/${ENTRY_PATH}"
+            rm -f "${PKGCACHE_DIR}/${ENTRY_PATH}"
         else
             VAR_METADATA_NEW+="${ENTRY}\n"
         fi
@@ -96,14 +103,14 @@ while IFS= read -r LINE || [[ -n $LINE ]]; do
             ENTRY_SIZE=${LINE#* }
         fi
     fi
-done < "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT_METADATA}"
+done < "${PKGCACHE_METADATA}"
 
 # Save changes
 if [ ${METADATA_MODIFIED} ]; then
-    echo -e "${VAR_METADATA_NEW}" > "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT_METADATA}"
-    sed -i "s/^PACKAGES: .*/PACKAGES: $PACKAGES_COUNT/" "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT_METADATA}"
+    echo -e "${VAR_METADATA_NEW}" > "${PKGCACHE_METADATA}"
+    sed -i "s/^PACKAGES: .*/PACKAGES: $PACKAGES_COUNT/" "${PKGCACHE_METADATA}"
 elif [ ${SIZE_LIMIT} ]; then
-    echo "Packages: ${ARG_PACKAGES_TO_REMOVE[@]} larger than ${SIZE_LIMIT}B not found in repository."
+    echo "Packages: ${ARG_PACKAGES_TO_REMOVE[@]} larger than ${SIZE_LIMIT_ARG} not found in repository."
 else
     echo "Packages: ${ARG_PACKAGES_TO_REMOVE[@]} not found in repository."
 fi

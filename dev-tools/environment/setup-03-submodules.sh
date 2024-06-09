@@ -12,7 +12,7 @@ git submodule foreach 'git checkout main'
 # Setup LFS for autobuilds.
 cat <<EOF > "${PATH_GIT_HOOK_RELEASES}"
 # Remove binhost packages that are too large.
-cd "$(dirname \"${PATH_BINHOST_SCRIPT_SANITIZE}\")"
+cd "$(dirname "${PATH_BINHOST_SCRIPT_SANITIZE}")"
 ${PATH_BINHOST_SCRIPT_SANITIZE}
 git add -u
 # Find all files larger than ${CONF_GIT_FILE_SIZE_LIMIT} and track them with Git LFS

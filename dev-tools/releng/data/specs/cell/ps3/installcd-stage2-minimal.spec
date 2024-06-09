@@ -1,12 +1,12 @@
 # Release version details
 version_stamp: openrc-@TIMESTAMP@
-source_subpath: default/livecd-stage1-cell-@TIMESTAMP@
+source_subpath: 23.0-default/livecd-stage1-cell-@TIMESTAMP@
 livecd/iso: install-cell-minimal-@TIMESTAMP@.iso
 livecd/volid: Gentoo-PS3
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
 portage_confdir: @REPO_DIR@/releases/portage/isos@PORTAGE_CONFDIR_POSTFIX@
-pkgcache_path: @PKGCACHE_PATH@
+#pkgcache_path: @PKGCACHE_PATH@
 @INTERPRETER@
 
 # Architecture and profile

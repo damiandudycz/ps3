@@ -1,10 +1,10 @@
 # Release version details
 version_stamp: @TIMESTAMP@
-source_subpath: default/stage3-cell-openrc-@TIMESTAMP@
+source_subpath: 23.0-default/stage3-cell-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
 portage_confdir: @REPO_DIR@/releases/portage/isos@PORTAGE_CONFDIR_POSTFIX@
-pkgcache_path: @PKGCACHE_PATH@
+#pkgcache_path: @PKGCACHE_PATH@
 @INTERPRETER@
 
 # Architecture and profile

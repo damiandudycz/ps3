@@ -6,4 +6,5 @@
 
 source ../../.env-shared.sh || exit 1
 
+# TODO:
 upload_repository "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}" "Binhost automatic update"

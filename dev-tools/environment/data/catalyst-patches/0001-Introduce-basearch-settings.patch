@@ -91,7 +91,7 @@ index 74c24a1d..2dbd8c66 100755
  		esac
  
  		echo ">> Running grub-mkrescue to create iso image...."
-		grub-mkrescue -volid "${clst_iso_volume_id}" "${extra_opts[@]}" -o "${1}" "${clst_target_path}"
+		grub-mkrescue --mbr-force-bootable -volid "${clst_iso_volume_id}" "${extra_opts[@]}" -o "${1}" "${clst_target_path}"
  	;;
 +	*)
 +		die "Cannot create ISO image: unsupported ARCH=${clst_basearch}"

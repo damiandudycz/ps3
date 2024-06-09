@@ -92,7 +92,7 @@ readonly PATH_DEV_TOOLS_BINHOST="\${PATH_DEV_TOOLS}/binhost"
 # External modules.
 readonly PATH_OVERLAYS_PS3_GENTOO="\${PATH_OVERLAYS}/ps3-gentoo-overlay"                     # Overlays.
 readonly PATH_OVERLAYS_PS3_GENTOO_DISTFILES="\${PATH_OVERLAYS}/ps3-gentoo-overlay.distfiles" # Distfiles.
-readonly PATH_RELEASES_PS3_GENTOO="\${PATH_OVERLAYS}/ps3-gentoo-releases"                    # RELEASES.
+#readonly PATH_RELEASES_PS3_GENTOO="\${PATH_OVERLAYS}/ps3-gentoo-releases"                    # RELEASES.
 
 # Main system directories elements.
 readonly PATH_ETC="/etc"
@@ -153,6 +153,7 @@ readonly PATH_BINHOSTS_PS3_GENTOO_DEFAULT_METADATA="\${PATH_BINHOSTS_PS3_GENTOO_
 
 # Releng.
 readonly PATH_RELENG="\${PATH_USR_SHARE}/releng"
+readonly PATH_RELENG_PKGCACHE="\${PATH_RELEASES}/binpackages"
 
 # QEMU.
 readonly PATH_QEMU_BINFMT="/proc/sys/fs/binfmt_misc"

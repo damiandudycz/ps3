@@ -10,4 +10,5 @@ snapshot_treeish: @TREEISH@
 compression_mode: pixz
 update_seed: yes
 update_seed_command: -uDN @world
+pkgcache_path: @PKGCACHE_PATH@/stage1
 @INTERPRETER@

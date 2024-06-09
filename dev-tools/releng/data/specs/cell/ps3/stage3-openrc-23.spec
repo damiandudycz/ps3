@@ -9,5 +9,5 @@ profile: default/linux/ppc64/23.0
 compression_mode: pixz
 portage_prefix: releng
 binrepo_path: ppc64/binpackages/23.0/cell # ??
-#pkgcache_path: @PKGCACHE_PATH@
+pkgcache_path: @PKGCACHE_PATH@/stage3
 @INTERPRETER@

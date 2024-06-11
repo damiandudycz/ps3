@@ -12,7 +12,7 @@ pkgcache_path: @PKGCACHE_PATH@/installcd-stage2
 # Architecture and profile
 subarch: cell
 target: livecd-stage2
-rel_type: default
+rel_type: 23.0-default
 profile: default/linux/ppc64/23.0
 
 # LiveCD config

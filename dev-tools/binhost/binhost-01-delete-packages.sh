@@ -45,7 +45,6 @@ done
 # Check if package parameter is provided and package exists
 [[ ! -z "${PKGCACHE_DIR}" ]] || show_usage
 [[ ! -z "${ARG_PACKAGES_TO_REMOVE}" ]] || [ ${SIZE_LIMIT} ] || show_usage
-#[[ -d "${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}/${CONF_PACKAGE_NAME}" ]] || failure "Package ${CONF_PACKAGE_NAME} not found in ${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}"
 
 # Convert wildcard to regex
 convert_to_regex() {

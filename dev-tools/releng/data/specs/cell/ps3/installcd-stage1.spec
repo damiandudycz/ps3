@@ -10,7 +10,7 @@ pkgcache_path: @PKGCACHE_PATH@/installcd-stage1
 # Architecture and profile
 subarch: cell
 target: livecd-stage1
-rel_type: default
+rel_type: 23.0-default
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
 

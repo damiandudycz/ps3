@@ -26,6 +26,13 @@ else
     exit 0
 fi
 
+empty_directory "${PATH_WORK_PS3_INSTALLER}"
+
+# Copy files
+cp "${PI_PATH_EBUILD_SRC}" "${PI_PATH_EBUILD_DST}"
+cp "${PI_PATH_CONFIG_SRC}" "${PI_PATH_CONFIG_DST}"
+cp "${PI_PATH_INSTALLER_SRC}" "${PI_PATH_INSTALLER_DST}"
+
 # Create package
-PI_COMMAND="--category ${PI_CONF_PACKAGE_GROUP} --ebuild ${PI_PATH_EBUILD_SRC} --version-increment --distfile ${PI_PATH_CONFIG_SRC} --distfile ${PI_PATH_INSTALLER_SRC} --save"
+PI_COMMAND="--category ${PI_CONF_PACKAGE_GROUP} --ebuild ${PI_PATH_EBUILD_DST} --version-increment --distfile ${PI_PATH_CONFIG_DST} --distfile ${PI_PATH_INSTALLER_DST} --save"
 source ${PATH_OVERLAY_SCRIPT_CREATE_PACKAGE} ${PI_COMMAND}

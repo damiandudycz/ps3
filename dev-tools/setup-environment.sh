@@ -47,7 +47,7 @@ readonly CONF_CATALYST_TMPFS="6" # GBs of TMPFS partition
 readonly CONF_QEMU_CONFIG=":\${CONF_TARGET_ARCH}:M::\x7fELF\x02\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x15:\xff\xff\xff\xff\xff\xff\xff\xfc\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:" # Srttings for PPC64.
 readonly CONF_QEMU_INTERPRETER="/usr/bin/qemu-\${CONF_TARGET_ARCH}"
 readonly CONF_QEMU_IS_NEEDED=$(expr "\${CONF_HOST_ARCH}" != "\${CONF_TARGET_ARCH}")
-readonly CONF_QEMU_REGISTRATION_EXPR="\${CONF_QEMU_CONFIG}\${PATH_QEMU_INTERPRETER}:"
+readonly CONF_QEMU_REGISTRATION_EXPR="\${CONF_QEMU_CONFIG}\${CONF_QEMU_INTERPRETER}:"
 readonly CONF_QEMU_RELENG_POSTFIX=\$([[ \${CONF_QEMU_IS_NEEDED} ]] && echo "-qemu") # TODO: Move to releng
 
 readonly CONF_RELEASE_PROFILE="23.0"

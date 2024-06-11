@@ -155,10 +155,6 @@ readonly PATH_CATALYST_PATCHES_SRC="\${PATH_DEV_TOOLS_ENVIRONMENT}/data/catalyst
 readonly PATH_CATALYST_PATCHES_DST="\${PATH_ETC_PORTAGE}/patches/dev-util/catalyst"
 readonly CONF_CATALYST_CHOST="\${CONF_TARGET_CHOST}"
 
-# Binhost.
-readonly PATH_BINHOSTS_PS3_GENTOO_DEFAULT="\${PATH_BINHOSTS_PS3_GENTOO}/\${CONF_RELEASE_TYPE_DFAULT}"
-#readonly PATH_BINHOSTS_PS3_GENTOO_DEFAULT_METADATA="\${PATH_BINHOSTS_PS3_GENTOO_DEFAULT}/Packages"
-
 # QEMU.
 readonly PATH_QEMU_BINFMT="/proc/sys/fs/binfmt_misc"
 readonly PATH_QEMU_BINFMT_REGISTER="\${PATH_QEMU_BINFMT}/register"
@@ -170,10 +166,10 @@ readonly PATH_CROSSDEV_INSTALLATION="\${PATH_USR}/\${CONF_CROSSDEV_TARGET}"
 readonly PATH_CROSSDEV_BINPKGS="\${PATH_CROSSDEV_INSTALLATION}/\${PATH_VAR_CACHE}/binpkgs"
 
 # Releases paths.
-readonly PATH_RELEASES_PS3_GENTOO_ARCH="\${PATH_RELEASES_PS3_GENTOO}/\${CONF_TARGET_ARCH_FAMILY}"                                                      # releases/ppc
-readonly PATH_RELEASES_PS3_GENTOO_ARCH_AUTOBUILDS="\${PATH_RELEASES_PS3_GENTOO_ARCH}/autobuilds"                                                       # releases/ppc/autobuilds
-readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES="\${PATH_RELEASES_PS3_GENTOO_ARCH}/binpackages"                                                     # releases/ppc/binpackages
-readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE="\${PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES}/\${CONF_RELEASE_PROFILE}"                    # releases/ppc/binpackages/23.0
+readonly PATH_RELEASES_PS3_GENTOO_ARCH="\${PATH_RELEASES_PS3_GENTOO}/\${CONF_TARGET_ARCH_FAMILY}"                                                       # releases/ppc
+readonly PATH_RELEASES_PS3_GENTOO_ARCH_AUTOBUILDS="\${PATH_RELEASES_PS3_GENTOO_ARCH}/autobuilds"                                                        # releases/ppc/autobuilds
+readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES="\${PATH_RELEASES_PS3_GENTOO_ARCH}/binpackages"                                                      # releases/ppc/binpackages
+readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE="\${PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES}/\${CONF_RELEASE_PROFILE}"                     # releases/ppc/binpackages/23.0
 readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE_SUBARCH="\${PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE}/\${CONF_TARGET_ARCH_SUBARCH}" # releases/ppc/binpackages/23.0/cell
 
 # Other.
@@ -190,6 +186,7 @@ readonly PATH_RELENG_DATA_SPEC="\${PATH_RELENG_DATA}/specs"
 readonly PATH_RELENG_RELEASES="\${PATH_RELEASES}/\${CONF_TARGET_ARCH_FAMILY}"
 readonly PATH_RELENG_RELEASES_BINPACKAGES="\${PATH_RELENG_RELEASES}/binpackages/\${CONF_RELEASE_PROFILE}"
 readonly PATH_RELENG_RELEASES_AUTOBUILDS="\${PATH_RELENG_RELEASES}/autobuilds/"
+readonly PATH_RELENG_CATALYST_AUTO="\${PATH_RELENG}/tools/catalyst-auto"
 
 # Paths to scripts.
 # Kernel ebuild:

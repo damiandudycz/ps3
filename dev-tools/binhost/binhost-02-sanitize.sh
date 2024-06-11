@@ -10,7 +10,7 @@ declare -a ARG_PACKAGES_TO_REMOVE
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --pkgcache|-p)
-            readonly PKGCACHE_DIR_TO_SANITIZE="$2"
+            PKGCACHE_DIR_TO_SANITIZE="$2"
             shift 2
             ;;
 	*)

@@ -14,7 +14,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --verbose) ;; # Handled by env-shared.sh
         --pkgcache|-p)
-            readonly PKGCACHE_DIR="$2"
+            PKGCACHE_DIR="$2"
             shift 2
             ;;
         --if-larger|-s)

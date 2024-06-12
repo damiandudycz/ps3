@@ -113,7 +113,8 @@ export -A guest_rc_startup=(
 )
 
 export -A binhosts=(
-    [ps3]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-binhosts/main/default"
+    [ps3]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-releases/main/ppc/binpackages/23.0/stage3"
+    [ps3]="https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-releases/main/ppc/binpackages/23.0/installcd-stage2"
 )
 
 export -A overlays=(

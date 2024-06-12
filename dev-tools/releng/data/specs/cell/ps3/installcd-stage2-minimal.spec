@@ -6,7 +6,7 @@ livecd/volid: Gentoo-PS3
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
 portage_confdir: @REPO_DIR@/releases/portage/isos@PORTAGE_CONFDIR_POSTFIX@
-pkgcache_path: @PKGCACHE_PATH@/installcd-stage2
+pkgcache_path: @PKGCACHE_PATH@/.installcd-stage2
 @INTERPRETER@
 
 # Architecture and profile

@@ -10,6 +10,7 @@ compression_mode: pixz
 portage_prefix: releng
 binrepo_path: ppc/binpackages/23.0/cell # ??
 pkgcache_path: @PKGCACHE_PATH@/cell
+repos: @REPOS@
 @INTERPRETER@
 
 stage4/use:

@@ -10,8 +10,8 @@ readonly EBUILD_FILES_DIFF=$(diff "${KE_PATH_EBUILD_FILE_DST}" "${KE_PATH_OVERLA
 empty_directory "${KE_PATH_WORK_BINPKGS}"
 empty_directory "${KE_PATH_CROSSDEV_BINPKGS_KERNEL_PACKAGE}"
 
-# Copy distfiles, so that they can be used by emerge without uploading to github.
-cp "${KE_PATH_WORK_EBUILD_DISTFILES}"/* "${PATH_VAR_CACHE_DISTFILES}"/
+# Copy everything from distfiles overlay to cache, so that it's available during emerge even if packages were not yet uploaded to git.
+source ${PATH_OVERLAY_SCRIPT_COPY_PS3_FILES}
 
 # Build package using crossdev.
 PORTDIR_OVERLAY="${PATH_OVERLAYS_PS3_GENTOO}" ${CONF_CROSSDEV_TARGET}-emerge --buildpkgonly "=${KE_NAME_PACKAGE_DST_VERSIONED}"

@@ -5,7 +5,7 @@ livecd/iso: install-cell-minimal-@TIMESTAMP@.iso
 livecd/volid: Gentoo-PS3
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
-portage_confdir: @REPO_DIR@/releases/portage/isos@PORTAGE_CONFDIR_POSTFIX@
+portage_confdir: @PORTAGE_CONFDIR@/isos
 pkgcache_path: @PKGCACHE_PATH@/.installcd-stage2
 @INTERPRETER@
 

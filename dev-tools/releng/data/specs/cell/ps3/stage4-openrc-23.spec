@@ -4,7 +4,7 @@ rel_type: 23.0-default
 version_stamp: openrc-@TIMESTAMP@
 source_subpath: 23.0-default/stage3-cell-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
-portage_confdir: @REPO_DIR@/releases/portage/stages@PORTAGE_CONFDIR_POSTFIX@
+portage_confdir: @PORTAGE_CONFDIR@/stages
 profile: default/linux/ppc64/23.0/desktop
 compression_mode: pixz
 portage_prefix: releng
@@ -14,8 +14,12 @@ repos: @REPOS@
 @INTERPRETER@
 
 stage4/use:
-	gtk
-	gtk3
+	ps3
+	dist-kernel
+	X
+	wayland
+	xwayland
+	wayland-compositor
 
 stage4/packages:
     --getbinpkg

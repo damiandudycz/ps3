@@ -1,6 +1,6 @@
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0010-ps3stor-multiple-regions.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0020-ps3stor-send-cmd-timeout.patch
-https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0030-ps3fb.patch
+#https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0030-ps3fb.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0035-ps3flash.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0040-ps3-partition.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0050-ps3sysmgr-lpar-reboot.patch

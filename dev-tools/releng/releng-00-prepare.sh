@@ -5,8 +5,6 @@
 # At the beggining it also checks if there is a need to release a new ps3-gentoo-installer
 # ebuild, and asks if you want to release it first, so that it can be used in the new build.
 
-# TODO: Prepare special PORTAGE_CONFDIR folders for stage4 or use some other way to unmask required desktop packages.
-
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_RELENG}" || failure "Failed to load env ${PATH_EXTRA_ENV_RELENG}"
 
@@ -43,9 +41,6 @@ find "${RL_PATH_RELENG_PORTAGE_CONFDIR_ENVS}" -mindepth 1 -maxdepth 1 -type d | 
     echo "Configuring environment: ${env_dst} [${dir}]"
     cp -r "${dir}/"* "${env_dst}/"
 done
-#echo '*/* CPU_FLAGS_PPC: altivec' > "${RL_PATH_RELENG_PORTAGE_CONFDIR_STAGES}/package.use/00cpu-flags"
-#echo '*/* CPU_FLAGS_PPC: altivec' > "${RL_PATH_RELENG_PORTAGE_CONFDIR_STAGE4}/package.use/00cpu-flags"
-#echo '*/* CPU_FLAGS_PPC: altivec' > "${RL_PATH_RELENG_PORTAGE_CONFDIR_STAGES_ISOS}/package.use/00cpu-flags"
 
 # Prepare spec files.
 cp -f "${RL_PATH_STAGE1_SRC}" "${RL_PATH_STAGE1_DST}"

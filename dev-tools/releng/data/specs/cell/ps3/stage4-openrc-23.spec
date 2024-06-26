@@ -4,7 +4,7 @@ rel_type: 23.0-default
 version_stamp: openrc-@TIMESTAMP@
 source_subpath: 23.0-default/stage3-cell-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
-portage_confdir: @PORTAGE_CONFDIR@/stages
+portage_confdir: @PORTAGE_CONFDIR@/stage4
 profile: default/linux/ppc64/23.0/desktop
 compression_mode: pixz
 portage_prefix: releng
@@ -30,7 +30,7 @@ stage4/packages:
 	app-eselect/eselect-repository
 	app-portage/gentoolkit
 	dev-vcs/git
-	new-misc/ntp
+	net-misc/ntp
 	sys-apps/ps3vram-swap
 	sys-devel/distcc
 	net-misc/dhcpcd

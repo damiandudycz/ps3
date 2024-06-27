@@ -1,14 +1,17 @@
+# Base build for desktop profiles. Includes only xorg-server and adds basic rc-scripts.
+# Contains also base packages used in all desktop profiles, like kernel, sido, etc.
+
 subarch: cell
 target: stage4
 rel_type: 23.0-default
-version_stamp: openrc-@TIMESTAMP@
+version_stamp: xorg-openrc-@TIMESTAMP@
 source_subpath: 23.0-default/stage3-cell-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
-portage_confdir: @PORTAGE_CONFDIR@/stage4
+portage_confdir: @PORTAGE_CONFDIR@/xorg
 profile: default/linux/ppc64/23.0/desktop
 compression_mode: pixz
 portage_prefix: releng
-binrepo_path: ppc/binpackages/23.0/cell # ??
+binrepo_path: ppc/binpackages/23.0/cell
 pkgcache_path: @PKGCACHE_PATH@/cell
 repos: @REPOS@
 @INTERPRETER@
@@ -17,25 +20,22 @@ stage4/use:
 	ps3
 	dist-kernel
 	X
-	wayland
-	xwayland
-	wayland-compositor
 
 stage4/packages:
     --getbinpkg
 	sys-kernel/gentoo-kernel-ps3
-	app-admin/sudo
-	app-admin/sysklogd
+	app-admin/sudo #?
+	app-admin/sysklogd #?
 	app-misc/ps3pf_utils
-	app-eselect/eselect-repository
-	app-portage/gentoolkit
-	dev-vcs/git
-	net-misc/ntp
+	net-misc/ntp #?
 	sys-apps/ps3vram-swap
-	sys-devel/distcc
+	sys-devel/distcc #?
 	net-misc/dhcpcd
 	x11-base/xorg-server
-	mate-base/mate
+	x11-apps/mesa-progs #?
+#	app-eselect/eselect-repository
+#	app-portage/gentoolkit
+#	dev-vcs/git
 
 stage4/rcadd:
 	ps3vram-swap|boot
@@ -44,13 +44,9 @@ stage4/rcadd:
 	sysklogd|default
 	ntpd|default
 	ntp-client|default
-	display-manager|default
 
 stage4/empty:
 	/var/cache/distfiles
 
 stage4/rm:
 	/root/.bash_history
-
-#stage4/fsscript: @STAGE4_FSSCRIPT@
-#stage4/root_overlay: @STAGE4_OVERLAY@

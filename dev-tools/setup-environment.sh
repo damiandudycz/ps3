@@ -166,8 +166,8 @@ readonly PATH_CROSSDEV_INSTALLATION="\${PATH_USR}/\${CONF_CROSSDEV_TARGET}"
 readonly PATH_CROSSDEV_BINPKGS="\${PATH_CROSSDEV_INSTALLATION}/\${PATH_VAR_CACHE}/binpkgs"
 
 # Releases paths.
+readonly PATH_RELEASES_PS3_GENTOO_DEFAULT="\${PATH_RELEASES_PS3_GENTOO}/\${CONF_RELEASE_TYPES}"
 readonly PATH_RELEASES_PS3_GENTOO_ARCH="\${PATH_RELEASES_PS3_GENTOO}/\${CONF_TARGET_ARCH_FAMILY}"                                                       # releases/ppc
-readonly PATH_RELEASES_PS3_GENTOO_ARCH_AUTOBUILDS="\${PATH_RELEASES_PS3_GENTOO_ARCH}/autobuilds"                                                        # releases/ppc/autobuilds
 readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES="\${PATH_RELEASES_PS3_GENTOO_ARCH}/binpackages"                                                      # releases/ppc/binpackages
 readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE="\${PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES}/\${CONF_RELEASE_PROFILE}"                     # releases/ppc/binpackages/23.0
 readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE_SUBARCH="\${PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE}/\${CONF_TARGET_ARCH_SUBARCH}" # releases/ppc/binpackages/23.0/cell

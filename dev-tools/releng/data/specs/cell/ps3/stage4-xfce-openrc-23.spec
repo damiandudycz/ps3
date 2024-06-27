@@ -20,7 +20,7 @@ stage4/use:
 
 stage4/packages:
     --getbinpkg
-	mate-base/mate
+	xfce4-base/xfce4-meta
 
 stage4/empty:
 	/var/cache/distfiles

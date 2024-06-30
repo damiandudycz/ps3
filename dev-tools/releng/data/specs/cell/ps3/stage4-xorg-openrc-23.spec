@@ -33,6 +33,7 @@ stage4/packages:
 	net-misc/dhcpcd
 	x11-base/xorg-server
 	x11-apps/mesa-progs #?
+#	=sys-devel/gcc-9.5.0 #?
 #	app-eselect/eselect-repository
 #	app-portage/gentoolkit
 #	dev-vcs/git

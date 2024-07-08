@@ -27,8 +27,10 @@ readonly LATEST_STAGE3_FILENAME=$(basename "${LATEST_STAGE3}")
 readonly SEED_RE_VAL_TIMESTAMP=$(echo "${LATEST_STAGE3_FILENAME}" | sed -n 's/.*-\([0-9]\{8\}T[0-9]\{6\}Z\)\.tar\.xz/\1/p')
 readonly PATH_STAGE3_SEED="${PATH_CATALYST_BUILDS_DEFAULT}/${LATEST_STAGE3_FILENAME}"
 readonly URL_GENTOO_TARBALL="$URL_RELEASE_GENTOO/$LATEST_STAGE3"
+mount -o bind "${RL_PATH_BUILDS_SRC}" "${RL_PATH_BUILDS_DST}"
 [[ -z "${LATEST_STAGE3}" ]] && failure "Failed to download Stage3 URL"
 [[ -f "${PATH_STAGE3_SEED}" ]] || wget "${URL_GENTOO_TARBALL}" -O "${PATH_STAGE3_SEED}"
+umount "${RL_PATH_BUILDS_DST}"
 
 # Prepare PORTAGE_CONFDIR environments.
 cp -rf "${PATH_RELENG_PORTAGE_CONFDIR_STAGES}" "${RL_PATH_RELENG_PORTAGE_CONFDIR_STAGES_DST}"

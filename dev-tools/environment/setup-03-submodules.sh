@@ -24,6 +24,7 @@ done
 # Find all files larger than 100M and track them with Git LFS
 echo "[Add release files to LFS if needed]"
 cd "/home/gentoo/ps3/releases"
+git lfs install
 find . -type f -size +100M | while read file; do
     if [[ \$file != *".git"* ]]; then
         git lfs track "\$file"

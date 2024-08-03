@@ -1,11 +1,11 @@
---- gentoo-kernel-6.6.13.ebuild	2024-02-01 16:21:52.560284000 -0000
-+++ gentoo-kernel-ps3-6.6.13.ebuild	2024-02-01 16:23:34.975043006 -0000
-@@ -17,3 +17,3 @@
+--- org.ebuild	2024-07-09 13:38:27.626205670 -0000
++++ mod.ebuild	2024-07-09 13:38:08.579537090 -0000
+@@ -17,3 +17,3 @@ GENTOO_CONFIG_VER=g13
  
 -DESCRIPTION="Linux kernel built with Gentoo patches"
 +DESCRIPTION="Linux kernel built with Gentoo patches and PS3 patches"
  HOMEPAGE="
-@@ -28,18 +28,3 @@
+@@ -28,18 +28,3 @@ SRC_URI+="
  		-> gentoo-kernel-config-${GENTOO_CONFIG_VER}.tar.gz
 -	amd64? (
 -		https://raw.githubusercontent.com/projg2/fedora-kernel-config-for-gentoo/${CONFIG_VER}/kernel-x86_64-fedora.config
@@ -25,28 +25,37 @@
 -	)
 +	https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-overlay.distfiles/main/sys-kernel/gentoo-kernel-ps3/gentoo-kernel-ps3-${PVR}.tar.xz
  "
-@@ -49,8 +34,3 @@
- IUSE="debug hardened"
+@@ -49,8 +32,4 @@ S=${WORKDIR}/${MY_P}
+-IUSE="debug hardened"
 -REQUIRED_USE="
 -	arm? ( savedconfig )
 -	hppa? ( savedconfig )
 -	riscv? ( savedconfig )
 -	sparc? ( savedconfig )
 -"
++IUSE="debug hardened X"
 +REQUIRED_USE=""
++PATCHES_USE="${IUSE}"
  
-@@ -62,5 +42,3 @@
+@@ -62,5 +43,3 @@ BDEPEND="
  "
 -PDEPEND="
 -	>=virtual/dist-kernel-${PV}
 -"
 +PDEPEND=""
  
-@@ -76,2 +54,3 @@
- 		"${WORKDIR}"/*.patch
-+		"${WORKDIR}/ps3_patches"/*.patch
+@@ -77,48 +56,16 @@ src_prepare() {
  	)
-@@ -79,46 +58,5 @@
++	PATCHES_PS3=( "${WORKDIR}/ps3_patches"/*.patch )
++	for flag in ${PATCHES_USE}; do
++		if use ${flag}; then
++			[[ -d "${WORKDIR}/ps3_patches/${flag}" ]] && PATCHES_PS3+=( "${WORKDIR}/ps3_patches/${flag}"/*.patch )
++		else
++			[[ -d "${WORKDIR}/ps3_patches/-${flag}" ]] && PATCHES_PS3+=( "${WORKDIR}/ps3_patches/-${flag}"/*.patch )
++		fi
++	done
++	PATCHES+=(${PATCHES_PS3[@]})
+ 	default
  
 -	local biendian=false
 +	cp "${WORKDIR}/ps3_gentoo_defconfig" .config || die
@@ -95,18 +104,18 @@
 -	local myversion="-gentoo-dist"
 +	local myversion="-gentoo-ps3-dist"
  	use hardened && myversion+="-hardened"
-@@ -129,3 +67,2 @@
+@@ -129,3 +76,2 @@ src_prepare() {
  		"${T}"/version.config
 -		"${dist_conf_path}"/base.config
  	)
-@@ -145,5 +82,3 @@
+@@ -145,5 +91,3 @@ src_prepare() {
  	# this covers ppc64 and aarch64_be only for now
 -	if [[ ${biendian} == true && $(tc-endian) == big ]]; then
 -		merge_configs+=( "${dist_conf_path}/big-endian.config" )
 -	fi
 +	merge_configs+=( "${dist_conf_path}/big-endian.config" )
  
-@@ -153 +88,67 @@
+@@ -153 +97,67 @@ src_prepare() {
  }
 +
 +pkg_postinst() {
@@ -174,4 +183,3 @@
 +		ewarn "KBOOT configuration file not found: ${kboot_path}"
 +	fi
 +}
-

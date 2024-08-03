@@ -7,9 +7,12 @@ KEYWORDS="ppc64"
 SRC_URI="https://github.com/damiandudycz/ps3-gentoo-overlay.distfiles/raw/main/sys-apps/${PN}/${PN}-${PVR}.tar.xz"
 S="${WORKDIR}"
 
-DEPEND="
+RDEPEND="
     sys-apps/util-linux
     sys-fs/btrfs-progs
+    sys-fs/e2fsprogs
+    sys-fs/dosfstools
+    app-misc/jq
 "
 
 src_unpack() {
@@ -22,5 +25,5 @@ src_install() {
 
     # Copy default configuration
     insinto /etc/ps3-gentoo-installer
-    doins "${S}/config"
+    doins "${S}/config.json"
 }

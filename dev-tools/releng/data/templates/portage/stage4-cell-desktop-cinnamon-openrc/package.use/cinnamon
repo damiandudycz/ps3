@@ -1,0 +1,3 @@
+x11-libs/xapp introspection
+media-libs/libcanberra pulseaudio
+media-plugins/alsa-plugins pulseaudio

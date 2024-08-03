@@ -1,0 +1,118 @@
+{
+	"supported_arch" : ["ppc64", "cell"],
+	"stage_types" : ["stage3", "stage4"],
+	"init_system" : "openrc",
+	"hostname" : "PS3",
+	"base_url_autobuilds" : "https://github.com/damiandudycz/ps3-gentoo-releases/raw/main/23.0-default",
+	"disk" : {
+		"scheme" : "gpt",
+		"partitions" : [
+			{
+				"order" : 1,
+				"filesystem" : "ext3",
+				"mount_point" : "/boot",
+				"size" : "+256MiB",
+				"options" : "defaults,noatime",
+				"dump" : 1,
+				"pass" : 2
+			},
+			{
+				"order" : 0,
+				"filesystem" : "btrfs",
+				"mount_point" : "/",
+				"size" : "-4100MiB",
+				"options" : "defaults,noatime",
+				"dump" : 0,
+				"pass" : 1
+                        },
+			{
+				"order" : 2,
+				"filesystem" : "swap",
+				"mount_point" : "none",
+				"size" : "+4096MiB",
+				"options" : "sw",
+				"dump" : 0,
+				"pass" : 0
+                        }
+		]
+	},
+	"locales" : {
+		"default" : "en_US.utf8",
+		"list" : ["en_US.UTF-8 UTF-8"]
+	},
+	"network" : {
+		"links" : ["eth0", "wlan0"]
+	},
+	"user" : {
+		"username" : "ps3",
+		"groups" : ["users", "wheel", "audio", "cdrom", "video", "usb"],
+		"autologin" : false
+	},
+	"portage" : {
+		"use" : {
+			"00cpu-flags" : ["*/* CPU_FLAGS_PPC: altivec"],
+			"01input-devices" : ["*/* INPUT_DEVICES: evdev libinput"],
+			"02video-cards" : ["*/* VIDEO_CARDS: fbdev -dmmy -radeon -r128 -nvidia -mga"],
+			"installkernel" : ["sys-kernel/installkernel dracut"],
+			"wpa_supplicant" : ["net-wireless/wpa_supplicant dbus"]
+		},
+		"accept" : {
+			"ps3pf_utils" : ["app-misc/ps3pf_utils ~ppc64"]
+		},
+		"env" : {},
+		"make_conf" : {
+			"COMMON_FLAGS" : "-O2 -pipe -mcpu=cell -mtune=cell -mabi=altivec -maltivec -mno-string -mno-update -mno-multiple",
+			"KCFLAGS" : "-mabi=altivec",
+			"KCPPFLAGS" : "${KCFLAGS}",
+			"MAKEOPTS" : "-j3",
+			"ACCEPT_LICENSE" : "*",
+			"FEATURES" : "-news parallel-fetch parallel-install getbinpkg",
+			"BINPKG_FORMAT" : "gpkg",
+			"EMERGE_DEFAULT_OPTS" : "--binpkg-respect-use",
+			"+USE" : "ps3 dist-kernel"
+		},
+		"overlays" : {
+			"eselect" : [],
+			"manual" : {
+				"ps3" : "https://github.com/damiandudycz/ps3-gentoo-overlay"
+			}
+		},
+		"binhosts" : {
+			"gentoobinhost" : "https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-releases/main/ppc/binpackages/23.0/cell"
+		}
+	},
+	"conf_d" : {
+		"zram-init" : [
+			"load_on_start=\"yes\"",
+			"unload_on_stop=\"yes\"",
+			"num_devices=\"1\"",
+			"type0=\"swap\"",
+			"flag0=",
+			"size0=\"128\"",
+			"maxs0=2",
+			"algo0=lz4"
+		]
+	},
+	"packages" : {
+		"initial" : [
+			"app-eselect/eselect-repository",
+			"dev-vcs/git",
+			"sys-devel/distcc"
+		],
+		"other" : [
+			"app-admin/sudo",
+			"app-admin/sysklogd",
+			"app-misc/ps3pf_utils",
+			"app-portage/gentoolkit",
+			"net-misc/networkmanager",
+			"net-misc/ntp",
+			"sys-apps/ps3vram-swap",
+			"sys-block/zram-init",
+			"sys-kernel/gentoo-kernel-ps3"
+		]
+	},
+	"rc_scripts" : {
+		"boot" : ["zram-init", "ps3vram-swap"],
+		"default" : ["NetworkManager", "sshd", "ntpd", "ntp-client"]
+	}
+}

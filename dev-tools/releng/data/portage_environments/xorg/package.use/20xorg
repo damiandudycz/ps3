@@ -1,3 +1,0 @@
-*/* VIDEO_CARDS: fbdev -dmmy -radeon -r128 -nvidia -mga
-*/* INPUT_DEVICES: evdev libinput
-

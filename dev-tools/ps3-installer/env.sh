@@ -5,8 +5,8 @@
 readonly PI_CONF_PACKAGE_GROUP="sys-apps/ps3-gentoo-installer"
 readonly PI_CONF_PACKAGE_NAME="ps3-gentoo-installer"
 readonly PI_CONF_INSTALLER_SCRIPT_NAME="ps3-gentoo-installer"
-readonly PI_CONF_CONFIG_NAME_SRC="PS3"
-readonly PI_CONF_CONFIG_NAME_DST="config"
+readonly PI_CONF_CONFIG_NAME_SRC="PS3.json"
+readonly PI_CONF_CONFIG_NAME_DST="config.json"
 readonly PI_CONF_CONFIG_DIR_NAME="config"
 readonly PI_CONF_DATA_DIR_NAME="data"
 

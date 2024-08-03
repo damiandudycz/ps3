@@ -6,7 +6,6 @@ dir="$(pwd)"                                               # Directory where scr
 iid="$(tr -dc A-Za-z0-9 </dev/urandom | head -c 10; echo)" # Random ID for tmp and chroot pathes.
 path_tmp="/tmp/gentoo-setup-${iid}"                        # Temporary files storage directory.
 path_chroot="/mnt/gentoo-setup-${iid}"                     # Gentoo chroot environment directory.
-edit_config=false                                          # Modify configuration file.
 quiet_flag='--quiet'                                       # Flag used to silence the output.
 branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)" # Name of current branch if running from git repository
 url_installer="https://raw.githubusercontent.com/damiandudycz/ps3/${branch}/dev-tools/ps3-installer/ps3-gentoo-installer"
@@ -18,12 +17,13 @@ source <(sed '1,/^# FUNCTIONS #.*$/d' "$0") # Load functions at the bottom of th
 
 read_variables "$@"      # Read user input variables - device, configuration, verbose.
 validate_input_data      # Validate if input data is correct.
-warn_about_disk_wiping   # Asks user to confirm disk formatting.
 prepare_directories      # Create path_tmp and path_chroot.
 get_config               # Download configuration or load local configuration file.
 validate_config          # Checks if all settings in configuration are set correctly.
+download_stages          # Download list of source stage tarballs and ask which one to use.
 
 ## Setup disk -----------------------------------------------------------------------------------
+warn_about_disk_wiping   # Asks user to confirm disk formatting.
 sort_partitions          # Prepare array of devices sorted by mounting order.
 disk_clean_signatures    # Remove signatures of partition table, and partitions from the disk.
 disk_create_partitions   # Create new partitions, definied in the configuration.
@@ -54,15 +54,16 @@ update_environment       # Refreshing env variables.
 setup_locales            # Generate locales and select default one.
 setup_portage_repository # Downloads latest portage tree.
 setup_binhosts           # Configure binrepos if added in config.
-setup_profile            # Changes profile to selected.
 setup_timezone           # Selects timezone.
 install_base_tools       # Installs tools needed at early stage, before distcc is available.
 setup_distcc_client      # Downloads and configures distcc if used.
 setup_overlays           # Add overlays using eselect repository.
 install_updates          # Updates and rebuilds @world system including new use flags.
 install_other_tools      # Installs other selected tools.
+setup_conf_d             # Creates /etc/conf.d entries from config.
 setup_autostart          # Adds init scripts to selected runlevels.
 setup_user               # Create default user if configured.
+setup_bootloader         # Updates entries in bootloader configuration file.
 
 ## Cleanup and exit -----------------------------------------------------------------------------
 revdep_rebuild           # Fixes broken dependencies.
@@ -142,12 +143,18 @@ print_usage() {
     echo "  --device <device>                 Specify the device to use."
     echo "  --directory <directory>           Specify the directory to work in."
     echo ""
-    echo "  --config <remote_config>          Use a remote configuration."
-    echo "  --custom-config <config_file>     Use a custom configuration file."
+    echo "  --config <config_file>            Use a custom configuration file."
     echo "  --edit-config                     Modify configuration file before installation."
+    echo ""
+    echo "  --hostname <hostname>             Set system hostname."
+    echo "  --username <username>             Set default user name."
+    echo "  --password <password>             Set default password."
+    echo "  --autologin                       Enable default user automatic login on tty1."
+    echo "  --root-password <password>        Set root password."
     echo ""
     echo "  --verbose                         Enable verbose output."
     echo ""
+    echo "  --update                          Perform system update."
     echo "  --distcc <host>                   Specify a distcc host."
     exit 1
 }
@@ -169,7 +176,17 @@ append_make_config() {
     local key="$1"
     local value="$2"
     if grep -q "$key=" "$path_make_conf"; then
-        try sed -i "/^$key=/ s/\"\(.*\)\"/\"\1 $value\"/" "$path_make_conf"
+        local original_value=$(grep "^$key=" "$path_make_conf" | sed -e "s/^$key=\"\(.*\)\"$/\1/")
+        local new_values=""
+        for val in $value; do
+            if [[ ! " $original_value " =~ " $val " ]]; then
+                new_values="$new_values $val"
+            fi
+        done
+        new_values=$(echo "$new_values" | xargs)
+        if [ -n "$new_values" ]; then
+            try sed -i "/^$key=/ s/\"\(.*\)\"/\"\1 $new_values\"/" "$path_make_conf"
+        fi
     else
         echo "$key=\"$value\"" | try tee -a "$path_make_conf" >/dev/null
     fi
@@ -208,13 +225,7 @@ read_variables() {
         --config)
             shift
             if [ $# -gt 0 ]; then
-                config="$1"
-            fi
-            ;;
-        --custom-config)
-            shift
-            if [ $# -gt 0 ]; then
-                custom_config="$1"
+                config_file="$1"
             fi
             ;;
 	--edit-config)
@@ -230,6 +241,36 @@ read_variables() {
                 distcc_hosts="$1"
             fi
             ;;
+        --root-password)
+            shift
+            if [ $# -gt 0 ]; then
+                root_password="$1"
+            fi
+            ;;
+        --password)
+            shift
+            if [ $# -gt 0 ]; then
+                password="$1"
+            fi
+            ;;
+        --username)
+            shift
+            if [ $# -gt 0 ]; then
+                username="$1"
+            fi
+            ;;
+        --autologin)
+            autologin=true
+            ;;
+        --update)
+            update=true
+            ;;
+        --hostname)
+            shift
+            if [ $# -gt 0 ]; then
+                hostname="$1"
+            fi
+            ;;
         *)
             error "Unknown option: $1"
             ;;
@@ -238,8 +279,8 @@ read_variables() {
     done
 
     # Set default value of config if none specified
-    if [ -z "$config" ] && [ -z "$custom_config" ]; then
-        custom_config="/etc/ps3-gentoo-installer/config"
+    if [ -z "$config_file" ]; then
+        config_file="/etc/ps3-gentoo-installer/config.json"
     fi
 }
 
@@ -251,17 +292,11 @@ validate_input_data() {
     if [ ! -z "$disk_device" ] && [ ! -z "$install_directory" ]; then
         print_usage
     fi
-    if [ -z "$config" ] && [ -z "$custom_config" ]; then
-        print_usage
-    fi
-    if [ ! -z "$config" ] && [ ! -z "$custom_config" ]; then
-        print_usage
-    fi
     # Validate if disk is not being used.
-    if [ "$installation_type" = 'device' ] && [ ! -e "$disk_device" ]; then
+    if [ "$installation_type" = 'disk' ] && [ ! -e "$disk_device" ]; then
         error "Device $disk_device does not exists."
     fi
-    if [ "$installation_type" = 'device' ] && [ lsblk -no MOUNTPOINT "$disk_device" | grep -q -v "^$" ]; then
+    if [ "$installation_type" = 'disk' ] && [ -n "$(lsblk -no MOUNTPOINT "$disk_device")" ]; then
         error "Device $disk_device is currently in use. Unmount it before usage."
     fi
 }
@@ -301,21 +336,71 @@ prepare_directories() {
 
 get_config() {
     # Get config from the repository or local file.
-    local path_config="$path_tmp/config"
-    if [ -z "$custom_config" ]; then
-        local url_config="$url_installer/config/$config"
-        try wget "$url_config" -O "$path_config" --no-http-keep-alive --no-cache --no-cookies $quiet_flag
-    else
-        try cp "$custom_config" "$path_config"
-    fi
-    if [ $edit_config = true ]; then
+    local path_config="$path_tmp/config.json"
+    try cp "$config_file" "$path_config"
+    if [ "$edit_config" = true ]; then
         nano "$path_config"
     fi
-    try source "$path_config"
-    # prepare additional fields
-    arch_family=$(echo $arch | cut -d'/' -f1)
-    arch_short=$(echo $arch | cut -d'/' -f2)
-    arch_long=$(echo $arch | cut -d'/' -f3)
+    config=$(cat "${path_config}")
+    if [ -z "${config}" ]; then
+        error "Failed to load configuration."
+    fi
+    # Overwrite config from run arguments.
+    if [ -n "$username" ]; then
+	config=$(echo "$config" | jq ".user.username = \"${username}\"")
+    fi
+    if [ -n "$password" ]; then
+	config=$(echo "$config" | jq ".user.password = \"${password}\"")
+    fi
+    if [ -n "$autologin" ]; then
+	config=$(echo "$config" | jq ".user.autologin = ${autologin}")
+    fi
+    if [ -n "$hostname" ]; then
+	config=$(echo "$config" | jq ".hostname = \"${hostname}\"")
+    fi
+}
+
+# cfg [key] <--asjson> <--from JSON_STRING> <--arg NAME VALUE>
+cfg() {
+    local asjson=false
+    local json="$config"
+    local key=""
+    local argv=""
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+        --asjson)
+            asjson=true
+            ;;
+        --from)
+            shift
+            json="$1"
+            ;;
+        --arg)
+            shift
+            k="$1"
+            shift
+            v="$1"
+            argv="$argv --arg $k \"$v\""
+            ;;
+        *)
+            key="$1"
+            ;;
+        esac
+        shift
+    done
+
+    if [ -n "$key" ]; then
+        if [ "$asjson" = true ]; then
+            echo "${json}" | jq -c $argv "${key}"
+        else
+            # For normal variables (not arrays) it replaces null with empty string
+            if [[ ! "$key" =~ \[\]$ ]]; then
+                key="${key} // \"\""
+            fi
+            echo "${json}" | jq -c -r $argv "${key}"
+        fi
+    fi
 }
 
 validate_config() {
@@ -327,11 +412,20 @@ sort_partitions() {
     if [ "$installation_type" != 'disk' ]; then
         return
     fi
-    IFS=$'\n' read -r -d '' -a disk_partitions_sorted_by_mount_order < <(
-        for partition in "${disk_partitions[@]}"; do
-            echo "$partition"
-        done | tr ':' $'\t' | sort -k2,2n | tr $'\t' ':'
-    )
+    disk_partitions=($(cfg '.disk.partitions[]' --asjson))
+
+    # Add index to partitions data
+    local indexed_partitions=()
+    local index=1
+    for partition in "${disk_partitions[@]}"; do
+        indexed_partition=$(echo "$partition" | jq --argjson idx "$index" '. + {index: $idx}')
+        indexed_partitions+=("$indexed_partition")
+        ((index++))
+    done
+    disk_partitions=("${indexed_partitions[@]}")
+
+    partitions_json=$(printf "%s\n" "${disk_partitions[@]}" | jq -s '.')
+    disk_partitions_sorted_by_mount_order=($(cfg --from "${partitions_json}" 'sort_by(.order)[]' --asjson))
 }
 
 disk_clean_signatures() {
@@ -355,12 +449,14 @@ disk_create_partitions() {
         return
     fi
     local fdisk_command=''
+    local disk_scheme=$(cfg .disk.scheme)
 
     if [ "$disk_scheme" = 'gpt' ]; then
         fdisk_command='g\n'
-    fi
-    if [ "$disk_scheme" = 'dos' ]; then
+    elif [ "$disk_scheme" = 'dos' ]; then
         fdisk_command='o\n'
+    else
+        error "Unsupported partition scheme."
     fi
 
     # Creating partition for given configuration.
@@ -368,14 +464,13 @@ disk_create_partitions() {
         local disk_device="$1"
         local disk_scheme="$2"
         local partition_data="$3"
-        local partition_data_fragments=(${partition_data//:/ })
-        local partition_data_index="${partition_data_fragments[0]}"
-        local partition_data_size="${partition_data_fragments[4]}"
+        local partition_data_size=$(cfg --from "$partition_data" .size)
+        local index=$(cfg --from "$partition_data" .index)
         local primary_partition_selector="" # Adds "p\n" for MBR partition scheme to command.
         if [ "$disk_scheme" = 'dos' ]; then
             primary_partition_selector='p\n'
         fi
-        fdisk_command="${fdisk_command}n\n${primary_partition_selector}${partition_data_index}\n\n${partition_data_size}\n"
+        fdisk_command="${fdisk_command}n\n${primary_partition_selector}${index}\n\n${partition_data_size}\n"
     }
 
     for part_config in "${disk_partitions[@]}"; do
@@ -394,10 +489,9 @@ disk_create_filesystems() {
     create_filesystem_from_config() {
         local disk_device="$1"
         local partition_data="$2"
-        local partition_data_fragments=(${partition_data//:/ })
-        local partition_data_index="${partition_data_fragments[0]}"
-        local partition_data_filesystem="${partition_data_fragments[2]}"
-        local partition_device="${disk_device}${partition_data_index}"
+        local partition_data_filesystem=$(cfg --from "$partition_data" .filesystem)
+        local index=$(cfg --from "$partition_data" .index)
+        local partition_device="${disk_device}${index}"
 	if [ ! -z "${quiet_flag}" ]; then
 	    quiet_flag_short='-q' # Quiet flag used to silence the output.
  	fi
@@ -422,11 +516,10 @@ disk_mount_partitions() {
     mount_filesystem_from_config() {
         local disk_device="$1"
         local partition_data="$2"
-        local partition_data_fragments=(${partition_data//:/ })
-        local partition_data_index="${partition_data_fragments[0]}"
-        local partition_data_filesystem="${partition_data_fragments[2]}"
-        local partition_data_mount_point="${partition_data_fragments[3]}"
-        local partition_device="${disk_device}${partition_data_index}"
+	local index=$(cfg --from "$partition_data" .index)
+        local partition_data_filesystem=$(cfg --from "$partition_data" .filesystem)
+        local partition_data_mount_point=$(cfg --from "$partition_data" .mount_point)
+        local partition_device="${disk_device}${index}"
         local partition_mount_path="$path_chroot$partition_data_mount_point"
         if [ "$partition_data_mount_point" != 'none' ]; then
             if [ ! -d "$partition_mount_path" ]; then
@@ -445,18 +538,60 @@ disk_mount_partitions() {
 
 # Downloading files =============================================================================
 
+download_stages() {
+    free_memory
+    declare -A stage_sources
+    local index=1
+    local stage_types=($(cfg .stage_types[]))
+    local base_url_autobuilds=$(cfg .base_url_autobuilds)
+    local supported_arch=($(cfg .supported_arch[]))
+    local init_system=$(cfg .init_system)
+
+    for stage in "${stage_types[@]}"; do
+        local stageinfo_url="${base_url_autobuilds}/latest-${stage}.txt"
+        local latest_gentoo_content=$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)
+
+        while IFS= read -r line; do
+            entry="${line%% *}"
+            if [[ "$entry" == *"-${init_system}"* ]]; then
+                arch_matches=false
+                for arch in "${supported_arch[@]}"; do
+                    if [[ "$entry" == *"$stage-$arch-"* ]]; then
+                        arch_matches=true
+                    fi
+                done
+                if [[ $arch_matches == true ]]; then
+                    stage_sources[$index]="$entry"
+                    ((index++))
+                fi
+            fi
+        done <<< "$latest_gentoo_content"
+    done
+
+    if [ ${#stage_sources[@]} -eq 0 ]; then
+        error "Failed to get stage tarball sources"
+    fi
+
+    while true; do
+        echo "Available stage tarballs:"
+        for key in $(printf "%s\n" "${!stage_sources[@]}" | sort -n); do
+            entry="${stage_sources[$key]}"
+            trimmed_entry="${entry%-*}"
+            echo "  [$key] $trimmed_entry"
+        done
+        read -p "Please select source stage tarball. In in doubt, select [1]: " selection
+        source_stage="${stage_sources[$selection]}"
+        if [[ -n "$source_stage" ]]; then
+            url_gentoo_tarball="$base_url_autobuilds/$source_stage"
+            echo "Proceeding with: ${source_stage}"
+            break
+        fi
+    done
+}
+
 gentoo_download() {
     free_memory
-    local url_gentoo_tarball
     local path_download="$path_chroot/gentoo.tar.xz"
-    local stageinfo_url="$base_url_autobuilds/latest-stage3.txt"
-    local latest_gentoo_content="$(wget -q -O - "$stageinfo_url" --no-http-keep-alive --no-cache --no-cookies)"
-    local latest_stage3="$(echo "$latest_gentoo_content" | grep "$arch_short-$init_system" | head -n 1 | cut -d' ' -f1)"
-    if [ -n "$latest_stage3" ]; then
-        url_gentoo_tarball="$base_url_autobuilds/$latest_stage3"
-    else
-        error "Failed to download Stage3 URL"
-    fi
     # Download stage3/4 file
     try wget "$url_gentoo_tarball" -O "$path_download" $quiet_flag
 }
@@ -484,37 +619,60 @@ prepare_chroot() {
 }
 
 setup_make_conf() {
-    for key in "${!make_conf[@]}"; do
-        insert_make_config "$key" "${make_conf[$key]}"
+    local path_make="$path_chroot/etc/portage/make.conf"
+    local opts=$(cfg .portage.make_conf --asjson)
+    local keys=($(cfg --from "$opts" keys[]))
+    for key in "${keys[@]}"; do
+        if [[ $key == +* ]]; then
+            # Concating changes to existing entry if found
+            key="${key:1}"
+            local value=$(cfg ".[\"+$key\"]" --from "$opts")
+            append_make_config "$key" "$value"
+        else
+            # Adding/Replacing whole entry
+            local value=$(cfg ".[\"$key\"]" --from "$opts")
+            insert_make_config "$key" "$value"
+        fi
     done
-    if [ ! -z "$add_features" ]; then
-        append_make_config "FEATURES" "$add_features"
-    fi
 }
 
 setup_env() {
-    for key in "${!env_overrides[@]}"; do
-        local key_short=$(echo $key | cut -d'_' -f1)
-	local category=$(echo "$key_short" | cut -d'/' -f1)
-	local package=$(echo "$key_short" | cut -d'/' -f2)
- 	local category_path="$path_chroot/etc/portage/env/$category"
-  	try mkdir -p "$category_path"
-   	echo "${env_overrides[$key]}" | try tee -a "$category_path/$package" >/dev/null
+    mkdir -p "$path_chroot/etc/portage/env"
+    local path_env="$path_chroot/etc/portage/env"
+    local envs=$(cfg .portage.env --asjson)
+    local keys=($(cfg --from "$envs" keys[]))
+    for key in "${keys[@]}"; do
+	local category=$(echo "$key" | cut -d'/' -f1)
+        mkdir -p "$path_env/$category"
+        mapfile -t lines < <(cfg --from "${envs}" ".[\"${key}\"][]")
+        for line in "${lines[@]}"; do
+            echo "$line" | try tee -a "$path_env/$key" >/dev/null
+        done
     done
 }
 
 setup_packages_config() {
+    mkdir -p "$path_chroot/etc/portage/package.accept_keywords"
+    mkdir -p "$path_chroot/etc/portage/package.use"
     # USE
     local path_package_use="$path_chroot/etc/portage/package.use"
-    for key in $(echo "${!package_use[@]}" | tr ' ' '\n' | sort); do
-        local key_short=$(echo $key | cut -d'_' -f1)
-        echo "${package_use[$key]}" | try tee -a "$path_package_use/$key" >/dev/null
+    local use=$(cfg .portage.use --asjson)
+    local keys_use=($(cfg --from "$use" keys[]))
+    for key in "${keys_use[@]}"; do
+        mapfile -t lines < <(cfg --from "${use}" ".[\"${key}\"][]")
+        for line in "${lines[@]}"; do
+            grep -qxF "$line" "$path_package_use/$key" || echo "$line" | tee -a "$path_package_use/$key" >/dev/null
+        done
     done
     # Accept keywords
     local path_package_accept_keywords="$path_chroot/etc/portage/package.accept_keywords"
-    for key in $(echo "${!package_accept_keywords[@]}" | tr ' ' '\n' | sort); do
-        local key_short=$(echo $key | cut -d'_' -f1)
-        echo "${package_accept_keywords[$key]}" | try tee -a "$path_package_accept_keywords/$key" >/dev/null
+    local accept=$(cfg .portage.accept --asjson)
+    local keys_accept=($(cfg --from "$accept" keys[]))
+    for key in "${keys_accept[@]}"; do
+        mapfile -t lines < <(cfg --from "${accept}" ".[\"${key}\"][]")
+        for line in "${lines[@]}"; do
+            grep -qxF "$line" "$path_package_accept_keywords/$key" || echo "$line" | tee -a "$path_package_accekt_keywords/$key" >/dev/null
+        done
     done
 }
 
@@ -523,10 +681,23 @@ setup_binhosts() {
     if [ ! -d "$path_binrepos" ]; then
         try mkdir -p "$path_binrepos"
     fi
-    for key in $(echo "${!binhosts[@]}" | tr ' ' '\n' | sort); do
+
+    local binhosts=$(cfg .portage.binhosts --asjson)
+    local keys=($(cfg --from "$binhosts" keys[]))
+
+
+    for key in "${keys}"; do
         local path_binrepo="$path_binrepos/$key.conf"
-        echo "[$key]" | try tee -a "$path_binrepo" >/dev/null
-        echo "sync-uri = ${binhosts[$key]}" | try tee -a "$path_binrepo" >/dev/null
+        local uri=$(cfg ".[\"$key\"]" --from "$binhosts")
+        if [ -f "$path_binrepo" ]; then
+            try sed -i -e "/^\[$key\]/,/^\[/ { /^sync-uri/ { s|sync-uri = .*|sync-uri = $uri|; h; } }" \
+                   -e "/^\[$key\]/,/^\[/ { /^sync-uri/ { x; s|^|sync-uri = $uri\n|; x; } }" \
+                   "$path_binrepo"
+        else
+            echo "[$key]" | try tee "$path_binrepo" >/dev/null
+            echo "priority = 1" | try tee -a "$path_binrepo" >/dev/null
+            echo "sync-uri = ${uri}" | try tee -a "$path_binrepo" >/dev/null
+        fi
     done
 }
 
@@ -539,13 +710,12 @@ setup_fstab() {
     add_partition_entry() {
         local disk_device="$1"
         local partition_data="$2"
-        local partition_data_fragments=(${partition_data//:/ })
-        local partition_data_index="${partition_data_fragments[0]}"
-        local partition_data_filesystem="${partition_data_fragments[2]}"
-        local partition_data_mount_point="${partition_data_fragments[3]}"
-        local partition_data_flags="${partition_data_fragments[5]}"
-        local partition_data_dump="${partition_data_fragments[6]}"
-        local partition_data_pass="${partition_data_fragments[7]}"
+        local partition_data_index=$(cfg --from "${partition_data}" .index)
+        local partition_data_filesystem=$(cfg --from "${partition_data}" .filesystem)
+        local partition_data_mount_point=$(cfg --from "${partition_data}" .mount_point)
+        local partition_data_flags=$(cfg --from "${partition_data}" .options)
+        local partition_data_dump=$(cfg --from "${partition_data}" .dump)
+        local partition_data_pass=$(cfg --from "${partition_data}" .pass)
         local partition_device="${disk_device}${partition_data_index}"
         local partition_mount_path="$path_chroot$partition_data_mount_point"
         local entry="${partition_device} ${partition_data_mount_point} ${partition_data_filesystem} ${partition_data_flags} ${partition_data_dump} ${partition_data_pass}"
@@ -557,6 +727,7 @@ setup_fstab() {
 }
 
 setup_hostname() {
+    hostname=$(cfg .hostname)
     if [ -z "$hostname" ]; then
         return
     fi
@@ -572,8 +743,8 @@ setup_distcc_client() {
     append_make_config "FEATURES" "distcc"
 }
 
-# TODO: Add other ways of configuring network, line network manager api.
 setup_network_link() {
+    local network_links=($(cfg .network.links[]))
     if [ -z "$network_links" ]; then
         return
     fi
@@ -603,22 +774,26 @@ setup_root_password() {
 
 setup_locales() {
     # Add locales.
-    local path_make_conf="$path_chroot/etc/locale.gen"
-    echo "C.UTF8 UTF-8" | try tee "$path_make_conf" >/dev/null
-    if [ ! -z "$locales" ]; then
-        for ((i = 0; i < "${#locales[@]}"; i++)); do
-            echo "${locales[$i]}" | try tee -a "$path_make_conf" >/dev/null
-        done
-    fi
+    local path_locale="$path_chroot/etc/locale.gen"
+    echo "C.UTF8 UTF-8" | try tee "$path_locale" >/dev/null
+
+    local locales=$(cfg .locales --asjson)
+    mapfile -t locales_list < <(cfg --from "${locales}" .list[])
+    local locale_default=$(cfg --from "${locales}" .defaults)
+
+    for locale in "${locales_list[@]}"; do
+        echo "${locale}" >> "${path_locale}" | try tee -a "${path_locale}" >/dev/null
+    done
     # Generate locales and select default.
     chroot_call 'locale-gen'
-    if [ ! -z "$locale" ]; then
-        chroot_call "eselect locale set $locale"
+    if [ -n "${locale_default}" ]; then
+        chroot_call "eselect locale set ${locale_default}"
     fi
     chroot_call 'env-update && source /etc/profile'
 }
 
 setup_timezone() {
+    local timezone=$(cfg .timezone)
     if [ ! -z "$timezone" ]; then
         chroot_call "echo '$timezone' >> /etc/timezone"
         chroot_call "emerge --config sys-libs/timezone-data"
@@ -641,36 +816,44 @@ setup_portage_repository() {
     chroot_call "killall dirmngr"
 }
 
-setup_profile() {
-    chroot_call "eselect profile set $profile"
-    chroot_call 'env-update && source /etc/profile'
-}
-
 install_updates() {
-    if [ $update_system = true ]; then
+    if [ "$update" = true ]; then
         free_memory
         chroot_call "emerge --newuse --deep --update --with-bdeps=y @world $quiet_flag"
     fi
 }
 
 install_base_tools() {
-    for package in "${guest_base_tools[@]}"; do
+    local packages=$(cfg .packages --asjson)
+    local to_install=($(cfg .initial[] --from "$packages"))
+    for package in "${to_install[@]}"; do
         free_memory
-        chroot_call "FEATURES='-distcc' emerge --update --newuse $package $quiet_flag"
+        chroot_call "FEATURES='-distcc' emerge --update --newuse --deep $package $quiet_flag"
     done
 }
 
 install_other_tools() {
-    for package in "${guest_tools[@]}"; do
+    local packages=$(cfg .packages --asjson)
+    local to_install=($(cfg .other[] --from "$packages"))
+    for package in "${to_install[@]}"; do
         free_memory
-        chroot_call "emerge --update --newuse $package $quiet_flag"
+        chroot_call "emerge --update --newuse --deep $package $quiet_flag"
     done
 }
 
 setup_overlays() {
-    for key in "${!overlays[@]}"; do
-        chroot_call "eselect repository add $key git ${overlays[$key]}"
+    local overlays_eselect=($(cfg .portage.overlays.eselect[]))
+    local overlays_manual=$(cfg .portage.overlays.manual --asjson)
+    local keys=($(cfg --from "$overlays_manual" keys[]))
+    for key in "${keys[@]}"; do
+        local url=$(cfg --from "$overlays_manual" ".[\"$key\"]")
+	chroot_call "eselect repository add $key git $url"
 	chroot_call "emerge --sync $key"
+    done
+
+    for overlay in "${overlays_eselect[@]}"; do
+        chroot_call "eselect repository enable ${overlay}"
+	chroot_call "emerge --sync $repo"
     done
 }
 
@@ -679,33 +862,90 @@ revdep_rebuild() {
     chroot_call "revdep-rebuild $quiet_flag"
 }
 
-setup_autostart() {
-    for key in "${!guest_rc_startup[@]}"; do
-        for tool in ${guest_rc_startup[$key]}; do
-            chroot_call "rc-update add $tool $key"
+setup_conf_d() {
+    local conf_d=$(cfg .conf_d --asjson)
+    local keys=($(cfg --from "$conf_d" keys[]))
+    for key in "${keys[@]}"; do
+        echo "" | try tee "$path_chroot/etc/conf.d/$key" >/dev/null
+	mapfile -t lines < <(cfg --from "${conf_d}" ".[\"${key}\"][]")
+	for line in "${lines[@]}"; do
+            echo "$line" | try tee -a "$path_chroot/etc/conf.d/$key" >/dev/null
         done
     done
 }
 
+setup_autostart() {
+    local rc_scripts=$(cfg .rc_scripts --asjson)
+
+    local rc_default=($(cfg .default[] --from "$rc_scripts"))
+    local rc_boot=($(cfg .boot[] --from "$rc_scripts"))
+
+    for tool in "${rc_boot[@]}"; do
+        chroot_call "rc-update add $tool boot"
+    done
+    for tool in "${rc_default[@]}"; do
+        chroot_call "rc-update add $tool default"
+    done
+}
+
 setup_user() {
-    if [ -v user[@] ]; then
-	local user_username="${user['username']}"
-	local user_fullname="${user['fullname']}"
-	local user_password="${user['password']}"
-	local user_groups="${user['groups']}"
- 	local user_autologin=${user['autologin']}
-	local command="useradd -m -G ${user_groups} -c '${user_fullname}' ${user_username}"
+    local user=$(cfg .user --asjson)
+    if [[ "$user" != null ]]; then
+	local user_username=$(cfg .username --from "$user")
+	local user_password=$(cfg .password --from "$user")
+	local user_groups=$(echo $(cfg .groups[] --from "$user") | sed 's/ /,/g')
+ 	local user_autologin=$(cfg .autologin --from "$user")
+	local command="useradd -m -G ${user_groups} ${user_username}"
 	chroot_call "${command}"
 	if [ ! -z "${user_password}" ]; then
 	    chroot_call "echo -e '${user_password}\n${user_password}' | passwd '${user_username}'"
         fi
- 	if [ ${user_autologin} = true ]; then
+ 	if [ "${user_autologin}" = true ]; then
 		chroot_call "sed -i '/^c1:12345:respawn:\/sbin\/agetty/c\c1:12345:respawn:\/sbin\/agetty --noclear --autologin ${user_username} 38400 tty1 linux' /etc/inittab"
   	fi
     fi
     # Allow wheel group to run sudo without password
     local path_sudoers_file="${path_chroot}/etc/sudoers"
     sed -i 's/^# %wheel ALL=(ALL:ALL) NOPASSWD: ALL/%wheel ALL=(ALL:ALL) NOPASSWD: ALL/' "$path_sudoers_file"
+}
+
+setup_bootloader() {
+        # Find root and boot partition
+        root_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/" {print $1}' ${path_chroot}/etc/fstab)
+        boot_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/boot" {print $1}' ${path_chroot}/etc/fstab)
+
+        if [ ! -z "$root_partition" ]; then
+                log magenta "Root partition detected: $root_partition."
+                kboot_path="${path_chroot}/etc/kboot.conf"
+        fi
+	if [ ! -z "$boot_partition" ]; then
+                log magenta "Boot partition detected: $boot_partition."
+                kboot_path="${path_chroot}/boot/kboot.conf"
+        fi
+        if [ -z "$root_partition" ]; then
+                log magenta "Skipping kboot configuration, because the root partition was not detected."
+                log magenta "Please configure it manually."
+        fi
+        # If there is no separate /boot partition, the boot entry needs /boot prefix/
+        if [ -z "$boot_partition" ]; then
+                vmlinux_path_prefix="/boot"
+        fi
+
+	# Find installed kernels
+        kernels=$(find ${path_chroot}/boot -type f \( -name 'vmlinux*' -o -name 'vmlinuz*' \))
+
+        for kernel_path in ${kernels[@]}; do
+            local kernel=$(basename $kernel_path)
+            local PV=$(kernel_version=$(echo $kernel | sed -n 's/^vmlinu[xz]-\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p'))
+
+            kboot_entry="Gentoo-Kernel-${PV}='${vmlinux_path_prefix}/$kernel root=${root_partition} video=ps3fb:mode:133'"
+            if [ -f "${kboot_path}" ]; then
+                grep -qxF "${kboot_entry}" "${kboot_path}" 2>/dev/null || sed -i "1i ${kboot_entry}" "${kboot_path}"
+            else
+               	echo "${kboot_entry}" >> "${kboot_path}"
+            fi
+            log magenta "KBOOT entry added to ${kboot_path}"
+        done
 }
 
 # Cleaning ======================================================================================
@@ -739,10 +979,9 @@ disk_unmount_partitions() {
     unmount_filesystem_from_config() {
         local disk_device="$1"
         local partition_data="$2"
-        local partition_data_fragments=(${partition_data//:/ })
-        local partition_data_index=${partition_data_fragments[0]}
-        local partition_data_filesystem=${partition_data_fragments[2]}
-        local partition_data_mount_point=${partition_data_fragments[3]}
+        local partition_data_index=$(cfg --from "${partition_data}" .index)
+        local partition_data_filesystem=$(cfg --from "${partition_data}" .filesystem)
+        local partition_data_mount_point=$(cfg --from "${partition_data}" .mount_point)
         local partition_device=${disk_device}${partition_data_index}
         if [ "$partition_data_filesystem" = 'swap' ]; then
             try swapoff $partition_device

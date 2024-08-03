@@ -20,7 +20,9 @@ for dir in "${PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE}"/{.[!.]*,*}; do
     git add -u
     echo ""
 done
+EOF
+chmod +x "${PATH_GIT_HOOK_RELEASES}"
 
 echo "[Initialize GIT LFS for releases]"
-cd "/home/gentoo/ps3/releases"
+cd "${PATH_ROOT}/releases"
 git lfs install

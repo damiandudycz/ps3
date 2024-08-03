@@ -1,12 +1,12 @@
 [submodule "overlays/ps3-gentoo-overlay"]
 	path = overlays/ps3-gentoo-overlay
-	url = git@github.com:damiandudycz/ps3-gentoo-overlay.git
+	url = git@github.com:damiandudycz/ps3-gentoo-overlay
 	branch = main
 [submodule "overlays/ps3-gentoo-overlay.distfiles"]
 	path = overlays/ps3-gentoo-overlay.distfiles
-	url = git@github.com:damiandudycz/ps3-gentoo-overlay.distfiles.git
+	url = git@github.com:damiandudycz/ps3-gentoo-overlay.distfiles
 	branch = main
 [submodule "releases"]
 	path = releases
-	url = git@github.com:damiandudycz/ps3-gentoo-releases
+	url = git@github.com:damiandudycz/ps3-gentoo-releases.git
 	branch = main

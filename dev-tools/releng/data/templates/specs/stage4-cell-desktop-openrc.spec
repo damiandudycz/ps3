@@ -34,13 +34,13 @@ stage4/packages:
 	app-misc/ps3pf_utils
 	sys-apps/ps3vram-swap
 	sys-block/zram-init
-	net-misc/dhcpcd
+#	net-misc/dhcpcd
 	app-admin/sudo
 	app-admin/sysklogd
 	net-misc/ntp
         net-misc/networkmanager
 	x11-base/xorg-server
-	x11-apps/xdm
+	x11-misc/lightdm
 
 stage4/rcadd:
 	zram-init|boot

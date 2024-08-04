@@ -36,17 +36,16 @@
                         }
 		]
 	},
+	"user" : {
+		"username" : "ps3",
+		"groups" : ["users", "wheel", "audio", "cdrom", "video", "usb"]
+	},
 	"locales" : {
 		"default" : "en_US.utf8",
 		"list" : ["en_US.UTF-8 UTF-8"]
 	},
 	"network" : {
-		"links" : ["eth0", "wlan0"]
-	},
-	"user" : {
-		"username" : "ps3",
-		"groups" : ["users", "wheel", "audio", "cdrom", "video", "usb"],
-		"autologin" : false
+		"links" : []
 	},
 	"portage" : {
 		"use" : {

@@ -33,7 +33,7 @@ stage4/packages:
 	app-misc/ps3pf_utils
 	sys-apps/ps3vram-swap
 	sys-block/zram-init
-	net-misc/dhcpcd
+#	net-misc/dhcpcd
 	app-admin/sudo
 	app-admin/sysklogd
 	net-misc/ntp

@@ -59,10 +59,10 @@ readonly CONF_RELEASE_EMAIL_PREPEND="[cell-auto]"
 readonly CONF_RELEASE_USE_FLAGS='"altivec", "ibm", "ps3"'
 
 readonly CONF_CROSSDEV_ABI="altivec"
-readonly CONF_CROSSDEV_L="2.37-r7"
-readonly CONF_CROSSDEV_K="6.9"
-readonly CONF_CROSSDEV_G="13.2.1_p20240113-r1"
-readonly CONF_CROSSDEV_B="2.41-r3"
+readonly CONF_CROSSDEV_L="2.40-r9"
+readonly CONF_CROSSDEV_K="6.6"
+readonly CONF_CROSSDEV_G="13.3.1_p20240614"
+readonly CONF_CROSSDEV_B="2.42-r1"
 
 readonly CONF_KERNEL_PACKAGE_GROUP="sys-kernel"
 readonly CONF_KERNEL_PACKAGE_NAME_BASE="gentoo-kernel" # Name of raw gentoo kernel package

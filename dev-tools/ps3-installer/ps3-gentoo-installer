@@ -576,14 +576,22 @@ download_stages() {
         echo "Available stage tarballs:"
         for key in $(printf "%s\n" "${!stage_sources[@]}" | sort -n); do
             entry="${stage_sources[$key]}"
-            trimmed_entry="${entry%-*}"
+            trimmed_entry=$(basename "${entry%-*}")
             echo "  [$key] $trimmed_entry"
         done
         read -p "Please select source stage tarball. In in doubt, select [1]: " selection
         source_stage="${stage_sources[$selection]}"
+	source_stage_basename=$(basename "${source_stage}")
         if [[ -n "$source_stage" ]]; then
             url_gentoo_tarball="$base_url_autobuilds/$source_stage"
+            local selected_stage_type="${trimmed_entry}"
             echo "Proceeding with: ${source_stage}"
+            # Determine if performing quick install (stage4)
+            if [[ "$selected_stage_type" == stage3* ]]; then
+                full_installation=true
+            else
+                full_installation=false
+            fi
             break
         fi
     done
@@ -619,6 +627,9 @@ prepare_chroot() {
 }
 
 setup_make_conf() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local path_make="$path_chroot/etc/portage/make.conf"
     local opts=$(cfg .portage.make_conf --asjson)
     local keys=($(cfg --from "$opts" keys[]))
@@ -637,6 +648,9 @@ setup_make_conf() {
 }
 
 setup_env() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     mkdir -p "$path_chroot/etc/portage/env"
     local path_env="$path_chroot/etc/portage/env"
     local envs=$(cfg .portage.env --asjson)
@@ -652,6 +666,9 @@ setup_env() {
 }
 
 setup_packages_config() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     mkdir -p "$path_chroot/etc/portage/package.accept_keywords"
     mkdir -p "$path_chroot/etc/portage/package.use"
     # USE
@@ -677,6 +694,9 @@ setup_packages_config() {
 }
 
 setup_binhosts() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local path_binrepos="$path_chroot/etc/portage/binrepos.conf"
     if [ ! -d "$path_binrepos" ]; then
         try mkdir -p "$path_binrepos"
@@ -744,6 +764,9 @@ setup_distcc_client() {
 }
 
 setup_network_link() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local network_links=($(cfg .network.links[]))
     if [ -z "$network_links" ]; then
         return
@@ -824,6 +847,9 @@ install_updates() {
 }
 
 install_base_tools() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local packages=$(cfg .packages --asjson)
     local to_install=($(cfg .initial[] --from "$packages"))
     for package in "${to_install[@]}"; do
@@ -833,6 +859,9 @@ install_base_tools() {
 }
 
 install_other_tools() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local packages=$(cfg .packages --asjson)
     local to_install=($(cfg .other[] --from "$packages"))
     for package in "${to_install[@]}"; do
@@ -863,6 +892,9 @@ revdep_rebuild() {
 }
 
 setup_conf_d() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local conf_d=$(cfg .conf_d --asjson)
     local keys=($(cfg --from "$conf_d" keys[]))
     for key in "${keys[@]}"; do
@@ -875,6 +907,9 @@ setup_conf_d() {
 }
 
 setup_autostart() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local rc_scripts=$(cfg .rc_scripts --asjson)
 
     local rc_default=($(cfg .default[] --from "$rc_scripts"))
@@ -910,6 +945,9 @@ setup_user() {
 }
 
 setup_bootloader() {
+	if [ "$installation_type" != 'disk' ]; then
+		return
+	fi
         # Find root and boot partition
         root_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/" {print $1}' ${path_chroot}/etc/fstab)
         boot_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/boot" {print $1}' ${path_chroot}/etc/fstab)
@@ -936,7 +974,7 @@ setup_bootloader() {
 
         for kernel_path in ${kernels[@]}; do
             local kernel=$(basename $kernel_path)
-            local PV=$(kernel_version=$(echo $kernel | sed -n 's/^vmlinu[xz]-\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p'))
+            local PV=$(echo $kernel | sed -n 's/^vmlinu[xz]-\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
 
             kboot_entry="Gentoo-Kernel-${PV}='${vmlinux_path_prefix}/$kernel root=${root_partition} video=ps3fb:mode:133'"
             if [ -f "${kboot_path}" ]; then

@@ -13,6 +13,7 @@ empty_directory "${KE_PATH_WORK_EBUILD}"
 
 # Create local working directories.
 mkdir -p "${KE_PATH_WORK_EBUILD}"
+mkdir -p "${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_PS3_PATCHES}"
 
 # Copy configuration files.
 cp "${KE_PATH_WORK_SRC_LINUX}/diffs" "${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DIFFS}"
@@ -32,6 +33,7 @@ if [[ ${KE_FLAG_UNMASK} ]]; then
 fi
 
 # Create package
-KE_COMMAND="--category ${CONF_KERNEL_PACKAGE_SPECIAL} --ebuild ${KE_PATH_EBUILD_FILE_DST} --version ${KE_PACKAGE_VERSION_SELECTED} --distfile ${KE_PATH_WORK_PATCHES} --distfile ${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DIFFS} --distfile ${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DEFCONF}"
-[[ ! -z "${KE_FLAG_SAVE}" ]] && KE_COMMAND="${KE_COMMAND} --save"
-source ${PATH_OVERLAY_SCRIPT_CREATE_PACKAGE} ${KE_COMMAND}
+patches_link=$(readlink -f ${KE_PATH_WORK_VERSION_PATCHES})
+cp -rf "${patches_link}"/* "${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_PS3_PATCHES}"/
+KE_COMMAND="--category ${CONF_KERNEL_PACKAGE_SPECIAL} --ebuild ${KE_PATH_EBUILD_FILE_DST} --version ${KE_PACKAGE_VERSION_SELECTED} --distfile ${KE_PATH_WORK_EBUILD}/${KE_NAME_FOLDER_PS3_PATCHES} --distfile ${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DIFFS} --distfile ${KE_PATH_WORK_EBUILD}/${KE_NAME_FILE_CONF_DEFCONF}"
+source ${PATH_OVERLAY_SCRIPT_CREATE_PACKAGE} --save ${KE_COMMAND}

@@ -1,1 +1,0 @@
-patches/patches-t2sde.txt

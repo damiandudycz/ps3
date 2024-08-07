@@ -14,20 +14,22 @@ register_failure_handler "rm -f ${KE_EBUILD_CONFIGURE_FILES_TO_CLEAN};"
 cd "${KE_PATH_WORK_SRC_LINUX}"
 
 # Make default PS3 Defconfig.
-if [[ ! -f "diffs" ]]; then
-    ARCH=powerpc make ${KE_NAME_FILE_EBUILD_DEFCONFIG}
+if [[ ! -f ".config" ]]; then
+    ARCH=powerpc CROSS_COMPILE=${CONF_CROSSDEV_TARGET}- make ${KE_NAME_FILE_EBUILD_DEFCONFIG}
     # Apply changes from diffs.
     if [[ -f "${KE_PATH_DATA_CONFIG_DIFFS}" ]]; then
         ruby ${KE_PATH_SCRIPT_APPLY_DIFFCONFIG} ${KE_PATH_DATA_CONFIG_DIFFS} ./.config > .config_modified
-        ARCH=powerpc ${KE_PATH_SCRIPT_MERGE_CONFIG} .config_modified
+        ARCH=powerpc CROSS_COMPILE=powerpc64-unknown-linux-gnu- ${KE_PATH_SCRIPT_MERGE_CONFIG} .config_modified
     fi
+#    rm .config.old
+    ARCH=powerpc CROSS_COMPILE=${CONF_CROSSDEV_TARGET}- make oldconfig
 fi
 
 # Menuconfig.
-[[ ${KE_FLAG_EDIT} ]] && ARCH=powerpc make menuconfig
+[[ ${KE_FLAG_EDIT} ]] && ARCH=powerpc CROSS_COMPILE=${CONF_CROSSDEV_TARGET}- make menuconfig
 
 # Create modified defconfig.
-ARCH=powerpc make savedefconfig
+ARCH=powerpc CROSS_COMPILE=${CONF_CROSSDEV_TARGET}- make savedefconfig
 
 # Generate diffs from default PS3 Defconfig.
 ${KE_PATH_SCRIPT_DIFFCONFIG} "arch/powerpc/configs/${KE_NAME_FILE_EBUILD_DEFCONFIG}" defconfig > diffs

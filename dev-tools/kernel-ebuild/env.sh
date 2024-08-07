@@ -1,7 +1,7 @@
 #!/bin/bash
 
 [ ${KE_ENV_LOADED} ] && return 0; readonly KE_ENV_LOADED=true
-register_usage "$0 [--unmask] [--save] [--edit] [--version <version>] [--use <use-flags>]"
+register_usage "$0 [--unmask] [--save] [--edit] [--version <version>] [--use <use-flags>] [--upload <username@ps3-host>]"
 
 # Input parsing.
 while [ $# -gt 0 ]; do case "$1" in
@@ -9,6 +9,7 @@ while [ $# -gt 0 ]; do case "$1" in
     --save)           KE_FLAG_SAVE=true;;                 # Save patches and configuration in versioned directory. Should always use, unless testing.
     --edit)           KE_FLAG_EDIT=true;;                 # Edit configuration in step ebuild-04-configure.sh.
     --version) shift; KE_PACKAGE_VERSION_SPECIFIED="$1";; # Ebuild version specified as the input value if any.
+    --upload) shift;  KE_UPLOAD_ADDRESS="$1";;            # Address of PS3 machine where to upload build kernel with ssh.
     --use) shift;     KE_PACKAGE_USE="$1";;               # Extra use flags to be added when building locally. For example: --use "X debug"
     *) show_usage
 esac; shift; done
@@ -30,6 +31,7 @@ readonly KE_NAME_FOLDER_CONFIG="config"                     # Config folder (dat
 readonly KE_NAME_FOLDER_DEFAULT="default"                   # Default storage folder (data/version-storage/default).
 readonly KE_NAME_FOLDER_SCRIPTS="scripts"                   # Scripts folder (data/scripts).
 readonly KE_NAME_FOLDER_BINPKGS="binpkgs"                   # Directory containing created binpkg file.
+readonly KE_NAME_FOLDER_LOCALBUILD="localbuild"             # Kernel build locally on this host with ARCH=powerpc.
 readonly KE_NAME_FILE_CONF_DIFFS="ps3_defconfig_diffs"      # Config diffs file (data/version-storage/<version>/diffs).
 readonly KE_NAME_FILE_CONF_DEFCONF="ps3_gentoo_defconfig"   # Default config file (data/version-storage/<version>/defconf).
 readonly KE_NAME_FILE_PATCHES_CURRENT="patches-current.txt" # List of patches to download (data/patches-current.txt).
@@ -60,6 +62,7 @@ readonly KE_PATH_WORK_SRC="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELEC
 readonly KE_PATH_WORK_SRC_LINUX="$(find ${KE_PATH_WORK_SRC}/portage/${CONF_KERNEL_PACKAGE_BASE}-${KE_PACKAGE_VERSION_SELECTED}/work/ -maxdepth 1 -name linux-* -type d -print -quit 2>/dev/null)" # Location of linux source code from gentoo-kernel ebuild extracted package.
 readonly KE_PATH_WORK_BINPKGS="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/${KE_NAME_FOLDER_BINPKGS}" # Location of folder containing binpkg created with crossdev.
 readonly KE_PATH_WORK_PATCHES="${PATH_WORK_KERNEL_EBUILD}/${KE_NAME_FOLDER_PATCHES}"
+readonly KE_PATH_WORK_LOCALBUILD="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/${KE_NAME_FOLDER_LOCALBUILD}"
 
 # Work files location.
 readonly KE_PATH_WORK_EBUILD="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/ebuild"                     # Location of ebuild generation workdir.

@@ -1,1 +1,1 @@
-patches/patches-t2sde-23.6.txt
+patches/patches-t2sde.txt

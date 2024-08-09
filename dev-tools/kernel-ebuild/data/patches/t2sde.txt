@@ -1,7 +1,9 @@
+# To rename patch file append |<new_name> after the url. For Example: https://patches.com/0010-patchA.patch|0010-superPatch.patch.
+# This can be used to unblock disabled patches or to add USE flags requirements (For example |0010-superPatch[X].patch).
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0009-ps3disk-blk_mq_queue_stopped.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0010-ps3stor-multiple-regions.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0011-ps3stor-send-cmd-timeout.patch
-https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0020-ps3fb-use-fifo.patch.disabled|0020-ps3fb-use-fifo[X].patch
+https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0020-ps3fb-use-fifo.patch.disabled
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0030-ps3flash.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0040-ps3sysmgr-lpar-reboot.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0050-ps3sysmgr-char-device.patch
@@ -25,11 +27,11 @@ https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0230-spul
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0240-ps3lv1call.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0250-lv1call-add-debug-console-hvcalls.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0260-udbg-lv1-console.patch
-#https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0600-ps3fb-ioctls.patch.disabled|X
-https://svn.exactcode.de/t2/trunk/package/kernel/linux/0666-ps3fb-vram.patch
-https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0667-ps3fb-cursor.patch|X
-https://svn.exactcode.de/t2/trunk/package/kernel/linux/0700-ps3vram-mod-ps3fb.patch
+https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0600-ps3fb-ioctls.patch.disabled
+https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0667-ps3fb-cursor.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/1000-ps3disk-fix-bvec-memcpy.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/ps3-gelic-skb-alloc.patch
+https://svn.exactcode.de/t2/trunk/package/kernel/linux/0666-ps3fb-vram.patch
+https://svn.exactcode.de/t2/trunk/package/kernel/linux/0700-ps3vram-mod-ps3fb.patch
 https://svn.exactcode.de/t2/trunk/package/kernel/linux/hotfix-ppc64-ps3-srr-clobber.patch
 https://svn.exactcode.de/t2/trunk/package/kernel/linux/ps3-partition.patch

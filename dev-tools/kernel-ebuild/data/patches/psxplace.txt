@@ -1,7 +1,8 @@
-# For patches that should be added only to specific use flags add |FLAG postfix, eq: |X
+# To rename patch file append |<new_name> after the url. For Example: https://patches.com/0010-patchA.patch|0010-superPatch.patch.
+# This can be used to unblock disabled patches or to add USE flags requirements (For example |0010-superPatch[X].patch).
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0010-ps3stor-multiple-regions.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0020-ps3stor-send-cmd-timeout.patch
-https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0030-ps3fb.patch|X
+https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0030-ps3fb.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0035-ps3flash.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0040-ps3-partition.patch
 https://raw.githubusercontent.com/damiandudycz/ps3/development/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.9/0050-ps3sysmgr-lpar-reboot.patch

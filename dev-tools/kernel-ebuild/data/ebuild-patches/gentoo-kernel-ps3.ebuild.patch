@@ -44,17 +44,30 @@
 -"
 +PDEPEND=""
  
-@@ -77,48 +56,16 @@ src_prepare() {
+@@ -77,48 +56,29 @@ src_prepare() {
  	)
-+	PATCHES_PS3=( "${WORKDIR}/ps3_patches"/*.patch )
-+	for flag in ${PATCHES_USE}; do
-+		if use ${flag}; then
-+			[[ -d "${WORKDIR}/ps3_patches/${flag}" ]] && PATCHES_PS3+=( "${WORKDIR}/ps3_patches/${flag}"/*.patch )
-+		else
-+			[[ -d "${WORKDIR}/ps3_patches/-${flag}" ]] && PATCHES_PS3+=( "${WORKDIR}/ps3_patches/-${flag}"/*.patch )
-+		fi
-+	done
++	# Add PS3 patches matching USE flags
++        for patch_file in "${WORKDIR}/ps3_patches/"*.patch; do
++            patch_name=$(basename "${patch_file}")
++            if [[ ! $patch_name =~ \[([^]]+)\] ]]; then
++                PATCHES_PS3+=( "${patch_file}" )
++            else
++                flags=$(grep -o '\[[^]]*\]' <<< "$patch_name")
++                add=false
++                while IFS= read -r flag; do
++                    flag=${flag:1:-1}
++                    use ${flag} && add=true
++                done <<< "$flags"
++                if [[ $add = true ]]; then
++                    PATCHES_PS3+=( "${patch_file}" )
++                fi
++            fi
++        done
 +	PATCHES+=(${PATCHES_PS3[@]})
++	# Sort all patches by name
++	sorted_patches=($(for patch in "${PATCHES[@]}"; do echo "$patch"; done | sort))
++	PATCHES=("${sorted_patches[@]}")
++
  	default
  
 -	local biendian=false

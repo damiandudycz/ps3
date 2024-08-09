@@ -1,7 +1,7 @@
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0009-ps3disk-blk_mq_queue_stopped.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0010-ps3stor-multiple-regions.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0011-ps3stor-send-cmd-timeout.patch
-#https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0020-ps3fb-use-fifo.patch.disabled|X
+https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0020-ps3fb-use-fifo.patch.disabled|0020-ps3fb-use-fifo[X].patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0030-ps3flash.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0040-ps3sysmgr-lpar-reboot.patch
 https://svn.exactcode.de/t2/trunk/architecture/powerpc64/package/linux/0050-ps3sysmgr-char-device.patch

@@ -16,7 +16,7 @@ apply_patches() {
     for PATCH in "$patch_dir"/*.patch; do
         [ -e "$PATCH" ] || continue
         echo "Apply patch ${PATCH}:"
-        patch --batch --force -p1 -i "${PATCH}" -d "${KE_PATH_WORK_SRC_LINUX}"
+        patch --batch --force -p1 -d "${KE_PATH_WORK_SRC_LINUX}" < "${PATCH}"
     done
 }
 

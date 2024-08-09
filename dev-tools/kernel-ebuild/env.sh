@@ -12,7 +12,8 @@ while [ $# -gt 0 ]; do case "$1" in
     --upload)  shift; KE_UPLOAD_ADDRESS="$1";;            # Address of PS3 machine where to upload build kernel with ssh.
     --use)     shift; KE_PACKAGE_USE="$1";;               # Extra use flags to be added when building locally. For example: --use "X debug"
     --patch)   shift; KE_PATCH_SET="$1";;                 # Which set of patches to use. If not selected, uses default.
-    *) show_usage
+    --accept-custom-flags) KE_ACCEPT_CUSTOM_FLAGS=true;;
+    *) [[ ${KE_ACCEPT_CUSTOM_FLAGS} = true ]] || show_usage
 esac; shift; done
 
 # Validate input variables;
@@ -20,6 +21,8 @@ esac; shift; done
 
 # Read default configurations from main environment.
 [[ ${CONF_KERNEL_PACKAGE_AUTOUNMASK} = true ]] && KE_FLAG_UNMASK=true
+
+readonly KE_CONF_PATCH_DEFULT_NAME="selected"
 
 # Main Scripts in kernel-ebuild group.
 readonly KE_SCRIPT_NAME_FIND_VERSION="ebuild-00-find-version.sh" # Finds version of gentoo-kernel - stable or unstable, depending on KE_FLAG_UNMASK.
@@ -36,14 +39,13 @@ readonly KE_NAME_FOLDER_BINPKGS="binpkgs"                   # Directory containi
 readonly KE_NAME_FOLDER_LOCALBUILD="localbuild"             # Kernel build locally on this host with ARCH=powerpc.
 readonly KE_NAME_FILE_CONF_DIFFS="ps3_defconfig_diffs"      # Config diffs file (data/version-storage/<version>/diffs).
 readonly KE_NAME_FILE_CONF_DEFCONF="ps3_gentoo_defconfig"   # Default config file (data/version-storage/<version>/defconf).
-readonly KE_NAME_FILE_PATCHES_DEFAULT="default"             # List of patches to download (data/patches-current.txt).
 readonly KE_NAME_FILE_EBUILD_DEFCONFIG="ps3_defconfig"      # Name of ps3 kernel config file.
 readonly KE_NAME_FILE_BINPKGS_PACKAGES="Packages"
 
 # Variables..
 set_if   KE_VAL_EBUILD_KEYWORD_SELECTED "\${KE_FLAG_UNMASK}" "~${CONF_TARGET_ARCH}" "${CONF_TARGET_ARCH}"
 set_if   KE_PACKAGE_VERSION_SELECTED "\"${KE_CONF_SCRIPT_NAME_CALLED}\" = \"${KE_SCRIPT_NAME_FIND_VERSION}\"" "" "$(source ${KE_SCRIPT_NAME_FIND_VERSION})"
-set_if   KE_PATCH_SET_SELECTED "-n \"${KE_PATCH_SET}\"" "${KE_PATCH_SET}" "${KE_NAME_FILE_PATCHES_DEFAULT}"
+set_if   KE_PATCH_SET_SELECTED "-n \"${KE_PATCH_SET}\"" "${KE_PATCH_SET}" "${KE_CONF_PATCH_DEFULT_NAME}"
 
 # Names of ebuild files and variables dependant on package version.
 readonly KE_NAME_EBUILD_FILE_DISTFILES_TAR="${CONF_KERNEL_PACKAGE_NAME_SPECIAL}-files-${KE_PACKAGE_VERSION_SELECTED}.tar.xz" # Destination distfiles tarball.

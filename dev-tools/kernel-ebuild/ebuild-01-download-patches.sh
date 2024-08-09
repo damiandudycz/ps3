@@ -19,7 +19,6 @@ for file in "${KE_PATH_DATA_PATCHES_LISTS}"/*.txt; do
         # Download patches.
         echo "Downloading patches to ${KE_PATH_WORK_PATCHES}/${patch_set_name}"
         cd "${KE_PATH_WORK_PATCHES}/${patch_set_name}"
-        DIR="${KE_PATH_WORK_PATCHES}/${patch_set_name}"
         for URL_PATCH in "${URL_PS3_PATCHES[@]}"; do
 	    echo "${URL_PATCH}"
 	    if [[ "${URL_PATCH}" == *'|'* ]]; then
@@ -29,7 +28,7 @@ for file in "${KE_PATH_DATA_PATCHES_LISTS}"/*.txt; do
 		    URL="${URL_PATCH}"
 	            FILENAME="$(basename ${URL})"
             fi
-            wget ${URL} --quiet -P "${DIR}/${FILENAME}"
+            wget ${URL} --quiet
         done
     fi
 

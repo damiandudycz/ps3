@@ -22,7 +22,7 @@ esac; shift; done
 # Read default configurations from main environment.
 [[ ${CONF_KERNEL_PACKAGE_AUTOUNMASK} = true ]] && KE_FLAG_UNMASK=true
 
-readonly KE_CONF_PATCH_DEFULT_NAME="selected"
+readonly KE_CONF_PATCH_DEFULT_NAME="psxplace"
 
 # Main Scripts in kernel-ebuild group.
 readonly KE_SCRIPT_NAME_FIND_VERSION="ebuild-00-find-version.sh" # Finds version of gentoo-kernel - stable or unstable, depending on KE_FLAG_UNMASK.

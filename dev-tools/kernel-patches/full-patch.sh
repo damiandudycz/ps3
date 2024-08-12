@@ -1,1 +1,3 @@
-for patch in ../Patches/New/*.patch; do echo $patch; patch -p1 -d . < $patch; done
+for patch in patches/New/*.patch; do 
+	patch -p1 -d linux-files < $patch
+done

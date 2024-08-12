@@ -4,7 +4,6 @@ obj-y += interrupt.o exports.o os-area.o
 obj-y += system-bus.o
 
 obj-$(CONFIG_PPC_EARLY_DEBUG_PS3GELIC) += gelic_udbg.o
-obj-$(CONFIG_PS3_LV1_CONS_UDBG) += lv1_cons_udbg.o
 obj-$(CONFIG_SMP) += smp.o
 obj-$(CONFIG_SPU_BASE) += spu.o
 obj-y += device-init.o

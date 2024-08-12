@@ -1,0 +1,800 @@
+diff --git a/arch/powerpc/include/asm/ps3.h b/arch/powerpc/include/asm/ps3.h
+index eba9d2b..83a633a 100644
+--- a/arch/powerpc/include/asm/ps3.h
++++ b/arch/powerpc/include/asm/ps3.h
+@@ -317,6 +317,7 @@ enum ps3_match_id {
+ 	PS3_MATCH_ID_LPM		= 11,
+ 	PS3_MATCH_ID_STOR_NOR_FLASH	= 12,
+ 	PS3_MATCH_ID_DISP_MANAGER	= 13,
++	PS3_MATCH_ID_STOR_ENCDEC	= 14,
+ };
+ 
+ enum ps3_match_sub_id {
+@@ -338,6 +339,7 @@ enum ps3_match_sub_id {
+ #define PS3_MODULE_ALIAS_LPM		"ps3:11:0"
+ #define PS3_MODULE_ALIAS_STOR_NOR_FLASH	"ps3:12:0"
+ #define PS3_MODULE_ALIAS_DISP_MANAGER	"ps3:13:0"
++#define PS3_MODULE_ALIAS_STOR_ENCDEC	"ps3:14:0"
+ 
+ enum ps3_system_bus_device_type {
+ 	PS3_DEVICE_TYPE_IOC0 = 1,
+diff --git a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kconfig
+index d5d787f..258e8e4 100644
+--- a/arch/powerpc/platforms/ps3/Kconfig
++++ b/arch/powerpc/platforms/ps3/Kconfig
+@@ -205,6 +205,16 @@ config PS3_STRGMNGR
+ 	  This driver allows you to create/delete/modify regions
+ 	  on PS3 storage devices.
+ 
++config PS3_ENCDEC
++	tristate "PS3 ENCDEC Driver"
++	depends on PPC_PS3
++	select PS3_STORAGE
++	help
++	  Include support for the PS3 ENCDEC device.
++
++	  This support is required to access the PS3 ENCDEC device.
++	  In general, all users will say Y or M.
++
+ config PS3_LPM
+ 	tristate "PS3 Logical Performance Monitor support"
+ 	depends on PPC_PS3
+diff --git a/arch/powerpc/platforms/ps3/Kconfig.orig b/arch/powerpc/platforms/ps3/Kconfig.orig
+deleted file mode 100644
+index 21c85bc..0000000
+--- a/arch/powerpc/platforms/ps3/Kconfig.orig
++++ /dev/null
+@@ -1,222 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0
+-config PPC_PS3
+-	bool "Sony PS3"
+-	depends on PPC64 && PPC_BOOK3S && CPU_BIG_ENDIAN
+-	select PPC_CELL
+-	select USB_OHCI_LITTLE_ENDIAN
+-	select USB_OHCI_BIG_ENDIAN_MMIO
+-	select USB_EHCI_BIG_ENDIAN_MMIO
+-	select HAVE_PCI
+-	select IRQ_DOMAIN_NOMAP
+-	help
+-	  This option enables support for the Sony PS3 game console
+-	  and other platforms using the PS3 hypervisor.  Enabling this
+-	  option will allow building otheros.bld, a kernel image suitable
+-	  for programming into flash memory, and vmlinux, a kernel image
+-	  suitable for loading via kexec.
+-
+-menu "PS3 Platform Options"
+-	depends on PPC_PS3
+-
+-config PS3_ADVANCED
+-	depends on PPC_PS3
+-	bool "PS3 Advanced configuration options"
+-	help
+-	  This gives you access to some advanced options for the PS3. The
+-	  defaults should be fine for most users, but these options may make
+-	  it possible to better control the kernel configuration if you know
+-	  what you are doing.
+-
+-	  Note that the answer to this question won't directly affect the
+-	  kernel: saying N will just cause the configurator to skip all
+-	  the questions about these options.
+-
+-	  Most users should say N to this question.
+-
+-config PS3_HTAB_SIZE
+-	depends on PPC_PS3
+-	int "PS3 Platform pagetable size" if PS3_ADVANCED
+-	range 18 20
+-	default 20
+-	help
+-	  This option is only for experts who may have the desire to fine
+-	  tune the pagetable size on their system.  The value here is
+-	  expressed as the log2 of the page table size.  Valid values are
+-	  18, 19, and 20, corresponding to 256KB, 512KB and 1MB respectively.
+-
+-	  If unsure, choose the default (20) with the confidence that your
+-	  system will have optimal runtime performance.
+-
+-config PS3_DYNAMIC_DMA
+-	depends on PPC_PS3
+-	bool "PS3 Platform dynamic DMA page table management"
+-	help
+-	  This option will enable kernel support to take advantage of the
+-	  per device dynamic DMA page table management provided by the Cell
+-	  processor's IO Controller.  This support incurs some runtime
+-	  overhead and also slightly increases kernel memory usage.  The
+-	  current implementation should be considered experimental.
+-
+-	  This support is mainly for Linux kernel development.  If unsure,
+-	  say N.
+-
+-config PS3_VUART
+-	depends on PPC_PS3
+-	tristate
+-
+-config PS3_PS3AV
+-	depends on PPC_PS3
+-	tristate "PS3 AV settings driver" if PS3_ADVANCED
+-	select VIDEO
+-	select PS3_VUART
+-	default y
+-	help
+-	  Include support for the PS3 AV Settings driver.
+-
+-	  This support is required for PS3 graphics and sound. In
+-	  general, all users will say Y or M.
+-
+-config PS3_SYS_MANAGER
+-	depends on PPC_PS3
+-	tristate "PS3 System Manager driver" if PS3_ADVANCED
+-	select PS3_VUART
+-	default y
+-	help
+-	  Include support for the PS3 System Manager.
+-
+-	  This support is required for PS3 system control.  In
+-	  general, all users will say Y or M.
+-
+-config PS3_LV1CALL
+-    tristate "PS3 LV1 Call Driver"
+-    depends on PPC_PS3 && PS3_ADVANCED
+-    help
+-      This driver allows you to execute LV1 calls.
+-
+-config PS3_VERBOSE_RESULT
+-	bool "PS3 Verbose LV1 hypercall results" if PS3_ADVANCED
+-	depends on PPC_PS3
+-	help
+-	  Enables more verbose log messages for LV1 hypercall results.
+-
+-	  If in doubt, say N here and reduce the size of the kernel by a
+-	  small amount.
+-
+-config PS3_REPOSITORY_WRITE
+-	bool "PS3 Repository write support" if PS3_ADVANCED
+-	depends on PPC_PS3
+-	help
+-	  Enables support for writing to the PS3 System Repository.
+-
+-	  This support is intended for bootloaders that need to store data
+-	  in the repository for later boot stages.
+-
+-	  If in doubt, say N here and reduce the size of the kernel by a
+-	  small amount.
+-
+-config PS3_DISP_MANAGER
+-	depends on PPC_PS3
+-	tristate "PS3 Dispatcher Manager driver" if PS3_ADVANCED
+-	select PS3_VUART
+-	default y
+-	help
+-	  Include support for the PS3 Dispatcher Manager.
+-
+-	  This support is required to access the PS3 SS services.
+-	  In general, all users will say Y or M.
+-
+-config PS3_STORAGE
+-	depends on PPC_PS3
+-	tristate
+-
+-config PS3_DISK
+-	tristate "PS3 Disk Storage Driver"
+-	depends on PPC_PS3 && BLOCK
+-	select PS3_STORAGE
+-	help
+-	  Include support for the PS3 Disk Storage.
+-
+-	  This support is required to access the PS3 hard disk.
+-	  In general, all users will say Y or M.
+-
+-config PS3_ROM
+-	tristate "PS3 BD/DVD/CD-ROM Storage Driver"
+-	depends on PPC_PS3 && SCSI
+-	select PS3_STORAGE
+-	help
+-	  Include support for the PS3 ROM Storage.
+-
+-	  This support is required to access the PS3 BD/DVD/CD-ROM drive.
+-	  In general, all users will say Y or M.
+-	  Also make sure to say Y or M to "SCSI CDROM support" later.
+-
+-config PS3_FLASH
+-	tristate "PS3 FLASH ROM Storage Driver"
+-	depends on PPC_PS3
+-	select PS3_STORAGE
+-	help
+-	  Include support for the PS3 FLASH ROM Storage.
+-
+-	  This support is required to access the PS3 FLASH ROM, which
+-	  contains the boot loader and some boot options.
+-	  In general, PS3 OtherOS users will say Y or M.
+-
+-	  As this driver needs a fixed buffer of 256 KiB of memory, it can
+-	  be disabled on the kernel command line using "ps3flash=off", to
+-	  not allocate this fixed buffer.
+-
+-config PS3_NOR_FLASH
+-	tristate "PS3 FLASH NOR Storage Driver"
+-	depends on PPC_PS3 && BLOCK
+-	select PS3_STORAGE
+-	help
+-	  Include support for the PS3 NOR Flash Storage.
+-
+-	  This support is required to access the PS3 NOR flash.
+-	  In general, all users will say Y or M.
+-
+-config PS3_FLASH_NG
+-	tristate "PS3 Flash Storage Driver"
+-	depends on PPC_PS3 && BLOCK
+-	select PS3_STORAGE
+-	help
+-	  Include support for the PS3 Flash Storage.
+-
+-	  This support is required to access the PS3 flash.
+-	  In general, all users will say Y or M.
+-
+-config PS3_VRAM
+-	tristate "PS3 Video RAM Storage Driver"
+-	depends on FB_PS3=y && BLOCK && m
+-	help
+-	  This driver allows you to use excess PS3 video RAM as volatile
+-	  storage or system swap.
+-
+-config PS3_PHYSMEM
+-	tristate "PS3 Physical Memory Driver"
+-	depends on PPC_PS3
+-	help
+-	  This driver allows you direct access to the PS3 physical memory.
+-
+-config PS3_LPM
+-	tristate "PS3 Logical Performance Monitor support"
+-	depends on PPC_PS3
+-	help
+-	  Include support for the PS3 Logical Performance Monitor.
+-
+-	  This support is required to use the logical performance monitor
+-	  of the PS3's LV1 hypervisor.
+-
+-	  If you intend to use the advanced performance monitoring and
+-	  profiling support of the Cell processor with programs like
+-	  perfmon2, then say Y or M, otherwise say N.
+-
+-config PS3_LV1_CONS_UDBG
+-	bool "PS3 udbg output via LV1 console"
+-	depends on PPC_PS3
+-	help
+-	  Enables udbg early debugging output to LV1 console.
+-
+-	  If in doubt, say N here.
+-
+-endmenu
+diff --git a/arch/powerpc/platforms/ps3/device-init.c b/arch/powerpc/platforms/ps3/device-init.c
+index bd6c490..3493cda 100644
+--- a/arch/powerpc/platforms/ps3/device-init.c
++++ b/arch/powerpc/platforms/ps3/device-init.c
+@@ -608,6 +608,13 @@ static int ps3_setup_dynamic_device(const struct ps3_repository_device *repo)
+ 				 __func__, __LINE__);
+ 		break;
+ 
++	case PS3_DEV_TYPE_STOR_ENCDEC:
++		result = ps3_setup_storage_dev(repo, PS3_MATCH_ID_STOR_ENCDEC);
++		if (result)
++			pr_debug("%s:%u ps3_setup_storage_dev failed\n",
++				 __func__, __LINE__);
++		break;
++
+ 	default:
+ 		result = 0;
+ 		pr_debug("%s:%u: unsupported dev_type %u\n", __func__, __LINE__,
+diff --git a/arch/powerpc/platforms/ps3/platform.h b/arch/powerpc/platforms/ps3/platform.h
+index 5168a49..9b930db 100644
+--- a/arch/powerpc/platforms/ps3/platform.h
++++ b/arch/powerpc/platforms/ps3/platform.h
+@@ -77,6 +77,7 @@ enum ps3_dev_type {
+ 	PS3_DEV_TYPE_SB_GPIO = 6,
+ 	PS3_DEV_TYPE_STOR_FLASH = TYPE_RBC,	/* 14 */
+ 	PS3_DEV_TYPE_STOR_NOR_FLASH = 254,
++	PS3_DEV_TYPE_STOR_ENCDEC = 255,
+ };
+ 
+ int ps3_repository_read_bus_str(unsigned int bus_index, const char *bus_str,
+diff --git a/arch/powerpc/platforms/ps3/system-bus.c b/arch/powerpc/platforms/ps3/system-bus.c
+index 43bc6bf..331607e 100644
+--- a/arch/powerpc/platforms/ps3/system-bus.c
++++ b/arch/powerpc/platforms/ps3/system-bus.c
+@@ -164,6 +164,7 @@ int ps3_open_hv_device(struct ps3_system_bus_device *dev)
+ 	case PS3_MATCH_ID_STOR_ROM:
+ 	case PS3_MATCH_ID_STOR_FLASH:
+ 	case PS3_MATCH_ID_STOR_NOR_FLASH:
++	case PS3_MATCH_ID_STOR_ENCDEC:
+ 		return ps3_open_hv_device_sb(dev);
+ 
+ 	case PS3_MATCH_ID_SOUND:
+@@ -204,6 +205,7 @@ int ps3_close_hv_device(struct ps3_system_bus_device *dev)
+ 	case PS3_MATCH_ID_STOR_ROM:
+ 	case PS3_MATCH_ID_STOR_FLASH:
+ 	case PS3_MATCH_ID_STOR_NOR_FLASH:
++	case PS3_MATCH_ID_STOR_ENCDEC:
+ 		return ps3_close_hv_device_sb(dev);
+ 
+ 	case PS3_MATCH_ID_SOUND:
+diff --git a/drivers/char/Makefile b/drivers/char/Makefile
+index bc17cd5..9c4d706 100644
+--- a/drivers/char/Makefile
++++ b/drivers/char/Makefile
+@@ -42,6 +42,7 @@ obj-$(CONFIG_PS3_LV1CALL)	+= ps3lv1call/
+ obj-$(CONFIG_PS3_FLASH)		+= ps3flash.o
+ obj-$(CONFIG_PS3_PHYSMEM)	+= ps3physmem.o
+ obj-$(CONFIG_PS3_STRGMNGR)	+= ps3strgmngr.o
++obj-$(CONFIG_PS3_ENCDEC)	+= ps3encdec.o
+ 
+ obj-$(CONFIG_XILLYBUS_CLASS)	+= xillybus/
+ obj-$(CONFIG_POWERNV_OP_PANEL)	+= powernv-op-panel.o
+diff --git a/drivers/char/Makefile.orig b/drivers/char/Makefile.orig
+deleted file mode 100644
+index 71883b4..0000000
+--- a/drivers/char/Makefile.orig
++++ /dev/null
+@@ -1,47 +0,0 @@
+-# SPDX-License-Identifier: GPL-2.0
+-#
+-# Makefile for the kernel character device drivers.
+-#
+-
+-obj-y				+= mem.o random.o
+-obj-$(CONFIG_TTY_PRINTK)	+= ttyprintk.o
+-obj-y				+= misc.o
+-obj-$(CONFIG_ATARI_DSP56K)	+= dsp56k.o
+-obj-$(CONFIG_VIRTIO_CONSOLE)	+= virtio_console.o
+-obj-$(CONFIG_UV_MMTIMER)	+= uv_mmtimer.o
+-obj-$(CONFIG_IBM_BSR)		+= bsr.o
+-
+-obj-$(CONFIG_PRINTER)		+= lp.o
+-
+-obj-$(CONFIG_APM_EMULATION)	+= apm-emulation.o
+-
+-obj-$(CONFIG_DTLK)		+= dtlk.o
+-obj-$(CONFIG_APPLICOM)		+= applicom.o
+-obj-$(CONFIG_SONYPI)		+= sonypi.o
+-obj-$(CONFIG_HPET)		+= hpet.o
+-obj-$(CONFIG_XILINX_HWICAP)	+= xilinx_hwicap/
+-obj-$(CONFIG_NVRAM)		+= nvram.o
+-obj-$(CONFIG_TOSHIBA)		+= toshiba.o
+-obj-$(CONFIG_DS1620)		+= ds1620.o
+-obj-$(CONFIG_HW_RANDOM)		+= hw_random/
+-obj-$(CONFIG_PPDEV)		+= ppdev.o
+-obj-$(CONFIG_NWBUTTON)		+= nwbutton.o
+-obj-$(CONFIG_NWFLASH)		+= nwflash.o
+-obj-$(CONFIG_SCx200_GPIO)	+= scx200_gpio.o
+-obj-$(CONFIG_PC8736x_GPIO)	+= pc8736x_gpio.o
+-obj-$(CONFIG_NSC_GPIO)		+= nsc_gpio.o
+-obj-$(CONFIG_TELCLOCK)		+= tlclk.o
+-
+-obj-$(CONFIG_MWAVE)		+= mwave/
+-obj-y				+= agp/
+-
+-obj-$(CONFIG_HANGCHECK_TIMER)	+= hangcheck-timer.o
+-obj-$(CONFIG_TCG_TPM)		+= tpm/
+-
+-obj-$(CONFIG_PS3_LV1CALL)	+= ps3lv1call/
+-obj-$(CONFIG_PS3_FLASH)		+= ps3flash.o
+-obj-$(CONFIG_PS3_PHYSMEM)	+= ps3physmem.o
+-
+-obj-$(CONFIG_XILLYBUS_CLASS)	+= xillybus/
+-obj-$(CONFIG_POWERNV_OP_PANEL)	+= powernv-op-panel.o
+-obj-$(CONFIG_ADI)		+= adi.o
+diff --git a/drivers/char/ps3encdec.c b/drivers/char/ps3encdec.c
+new file mode 100644
+index 0000000..6c4c772
+--- /dev/null
++++ b/drivers/char/ps3encdec.c
+@@ -0,0 +1,394 @@
++/*
++ * PS3 ENCDEC Driver
++ *
++ * Copyright (C) 2011 graf_chokolo <grafchokolo@gmail.com>
++ * Copyright (C) 2011, 2012 glevand <geoffrey.levand@mail.ru>
++ * All rights reserved.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published
++ * by the Free Software Foundation; version 2 of the License.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program; if not, write to the Free Software Foundation, Inc.,
++ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
++ */
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/init.h>
++#include <linux/slab.h>
++#include <linux/fs.h>
++#include <linux/sched.h>
++#include <linux/mutex.h>
++#include <linux/poll.h>
++#include <linux/uaccess.h>
++#include <linux/compat.h>
++#include <linux/miscdevice.h>
++#include <linux/sched/signal.h>
++
++#include <asm/ps3.h>
++#include <asm/lv1call.h>
++#include <asm/ps3stor.h>
++#include <asm/firmware.h>
++
++#define DEVICE_NAME		"ps3encdec"
++
++#define BOUNCE_SIZE		(4 * 1024)
++
++struct ps3encdec_private
++{
++	struct ps3_storage_device *dev;
++	struct miscdevice misc;
++	char *bounce_wbuf;
++	u64 bounce_wlpar;
++	char *bounce_rbuf;
++	u64 bounce_rlpar;
++	struct mutex mtx;
++	wait_queue_head_t read_wq;
++	wait_queue_head_t write_wq;
++	int cmd_done;
++	int cmd_failed;
++	int cmd_data_avail;
++};
++
++static struct ps3encdec_private *ps3encdec_priv;
++
++static ssize_t ps3encdec_read(struct file *file, char __user *usrbuf,
++	size_t count, loff_t *pos)
++{
++	struct ps3encdec_private *priv = ps3encdec_priv;
++	int res = 0;
++
++	if (mutex_lock_interruptible(&priv->mtx))
++		return (-ERESTARTSYS);
++
++	if (file->f_flags & O_NONBLOCK) {
++		if (!priv->cmd_done || priv->cmd_failed)
++			res = -EAGAIN;
++	} else {
++		DEFINE_WAIT(__wait);
++
++		while (1) {
++			prepare_to_wait(&priv->read_wq, &__wait, TASK_INTERRUPTIBLE);
++
++			if (priv->cmd_data_avail)
++				break;
++	
++			mutex_unlock(&priv->mtx);
++
++			if (signal_pending(current)) {
++				finish_wait(&priv->read_wq, &__wait);
++				return (-ERESTARTSYS);
++			}
++
++			schedule();
++
++			res = mutex_lock_interruptible(&priv->mtx);
++			if (res) {
++				finish_wait(&priv->read_wq, &__wait);
++				return (res);
++			}
++		}
++
++		finish_wait(&priv->read_wq, &__wait);
++	}
++
++	if (res)
++		goto done;
++
++	if (count > BOUNCE_SIZE)
++		count = BOUNCE_SIZE;
++
++	if (!count || (priv->cmd_done && priv->cmd_failed))
++		goto done;
++
++	if (copy_to_user(usrbuf, priv->bounce_rbuf + *pos, count)) {
++		res = -EFAULT;
++		goto done;
++	}
++
++	priv->cmd_data_avail = 0;
++
++	res = count;
++
++done:
++
++	mutex_unlock(&priv->mtx);
++
++	return (res);
++}
++
++static ssize_t ps3encdec_write(struct file *file, const char __user *usrbuf,
++	size_t count, loff_t *pos)
++{
++	struct ps3encdec_private *priv = ps3encdec_priv;
++	struct ps3_storage_device *dev = priv->dev;
++	u32 cmd;
++	int res = 0;
++
++	if (mutex_lock_interruptible(&priv->mtx))
++		return (-ERESTARTSYS);
++
++	if (file->f_flags & O_NONBLOCK) {
++		if (!priv->cmd_done)
++			res = -EAGAIN;
++	} else {
++		DEFINE_WAIT(__wait);
++
++		while (1) {
++			prepare_to_wait(&priv->write_wq, &__wait, TASK_INTERRUPTIBLE);
++
++			if (priv->cmd_done)
++				break;
++	
++			mutex_unlock(&priv->mtx);
++
++			if (signal_pending(current)) {
++				finish_wait(&priv->write_wq, &__wait);
++				return (-ERESTARTSYS);
++			}
++
++			schedule();
++
++			res = mutex_lock_interruptible(&priv->mtx);
++			if (res) {
++				finish_wait(&priv->write_wq, &__wait);
++				return (res);
++			}
++		}
++
++		finish_wait(&priv->write_wq, &__wait);
++	}
++
++	if (res)
++		goto done;
++
++	if (count > BOUNCE_SIZE + sizeof(cmd))
++		count = BOUNCE_SIZE + sizeof(cmd);
++
++	if (!count)
++		goto done;
++
++	if (count < sizeof(cmd)) {
++		res = -EINVAL;
++		goto done;
++	}
++
++	if (copy_from_user(&cmd, usrbuf, sizeof(cmd))) {
++		res = -EFAULT;
++		goto done;
++	}
++
++	if (copy_from_user(priv->bounce_wbuf, usrbuf + sizeof(cmd), count - sizeof(cmd))) {
++		res = -EFAULT;
++		goto done;
++	}
++
++	priv->cmd_done = 0;
++	priv->cmd_failed = 1;
++	priv->cmd_data_avail = 0;
++
++	res = lv1_storage_send_device_command(dev->sbd.dev_id, cmd,
++		priv->bounce_wlpar, count - sizeof(cmd),
++		priv->bounce_rlpar, BOUNCE_SIZE, &dev->tag);
++	if (res) {
++		dev_err(&dev->sbd.core, "%s:%u: res=%d\n",
++			__func__, __LINE__, res);
++		priv->cmd_done = 1;
++		res = -EIO;
++		goto done;
++	}
++
++	res = count;
++
++done:
++
++	mutex_unlock(&priv->mtx);
++
++	return (res);
++}
++
++static unsigned int ps3encdec_poll(struct file *file, poll_table *wait)
++{
++	struct ps3encdec_private *priv = ps3encdec_priv;
++	unsigned int mask = 0;
++
++	mutex_lock(&priv->mtx);
++
++	poll_wait(file, &priv->read_wq, wait);
++	poll_wait(file, &priv->write_wq, wait);
++
++	if (priv->cmd_data_avail)
++		mask |= POLLIN | POLLRDNORM;
++
++	if (priv->cmd_done)
++		mask |= POLLOUT | POLLWRNORM;
++
++	mutex_unlock(&priv->mtx);
++
++	return (mask);
++}
++
++static irqreturn_t ps3encdec_interrupt(int irq, void *data)
++{
++	struct ps3_storage_device *dev = data;
++	struct ps3encdec_private *priv;
++	u64 tag, status;
++	int res;
++
++	res = lv1_storage_get_async_status(dev->sbd.dev_id, &tag, &status);
++
++	pr_info("%s:%d: res=%d status=%llx\n", __func__, __LINE__, res, status);
++
++	if (tag != dev->tag) {
++		dev_err(&dev->sbd.core,
++			"%s:%u: tag mismatch, got %llx, expected %llx\n",
++			__func__, __LINE__, tag, dev->tag);
++	}
++
++	if (res) {
++		dev_err(&dev->sbd.core, "%s:%u: res=%d status=0x%llx\n",
++			__func__, __LINE__, res, status);
++		return (IRQ_HANDLED);
++	}
++
++	priv = ps3_system_bus_get_drvdata(&dev->sbd);
++
++	priv->cmd_done = 1;
++	priv->cmd_failed = (status != 0);
++	priv->cmd_data_avail = !priv->cmd_failed;
++
++	wake_up_interruptible(&priv->read_wq);
++	wake_up_interruptible(&priv->write_wq);
++
++	return (IRQ_HANDLED);
++}
++
++static const struct file_operations ps3encdec_fops = {
++	.owner = THIS_MODULE,
++	.open = nonseekable_open,
++	.read = ps3encdec_read,
++	.write = ps3encdec_write,
++	.poll = ps3encdec_poll,
++};
++
++static int ps3encdec_probe(struct ps3_system_bus_device *_dev)
++{
++	struct ps3_storage_device *dev = to_ps3_storage_device(&_dev->core);
++	struct ps3encdec_private *priv;
++	int res;
++
++	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return (-ENOMEM);
++
++	ps3_system_bus_set_drvdata(_dev, priv);
++
++	dev->bounce_size = BOUNCE_SIZE * 2;
++	dev->bounce_buf = kmalloc(dev->bounce_size, GFP_DMA);
++	if (!dev->bounce_buf) {
++		res = -ENOMEM;
++		goto fail_free_priv;
++	}
++
++	res = ps3stor_setup(dev, ps3encdec_interrupt);
++	if (res)
++		goto fail_free_bounce;
++
++	mutex_init(&priv->mtx);
++
++	init_waitqueue_head(&priv->read_wq);
++	init_waitqueue_head(&priv->write_wq);
++
++	priv->cmd_done = 1;
++	priv->cmd_failed = 0;
++	priv->cmd_data_avail = 0;
++
++	priv->misc.minor = MISC_DYNAMIC_MINOR,
++	priv->misc.name	= DEVICE_NAME,
++	priv->misc.fops	= &ps3encdec_fops,
++
++	res = misc_register(&priv->misc);
++	if (res)
++		goto fail_teardown;
++
++	priv->dev = dev;
++	priv->bounce_wbuf = dev->bounce_buf;
++	priv->bounce_wlpar = dev->bounce_lpar;
++	priv->bounce_rbuf = dev->bounce_buf + BOUNCE_SIZE;
++	priv->bounce_rlpar = dev->bounce_lpar + BOUNCE_SIZE;
++
++	ps3encdec_priv = priv;
++
++	return (0);
++
++fail_teardown:
++
++	ps3stor_teardown(dev);
++
++fail_free_bounce:
++
++	kfree(dev->bounce_buf);
++
++fail_free_priv:
++
++	kfree(priv);
++	ps3_system_bus_set_drvdata(_dev, NULL);
++
++	return (res);
++}
++
++static void ps3encdec_remove(struct ps3_system_bus_device *_dev)
++{
++	struct ps3_storage_device *dev = to_ps3_storage_device(&_dev->core);
++	struct ps3encdec_private *priv = ps3_system_bus_get_drvdata(&dev->sbd);
++
++	ps3encdec_priv = NULL;
++
++	misc_deregister(&priv->misc);
++	ps3stor_teardown(dev);
++	kfree(dev->bounce_buf);
++	kfree(priv);
++	ps3_system_bus_set_drvdata(_dev, NULL);
++
++
++}
++
++static struct ps3_system_bus_driver ps3encdec = {
++	.match_id	= PS3_MATCH_ID_STOR_ENCDEC,
++	.core.name	= DEVICE_NAME,
++	.core.owner	= THIS_MODULE,
++	.probe		= ps3encdec_probe,
++	.remove		= ps3encdec_remove,
++	.shutdown	= ps3encdec_remove,
++};
++
++static int __init ps3encdec_init(void)
++{
++	int res;
++
++	if (!firmware_has_feature(FW_FEATURE_PS3_LV1))
++		return (-ENODEV);
++
++	res = ps3_system_bus_driver_register(&ps3encdec);
++
++	return (res);
++}
++
++static void __exit ps3encdec_exit(void)
++{
++	ps3_system_bus_driver_unregister(&ps3encdec);
++}
++
++module_init(ps3encdec_init);
++module_exit(ps3encdec_exit);
++
++MODULE_AUTHOR("glevand");
++MODULE_DESCRIPTION("PS3 ENCDEC Driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/ps3/ps3stor_lib.c b/drivers/ps3/ps3stor_lib.c
+index 98b69e8..c2e1901 100644
+--- a/drivers/ps3/ps3stor_lib.c
++++ b/drivers/ps3/ps3stor_lib.c
+@@ -78,8 +78,9 @@ static int ps3stor_probe_access(struct ps3_storage_device *dev)
+ 	unsigned int i;
+ 	unsigned long n;
+ 
+-	if (dev->sbd.match_id == PS3_MATCH_ID_STOR_ROM) {
+-		/* special case: CD-ROM is assumed always accessible */
++	if ((dev->sbd.match_id == PS3_MATCH_ID_STOR_ROM) ||
++	    (dev->sbd.match_id == PS3_MATCH_ID_STOR_ENCDEC)) {
++		/* special case: CD-ROM and ENCDEC are assumed always accessible */
+ 		dev->accessible_regions = 1;
+ 		return 0;
+ 	}

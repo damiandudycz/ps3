@@ -215,6 +215,13 @@ config PS3_ENCDEC
 	  This support is required to access the PS3 ENCDEC device.
 	  In general, all users will say Y or M.
 
+config SPUISO_FS
+	tristate "PS3 isolated SPU file system"
+	default m
+	depends on PPC_PS3
+	help
+	  The isolated SPU file system is used to execute isolated SPU modules.
+
 config PS3_LPM
 	tristate "PS3 Logical Performance Monitor support"
 	depends on PPC_PS3

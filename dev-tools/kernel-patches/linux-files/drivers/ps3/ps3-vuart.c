@@ -27,7 +27,6 @@ MODULE_DESCRIPTION("PS3 vuart");
  * vuart - An inter-partition data link service.
  *  port 0: PS3 AV Settings.
  *  port 2: PS3 System Manager.
- *  port 10: PS3 Dispatcher Manager.
  *
  * The vuart provides a bi-directional byte stream data link between logical
  * partitions.  Its primary role is as a communications link between the guest
@@ -35,7 +34,7 @@ MODULE_DESCRIPTION("PS3 vuart");
  * connections other than those listed.
  */
 
-enum {PORT_COUNT = 11,};
+enum {PORT_COUNT = 3,};
 
 enum vuart_param {
 	PARAM_TX_TRIGGER = 0,
@@ -908,7 +907,7 @@ static int ps3_vuart_bus_interrupt_get(void)
 
 	vuart_bus_priv.use_count++;
 
-	BUG_ON(vuart_bus_priv.use_count > 3);
+	BUG_ON(vuart_bus_priv.use_count > 2);
 
 	if (vuart_bus_priv.use_count != 1)
 		return 0;

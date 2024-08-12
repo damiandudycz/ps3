@@ -154,6 +154,16 @@ config PS3_FLASH
 	  be disabled on the kernel command line using "ps3flash=off", to
 	  not allocate this fixed buffer.
 
+config PS3_NOR_FLASH
+	tristate "PS3 FLASH NOR Storage Driver"
+	depends on PPC_PS3 && BLOCK
+	select PS3_STORAGE
+	help
+	  Include support for the PS3 NOR Flash Storage.
+
+	  This support is required to access the PS3 NOR flash.
+	  In general, all users will say Y or M.
+
 config PS3_VRAM
 	tristate "PS3 Video RAM Storage Driver"
 	depends on FB_PS3=y && BLOCK && m

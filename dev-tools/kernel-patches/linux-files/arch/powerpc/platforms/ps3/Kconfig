@@ -181,6 +181,12 @@ config PS3_VRAM
 	  This driver allows you to use excess PS3 video RAM as volatile
 	  storage or system swap.
 
+config PS3_PHYSMEM
+	tristate "PS3 Physical Memory Driver"
+	depends on PPC_PS3
+	help
+	  This driver allows you direct access to the PS3 physical memory.
+
 config PS3_LPM
 	tristate "PS3 Logical Performance Monitor support"
 	depends on PPC_PS3

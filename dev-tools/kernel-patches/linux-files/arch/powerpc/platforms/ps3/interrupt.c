@@ -375,6 +375,7 @@ int ps3_send_event_locally(unsigned int virq)
 {
 	return lv1_send_event_locally(virq_to_hw(virq));
 }
+EXPORT_SYMBOL_GPL(ps3_event_receive_port_destroy);
 
 /**
  * ps3_sb_event_receive_port_setup - Setup a system bus event receive port.

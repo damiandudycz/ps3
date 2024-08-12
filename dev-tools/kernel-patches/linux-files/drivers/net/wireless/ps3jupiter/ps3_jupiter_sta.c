@@ -2927,8 +2927,8 @@ static void __exit ps3_jupiter_sta_exit(void)
 module_init(ps3_jupiter_sta_init);
 module_exit(ps3_jupiter_sta_exit);
 
-MODULE_SUPPORTED_DEVICE("PS3 Jupiter STA");
 MODULE_DEVICE_TABLE(usb, ps3_jupiter_sta_devtab);
 MODULE_DESCRIPTION("PS3 Jupiter STA");
 MODULE_AUTHOR("glevand");
 MODULE_LICENSE("GPL");
+MODULE_ALIAS("ps3:15:0");

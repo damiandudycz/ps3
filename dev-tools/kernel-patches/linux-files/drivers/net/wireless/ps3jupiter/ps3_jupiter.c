@@ -1238,8 +1238,8 @@ static void __exit ps3_jupiter_exit(void)
 module_init(ps3_jupiter_init);
 module_exit(ps3_jupiter_exit);
 
-MODULE_SUPPORTED_DEVICE("PS3 Jupiter");
 MODULE_DEVICE_TABLE(usb, ps3_jupiter_devtab);
 MODULE_DESCRIPTION("PS3 Jupiter");
 MODULE_AUTHOR("glevand");
 MODULE_LICENSE("GPL");
+MODULE_ALIAS(PS3_MODULE_ALIAS_JUPITER);

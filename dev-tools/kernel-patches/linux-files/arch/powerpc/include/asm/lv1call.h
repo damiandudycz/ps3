@@ -14,6 +14,7 @@
 
 #include <linux/types.h>
 #include <linux/export.h>
+#include <asm/interrupt.h>
 
 /* lv1 call declaration macros */
 
@@ -208,7 +209,7 @@
 #define LV1_CALL(name, in, out, num)                               \
   extern s64 _lv1_##name(LV1_##in##_IN_##out##_OUT_ARG_DECL);      \
   static inline int lv1_##name(LV1_##in##_IN_##out##_OUT_ARG_DECL) \
-    {return _lv1_##name(LV1_##in##_IN_##out##_OUT_ARGS);}
+    {srr_regs_clobbered(); return _lv1_##name(LV1_##in##_IN_##out##_OUT_ARGS);}
 #endif
 
 #endif /* !defined(__ASSEMBLY__) */

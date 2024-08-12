@@ -1,3 +1,3 @@
-for patch in patches/New/*.patch; do 
+for patch in patches/damiandudycz/*.patch; do 
 	patch -p1 -d linux-files < $patch
 done

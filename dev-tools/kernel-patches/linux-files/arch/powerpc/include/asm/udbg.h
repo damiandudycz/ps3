@@ -50,7 +50,6 @@ void __init udbg_init_usbgecko(void);
 void __init udbg_init_memcons(void);
 void __init udbg_init_ehv_bc(void);
 void __init udbg_init_ps3gelic(void);
-void __init udbg_init_ps3_lv1_cons(void);
 void __init udbg_init_debug_opal_raw(void);
 void __init udbg_init_debug_opal_hvsi(void);
 void __init udbg_init_debug_16550(void);

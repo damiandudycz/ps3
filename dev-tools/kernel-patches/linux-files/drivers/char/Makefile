@@ -38,7 +38,9 @@ obj-y				+= agp/
 obj-$(CONFIG_HANGCHECK_TIMER)	+= hangcheck-timer.o
 obj-$(CONFIG_TCG_TPM)		+= tpm/
 
+obj-$(CONFIG_PS3_LV1CALL)	+= ps3lv1call/
 obj-$(CONFIG_PS3_FLASH)		+= ps3flash.o
+obj-$(CONFIG_PS3_PHYSMEM)	+= ps3physmem.o
 
 obj-$(CONFIG_XILLYBUS_CLASS)	+= xillybus/
 obj-$(CONFIG_POWERNV_OP_PANEL)	+= powernv-op-panel.o

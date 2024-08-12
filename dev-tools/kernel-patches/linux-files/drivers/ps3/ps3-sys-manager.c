@@ -645,7 +645,7 @@ static void ps3_sys_manager_final_restart(struct ps3_system_bus_device *dev)
 	ps3_vuart_cancel_async(dev);
 
 	ps3_sys_manager_send_attr(dev, 0);
-	ps3_sys_manager_send_next_op(dev, PS3_SM_NEXT_OP_SYS_REBOOT,
+	ps3_sys_manager_send_next_op(dev, PS3_SM_NEXT_OP_LPAR_REBOOT,
 		user_wake_sources);
 
 	ps3_sys_manager_fin(dev);

@@ -315,6 +315,7 @@ enum ps3_match_id {
 	PS3_MATCH_ID_SOUND		= 9,
 	PS3_MATCH_ID_GPU		= 10,
 	PS3_MATCH_ID_LPM		= 11,
+	PS3_MATCH_ID_STOR_NOR_FLASH	= 12,
 };
 
 enum ps3_match_sub_id {
@@ -334,6 +335,7 @@ enum ps3_match_sub_id {
 #define PS3_MODULE_ALIAS_GPU_FB		"ps3:10:1"
 #define PS3_MODULE_ALIAS_GPU_RAMDISK	"ps3:10:2"
 #define PS3_MODULE_ALIAS_LPM		"ps3:11:0"
+#define PS3_MODULE_ALIAS_STOR_NOR_FLASH	"ps3:12:0"
 
 enum ps3_system_bus_device_type {
 	PS3_DEVICE_TYPE_IOC0 = 1,

@@ -63,6 +63,8 @@ void __init udbg_early_init(void)
 	udbg_init_ehv_bc();
 #elif defined(CONFIG_PPC_EARLY_DEBUG_PS3GELIC)
 	udbg_init_ps3gelic();
+#elif defined(CONFIG_PPC_EARLY_DEBUG_PS3_LV1_CONS)
+	udbg_init_ps3_lv1_cons();
 #elif defined(CONFIG_PPC_EARLY_DEBUG_OPAL_RAW)
 	udbg_init_debug_opal_raw();
 #elif defined(CONFIG_PPC_EARLY_DEBUG_OPAL_HVSI)

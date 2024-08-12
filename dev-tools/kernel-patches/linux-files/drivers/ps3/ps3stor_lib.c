@@ -78,8 +78,9 @@ static int ps3stor_probe_access(struct ps3_storage_device *dev)
 	unsigned int i;
 	unsigned long n;
 
-	if (dev->sbd.match_id == PS3_MATCH_ID_STOR_ROM) {
-		/* special case: CD-ROM is assumed always accessible */
+	if ((dev->sbd.match_id == PS3_MATCH_ID_STOR_ROM) ||
+	    (dev->sbd.match_id == PS3_MATCH_ID_STOR_ENCDEC)) {
+		/* special case: CD-ROM and ENCDEC are assumed always accessible */
 		dev->accessible_regions = 1;
 		return 0;
 	}

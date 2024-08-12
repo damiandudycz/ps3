@@ -579,13 +579,6 @@ static int ps3_setup_dynamic_device(const struct ps3_repository_device *repo)
 				 __func__, __LINE__);
 		break;
 
-	case PS3_DEV_TYPE_STOR_NOR_FLASH:
-		result = ps3_setup_storage_dev(repo, PS3_MATCH_ID_STOR_NOR_FLASH);
-		if (result)
-			pr_debug("%s:%u ps3_setup_storage_dev failed\n",
-				 __func__, __LINE__);
-		break;
-
 	default:
 		result = 0;
 		pr_debug("%s:%u: unsupported dev_type %u\n", __func__, __LINE__,

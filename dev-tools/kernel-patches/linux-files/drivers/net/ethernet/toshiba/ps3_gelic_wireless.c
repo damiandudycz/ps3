@@ -1479,7 +1479,6 @@ static int gelic_wl_start_scan(struct gelic_wl_info *wl, int always_scan,
 		wl->scan_stat = GELIC_WL_SCAN_STAT_INIT;
 		complete(&wl->scan_done);
 		ret = -ENOMEM;
-		goto out;
 	}
 	kfree(cmd);
 out:

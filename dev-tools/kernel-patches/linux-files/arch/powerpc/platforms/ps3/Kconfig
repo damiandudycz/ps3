@@ -87,12 +87,6 @@ config PS3_SYS_MANAGER
 	  This support is required for PS3 system control.  In
 	  general, all users will say Y or M.
 
-config PS3_LV1CALL
-    tristate "PS3 LV1 Call Driver"
-    depends on PPC_PS3 && PS3_ADVANCED
-    help
-      This driver allows you to execute LV1 calls.
-
 config PS3_VERBOSE_RESULT
 	bool "PS3 Verbose LV1 hypercall results" if PS3_ADVANCED
 	depends on PPC_PS3
@@ -173,13 +167,5 @@ config PS3_LPM
 	  If you intend to use the advanced performance monitoring and
 	  profiling support of the Cell processor with programs like
 	  perfmon2, then say Y or M, otherwise say N.
-
-config PS3_LV1_CONS_UDBG
-	bool "PS3 udbg output via LV1 console"
-	depends on PPC_PS3
-	help
-	  Enables udbg early debugging output to LV1 console.
-
-	  If in doubt, say N here.
 
 endmenu

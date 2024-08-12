@@ -87,12 +87,6 @@ config PS3_SYS_MANAGER
 	  This support is required for PS3 system control.  In
 	  general, all users will say Y or M.
 
-config PS3_LV1CALL
-    tristate "PS3 LV1 Call Driver"
-    depends on PPC_PS3 && PS3_ADVANCED
-    help
-      This driver allows you to execute LV1 calls.
-
 config PS3_VERBOSE_RESULT
 	bool "PS3 Verbose LV1 hypercall results" if PS3_ADVANCED
 	depends on PPC_PS3

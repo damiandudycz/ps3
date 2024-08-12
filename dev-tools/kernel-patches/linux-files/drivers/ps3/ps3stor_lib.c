@@ -90,9 +90,8 @@ static int ps3stor_probe_access(struct ps3_storage_device *dev)
 			"%s:%u: checking accessibility of region %u\n",
 			__func__, __LINE__, i);
 
-		dev->region_idx = i;
-		res = ps3stor_read_write_sectors(dev, dev->bounce_lpar, 0, 1,
-						 0);
+		res = ps3stor_read_write_sectors(dev, dev->bounce_lpar, i, 0, 1,
+						 dev->regions[i].flags, 0);	
 		if (res) {
 			dev_dbg(&dev->sbd.core, "%s:%u: read failed, "
 				"region %u is not accessible\n", __func__,
@@ -104,6 +103,10 @@ static int ps3stor_probe_access(struct ps3_storage_device *dev)
 			__func__, __LINE__, i);
 		set_bit(i, &dev->accessible_regions);
 
+		dev_info(&dev->sbd.core,
+			 "accessible region %u start %llu size %llu\n",
+			 i, dev->regions[i].start, dev->regions[i].size);
+
 		/* We can access at least one region */
 		error = 0;
 	}
@@ -113,14 +116,8 @@ static int ps3stor_probe_access(struct ps3_storage_device *dev)
 	n = hweight_long(dev->accessible_regions);
 	if (n > 1)
 		dev_info(&dev->sbd.core,
-			 "%s:%u: %lu accessible regions found. Only the first "
-			 "one will be used\n",
+			 "%s:%u: %lu accessible regions found\n",
 			 __func__, __LINE__, n);
-	dev->region_idx = __ffs(dev->accessible_regions);
-	dev_info(&dev->sbd.core,
-		 "First accessible region has index %u start %llu size %llu\n",
-		 dev->region_idx, dev->regions[dev->region_idx].start,
-		 dev->regions[dev->region_idx].size);
 
 	return 0;
 }
@@ -254,17 +251,19 @@ EXPORT_SYMBOL_GPL(ps3stor_teardown);
  *	ps3stor_read_write_sectors - read/write from/to a storage device
  *	@dev: Pointer to a struct ps3_storage_device
  *	@lpar: HV logical partition address
+ *	@region_idx: Region index
  *	@start_sector: First sector to read/write
  *	@sectors: Number of sectors to read/write
+ *	@flags: Flags
  *	@write: Flag indicating write (non-zero) or read (zero)
  *
  *	Returns 0 for success, -1 in case of failure to submit the command, or
  *	an LV1 status value in case of other errors
  */
-u64 ps3stor_read_write_sectors(struct ps3_storage_device *dev, u64 lpar,
-			       u64 start_sector, u64 sectors, int write)
+u64 ps3stor_read_write_sectors(struct ps3_storage_device *dev, u64 lpar, unsigned int region_idx,
+			       u64 start_sector, u64 sectors, u64 flags, int write)
 {
-	unsigned int region_id = dev->regions[dev->region_idx].id;
+	unsigned int region_id = dev->regions[region_idx].id;
 	const char *op = write ? "write" : "read";
 	int res;
 
@@ -273,10 +272,10 @@ u64 ps3stor_read_write_sectors(struct ps3_storage_device *dev, u64 lpar,
 
 	init_completion(&dev->done);
 	res = write ? lv1_storage_write(dev->sbd.dev_id, region_id,
-					start_sector, sectors, 0, lpar,
+					start_sector, sectors, flags, lpar,
 					&dev->tag)
 		    : lv1_storage_read(dev->sbd.dev_id, region_id,
-				       start_sector, sectors, 0, lpar,
+					start_sector, sectors, flags, lpar,
 				       &dev->tag);
 	if (res) {
 		dev_dbg(&dev->sbd.core, "%s:%u: %s failed %d\n", __func__,

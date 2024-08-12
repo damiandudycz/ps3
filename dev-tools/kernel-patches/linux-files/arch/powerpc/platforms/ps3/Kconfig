@@ -87,6 +87,12 @@ config PS3_SYS_MANAGER
 	  This support is required for PS3 system control.  In
 	  general, all users will say Y or M.
 
+config PS3_LV1CALL
+    tristate "PS3 LV1 Call Driver"
+    depends on PPC_PS3 && PS3_ADVANCED
+    help
+      This driver allows you to execute LV1 calls.
+
 config PS3_VERBOSE_RESULT
 	bool "PS3 Verbose LV1 hypercall results" if PS3_ADVANCED
 	depends on PPC_PS3
@@ -107,6 +113,17 @@ config PS3_REPOSITORY_WRITE
 
 	  If in doubt, say N here and reduce the size of the kernel by a
 	  small amount.
+
+config PS3_DISP_MANAGER
+	depends on PPC_PS3
+	tristate "PS3 Dispatcher Manager driver" if PS3_ADVANCED
+	select PS3_VUART
+	default y
+	help
+	  Include support for the PS3 Dispatcher Manager.
+
+	  This support is required to access the PS3 SS services.
+	  In general, all users will say Y or M.
 
 config PS3_STORAGE
 	depends on PPC_PS3
@@ -148,12 +165,55 @@ config PS3_FLASH
 	  be disabled on the kernel command line using "ps3flash=off", to
 	  not allocate this fixed buffer.
 
+config PS3_NOR_FLASH
+	tristate "PS3 FLASH NOR Storage Driver"
+	depends on PPC_PS3 && BLOCK
+	select PS3_STORAGE
+	help
+	  Include support for the PS3 NOR Flash Storage.
+
+	  This support is required to access the PS3 NOR flash.
+	  In general, all users will say Y or M.
+
+config PS3_FLASH_NG
+	tristate "PS3 Flash Storage Driver"
+	depends on PPC_PS3 && BLOCK
+	select PS3_STORAGE
+	help
+	  Include support for the PS3 Flash Storage.
+
+	  This support is required to access the PS3 flash.
+	  In general, all users will say Y or M.
+
 config PS3_VRAM
 	tristate "PS3 Video RAM Storage Driver"
 	depends on FB_PS3=y && BLOCK && m
 	help
 	  This driver allows you to use excess PS3 video RAM as volatile
 	  storage or system swap.
+
+config PS3_PHYSMEM
+	tristate "PS3 Physical Memory Driver"
+	depends on PPC_PS3
+	help
+	  This driver allows you direct access to the PS3 physical memory.
+
+config PS3_STRGMNGR
+	tristate "PS3 Storage Manager Driver"
+	depends on PPC_PS3
+	help
+	  This driver allows you to create/delete/modify regions
+	  on PS3 storage devices.
+
+config PS3_ENCDEC
+	tristate "PS3 ENCDEC Driver"
+	depends on PPC_PS3
+	select PS3_STORAGE
+	help
+	  Include support for the PS3 ENCDEC device.
+
+	  This support is required to access the PS3 ENCDEC device.
+	  In general, all users will say Y or M.
 
 config PS3_LPM
 	tristate "PS3 Logical Performance Monitor support"
@@ -167,5 +227,13 @@ config PS3_LPM
 	  If you intend to use the advanced performance monitoring and
 	  profiling support of the Cell processor with programs like
 	  perfmon2, then say Y or M, otherwise say N.
+
+config PS3_LV1_CONS_UDBG
+	bool "PS3 udbg output via LV1 console"
+	depends on PPC_PS3
+	help
+	  Enables udbg early debugging output to LV1 console.
+
+	  If in doubt, say N here.
 
 endmenu

@@ -171,7 +171,7 @@ static void gelic_eurus_sync_cmd_worker(struct work_struct *work)
 				      &cmd->tag, &cmd->size);
 	if (cmd->status) {
 		complete(&cmd->done);
-		pr_info("%s: cmd (%d) issue failed (%d)\n", __func__, cmd->cmd, cmd->status);
+		pr_info("%s: cmd issue failed\n", __func__);
 		return;
 	}
 
@@ -1479,6 +1479,7 @@ static int gelic_wl_start_scan(struct gelic_wl_info *wl, int always_scan,
 		wl->scan_stat = GELIC_WL_SCAN_STAT_INIT;
 		complete(&wl->scan_done);
 		ret = -ENOMEM;
+		goto out;
 	}
 	kfree(cmd);
 out:

@@ -1052,7 +1052,7 @@ static int create_node(u64 n1, u64 n2, u64 n3, u64 n4, u64 v1, u64 v2)
 
 	dump_node(0, n1, n2, n3, n4, v1, v2);
 
-	result = lv1_create_repository_node(n1, n2, n3, n4, v1, v2);
+	result = lv1_create_repository_node(n1, n2, n3, n4, v1, v2, 0);
 
 	if (result) {
 		pr_devel("%s:%d: lv1_create_repository_node failed: %s\n",
@@ -1069,7 +1069,7 @@ static int delete_node(u64 n1, u64 n2, u64 n3, u64 n4)
 
 	dump_node(0, n1, n2, n3, n4, 0, 0);
 
-	result = lv1_delete_repository_node(n1, n2, n3, n4);
+	result = lv1_delete_repository_node(n1, n2, n3, n4, 0);
 
 	if (result) {
 		pr_devel("%s:%d: lv1_delete_repository_node failed: %s\n",
@@ -1089,7 +1089,7 @@ static int write_node(u64 n1, u64 n2, u64 n3, u64 n4, u64 v1, u64 v2)
 	if (!result)
 		return 0;
 
-	result = lv1_write_repository_node(n1, n2, n3, n4, v1, v2);
+	result = lv1_write_repository_node(n1, n2, n3, n4, v1, v2, 0);
 
 	if (result) {
 		pr_devel("%s:%d: lv1_write_repository_node failed: %s\n",

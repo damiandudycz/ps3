@@ -834,6 +834,18 @@ static int ps3fb_ioctl(struct fb_info *info, unsigned int cmd,
 		console_unlock();
 		break;
 
+	case PS3FB_IOCTL_CURSOR_ENABLE:
+		retval = lv1_gpu_context_attribute(ps3fb.context_handle, 0x10c, 0/*head*/, arg ? 0x1 : 0x02, 0x0, 0x0);	/* enable/disable */
+		break;
+
+	case PS3FB_IOCTL_CURSOR_POS:
+ 		retval = lv1_gpu_context_attribute(ps3fb.context_handle, 0x10b, 0/*head*/, 3, arg & 0xffff, arg >> 16); /* x/y pos */
+		break;
+
+	case PS3FB_IOCTL_CURSOR_OFFS:
+		retval = lv1_gpu_context_attribute(ps3fb.context_handle, 0x10b, 0/*head*/, 2, arg, 0); /* offset */
+		break;
+
 	default:
 		retval = -ENOIOCTLCMD;
 		break;
@@ -1085,6 +1097,10 @@ static int ps3fb_probe(struct ps3_system_bus_device *dev)
 	ps3_system_bus_set_drvdata(dev, info);
 
 	fb_info(info, "using %u KiB of video memory\n", info->fix.smem_len >> 10);
+
+	/* test cursor init here */
+	status = lv1_gpu_context_attribute(ps3fb.context_handle, 0x10b, 0/*head*/, 1, 0, 0); /* init */
+	if (status) dev_err(info->device, "%s: cursor init failed (%d)\n", __func__, status);
 
 	return 0;
 

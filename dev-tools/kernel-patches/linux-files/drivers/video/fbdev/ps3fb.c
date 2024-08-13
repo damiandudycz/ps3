@@ -1255,10 +1255,6 @@ static int __init ps3fb_setup(void)
 {
 	char *options;
 
-#ifdef MODULE
-	return 0;
-#endif
-
 	if (fb_get_options(DEVICE_NAME, &options))
 		return -ENXIO;
 

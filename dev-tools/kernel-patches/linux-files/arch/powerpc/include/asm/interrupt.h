@@ -106,6 +106,7 @@ static inline bool is_implicit_soft_masked(struct pt_regs *regs)
 	return search_kernel_soft_mask_table(regs->nip);
 }
 
+__attribute__((always_inline))
 static inline void srr_regs_clobbered(void)
 {
 	local_paca->srr_valid = 0;

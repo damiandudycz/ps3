@@ -1,5 +1,5 @@
 diff --git a/arch/powerpc/include/asm/ps3gpu.h b/arch/powerpc/include/asm/ps3gpu.h
-index 9645c30..64670c2 100644
+index 9645c30..bab8bd5 100644
 --- a/arch/powerpc/include/asm/ps3gpu.h
 +++ b/arch/powerpc/include/asm/ps3gpu.h
 @@ -23,6 +23,10 @@
@@ -13,7 +13,12 @@ index 9645c30..64670c2 100644
  #define L1GPU_DISPLAY_SYNC_HSYNC		1
  #define L1GPU_DISPLAY_SYNC_VSYNC		2
  
-@@ -36,11 +40,11 @@ static inline int lv1_gpu_display_sync(u64 context_handle, u64 head,
+@@ -32,19 +36,19 @@ extern struct mutex ps3_gpu_mutex;
+ 
+ 
+ static inline int lv1_gpu_display_sync(u64 context_handle, u64 head,
+-				       u64 ddr_offset)
++				       u64 sync_mode)
  {
  	return lv1_gpu_context_attribute(context_handle,
  					 L1GPU_CONTEXT_ATTRIBUTE_DISPLAY_SYNC,
@@ -27,6 +32,11 @@ index 9645c30..64670c2 100644
  {
  	return lv1_gpu_context_attribute(context_handle,
  					 L1GPU_CONTEXT_ATTRIBUTE_DISPLAY_FLIP,
+-					 head, ddr_offset, 0, 0);
++					 head, sync_mode, 0, 0);
+ }
+ 
+ static inline int lv1_gpu_fb_setup(u64 context_handle, u64 xdr_lpar,
 diff --git a/drivers/video/fbdev/ps3fb.c b/drivers/video/fbdev/ps3fb.c
 index f99c4c9..e95bb68 100644
 --- a/drivers/video/fbdev/ps3fb.c

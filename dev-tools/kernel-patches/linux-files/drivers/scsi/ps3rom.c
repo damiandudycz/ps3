@@ -28,7 +28,6 @@
 
 #define PS3ROM_MAX_SECTORS		(BOUNCE_SIZE >> 9)
 
-#define PS3ROM_VENDOR_SPECIFIC_OPCODE	0xfd
 
 struct ps3rom_private {
 	struct ps3_storage_device *dev;
@@ -61,12 +60,6 @@ enum lv1_atapi_in_out {
 	DIR_READ = 1		/* device -> memory */
 };
 
-static unsigned int region_flags[] =
-{
-	0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-};
-module_param_array(region_flags, uint, NULL, S_IRUGO);
-MODULE_PARM_DESC(region_flags, "Region flags");
 
 static int ps3rom_slave_configure(struct scsi_device *scsi_dev)
 {
@@ -152,40 +145,6 @@ static int ps3rom_atapi_request(struct ps3_storage_device *dev,
 	return 0;
 }
 
-static int ps3rom_vendor_specific_request(struct ps3_storage_device *dev,
-					  struct scsi_cmnd *cmd)
-{
-	unsigned char opcode = cmd->cmnd[1];
-	int res;
-
-	dev_dbg(&dev->sbd.core, "%s:%u: send vendor-specific command 0x%02x\n", __func__,
-		__LINE__, opcode);
-
-	if (cmd->sc_data_direction == DMA_TO_DEVICE)
-		scsi_sg_copy_to_buffer(cmd, dev->bounce_buf, dev->bounce_size);
-
-	res = lv1_storage_send_device_command(dev->sbd.dev_id,
-					      opcode,
-					      dev->bounce_lpar, scsi_bufflen(cmd),
-					      dev->bounce_lpar, dev->bounce_size,
-					      &dev->tag);
-	if (res == LV1_DENIED_BY_POLICY) {
-		dev_dbg(&dev->sbd.core,
-			"%s:%u: vendor-specific command 0x%02x denied by policy\n",
-			__func__, __LINE__, opcode);
-		return DID_ERROR << 16;
-	}
-
-	if (res) {
-		dev_err(&dev->sbd.core,
-			"%s:%u: vendor-specific command 0x%02x failed %d\n", __func__,
-			__LINE__, opcode, res);
-		return DID_ERROR << 16;
-	}
-
-	return 0;
-}
-
 static inline unsigned int srb10_lba(const struct scsi_cmnd *cmd)
 {
 	return cmd->cmnd[2] << 24 | cmd->cmnd[3] << 16 | cmd->cmnd[4] << 8 |
@@ -202,13 +161,12 @@ static int ps3rom_read_request(struct ps3_storage_device *dev,
 			       u32 sectors)
 {
 	int res;
-	unsigned int region_idx = 0;
 
 	dev_dbg(&dev->sbd.core, "%s:%u: read %u sectors starting at %u\n",
 		__func__, __LINE__, sectors, start_sector);
 
 	res = lv1_storage_read(dev->sbd.dev_id,
-			       dev->regions[region_idx].id, start_sector,
+			       dev->regions[dev->region_idx].id, start_sector,
 			       sectors, 0, dev->bounce_lpar, &dev->tag);
 	if (res) {
 		dev_err(&dev->sbd.core, "%s:%u: read failed %d\n", __func__,
@@ -224,7 +182,6 @@ static int ps3rom_write_request(struct ps3_storage_device *dev,
 				u32 sectors)
 {
 	int res;
-	unsigned int region_idx = 0;
 
 	dev_dbg(&dev->sbd.core, "%s:%u: write %u sectors starting at %u\n",
 		__func__, __LINE__, sectors, start_sector);
@@ -232,7 +189,7 @@ static int ps3rom_write_request(struct ps3_storage_device *dev,
 	scsi_sg_copy_to_buffer(cmd, dev->bounce_buf, dev->bounce_size);
 
 	res = lv1_storage_write(dev->sbd.dev_id,
-				dev->regions[region_idx].id, start_sector,
+				dev->regions[dev->region_idx].id, start_sector,
 				sectors, 0, dev->bounce_lpar, &dev->tag);
 	if (res) {
 		dev_err(&dev->sbd.core, "%s:%u: write failed %d\n", __func__,
@@ -267,10 +224,6 @@ static int ps3rom_queuecommand_lck(struct scsi_cmnd *cmd)
 	case WRITE_10:
 		res = ps3rom_write_request(dev, cmd, srb10_lba(cmd),
 					   srb10_len(cmd));
-		break;
-
-	case PS3ROM_VENDOR_SPECIFIC_OPCODE:
-		res = ps3rom_vendor_specific_request(dev, cmd);
 		break;
 
 	default:
@@ -387,7 +340,6 @@ static int ps3rom_probe(struct ps3_system_bus_device *_dev)
 {
 	struct ps3_storage_device *dev = to_ps3_storage_device(&_dev->core);
 	int error;
-	unsigned int regidx;
 	struct Scsi_Host *host;
 	struct ps3rom_private *priv;
 
@@ -402,9 +354,6 @@ static int ps3rom_probe(struct ps3_system_bus_device *_dev)
 	dev->bounce_buf = kmalloc(BOUNCE_SIZE, GFP_DMA);
 	if (!dev->bounce_buf)
 		return -ENOMEM;
-
-	for (regidx = 0; regidx < dev->num_regions; regidx++)
-		dev->regions[regidx].flags = region_flags[regidx];
 
 	error = ps3stor_setup(dev, ps3rom_interrupt);
 	if (error)

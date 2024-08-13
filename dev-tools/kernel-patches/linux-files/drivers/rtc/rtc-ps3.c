@@ -13,6 +13,7 @@
 #include <asm/lv1call.h>
 #include <asm/ps3.h>
 
+extern long long  RTCAdj;
 
 static u64 read_rtc(void)
 {
@@ -23,7 +24,7 @@ static u64 read_rtc(void)
 	result = lv1_get_rtc(&rtc_val, &tb_val);
 	BUG_ON(result);
 
-	return rtc_val;
+	return rtc_val + RTCAdj;
 }
 
 static int ps3_get_time(struct device *dev, struct rtc_time *tm)
@@ -52,7 +53,7 @@ static int __init ps3_rtc_probe(struct platform_device *dev)
 		return PTR_ERR(rtc);
 
 	rtc->ops = &ps3_rtc_ops;
-	rtc->range_max = U64_MAX;
+	rtc->range_max = S64_MAX;
 
 	platform_set_drvdata(dev, rtc);
 

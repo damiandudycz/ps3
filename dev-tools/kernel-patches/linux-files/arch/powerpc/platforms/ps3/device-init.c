@@ -413,7 +413,6 @@ static int __init ps3_register_vuart_devices(void)
 {
 	int result;
 	unsigned int port_number;
-	u64 lpar_id, laid, junk;
 
 	pr_debug(" -> %s:%d\n", __func__, __LINE__);
 
@@ -430,27 +429,6 @@ static int __init ps3_register_vuart_devices(void)
 
 	result = ps3_setup_vuart_device(PS3_MATCH_ID_SYSTEM_MANAGER,
 		port_number);
-	WARN_ON(result);
-
-	result = lv1_get_logical_partition_id(&lpar_id);
-	if (result)
-		goto out;
-
-	result = lv1_read_repository_node(1, 0x0000000073730000ul /* ss */,
-					     0x6c61696400000000ul /* laid */,
-					     lpar_id,
-					     0, &laid, &junk);
-	if (result)
-		goto out;
-
-	if (laid == 0x1070000002000001ul) {
-		port_number = 10;
-		result = ps3_setup_vuart_device(PS3_MATCH_ID_DISP_MANAGER,
-			port_number);
-	}
-
-out:
-
 	WARN_ON(result);
 
 	pr_debug(" <- %s:%d\n", __func__, __LINE__);
@@ -596,20 +574,6 @@ static int ps3_setup_dynamic_device(const struct ps3_repository_device *repo)
 
 	case PS3_DEV_TYPE_STOR_FLASH:
 		result = ps3_setup_storage_dev(repo, PS3_MATCH_ID_STOR_FLASH);
-		if (result)
-			pr_debug("%s:%u ps3_setup_storage_dev failed\n",
-				 __func__, __LINE__);
-		break;
-
-	case PS3_DEV_TYPE_STOR_NOR_FLASH:
-		result = ps3_setup_storage_dev(repo, PS3_MATCH_ID_STOR_NOR_FLASH);
-		if (result)
-			pr_debug("%s:%u ps3_setup_storage_dev failed\n",
-				 __func__, __LINE__);
-		break;
-
-	case PS3_DEV_TYPE_STOR_ENCDEC:
-		result = ps3_setup_storage_dev(repo, PS3_MATCH_ID_STOR_ENCDEC);
 		if (result)
 			pr_debug("%s:%u ps3_setup_storage_dev failed\n",
 				 __func__, __LINE__);

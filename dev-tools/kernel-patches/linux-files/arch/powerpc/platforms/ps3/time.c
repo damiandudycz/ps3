@@ -16,8 +16,6 @@
 
 #include "platform.h"
 
-extern long long  RTCAdj;
-
 void __init ps3_calibrate_decr(void)
 {
 	int result;
@@ -39,7 +37,7 @@ static u64 read_rtc(void)
 	result = lv1_get_rtc(&rtc_val, &tb_val);
 	BUG_ON(result);
 
-	return rtc_val + RTCAdj;
+	return rtc_val;
 }
 
 time64_t __init ps3_get_boot_time(void)

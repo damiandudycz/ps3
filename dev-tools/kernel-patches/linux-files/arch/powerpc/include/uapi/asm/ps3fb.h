@@ -31,10 +31,6 @@
 #define PS3FB_IOCTL_OFF           _IO('r', 5)        /* return to normal-flip */
 #define PS3FB_IOCTL_FSEL          _IOW('r', 6, int)  /* blit and flip request */
 
-#define PS3FB_IOCTL_CURSOR_ENABLE _IOW('r', 10, int)	/* cursor enable/disable */
-#define PS3FB_IOCTL_CURSOR_POS    _IOW('r', 11, int)	/* cursor x/y pos*/
-#define PS3FB_IOCTL_CURSOR_OFFS   _IOW('r', 12, int)	/* cursor data offset */
-
 #ifndef FBIO_WAITFORVSYNC
 #define FBIO_WAITFORVSYNC         _IOW('F', 0x20, __u32) /* wait for vsync */
 #endif

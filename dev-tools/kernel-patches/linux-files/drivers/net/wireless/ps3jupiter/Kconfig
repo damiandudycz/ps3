@@ -1,0 +1,16 @@
+
+config PS3_JUPITER
+	tristate "PS3 Jupiter 802.11bg support"
+	depends on USB
+	help
+          A driver for the PS3 Jupiter
+          802.11bg wireless network adapter.
+
+config PS3_JUPITER_STA
+	tristate "PS3 Jupiter 802.11bg station support"
+	depends on PS3_JUPITER
+	select WIRELESS_EXT
+	select WEXT_PRIV
+	help
+          A station driver for the PS3 Jupiter
+          802.11bg wireless network adapter.

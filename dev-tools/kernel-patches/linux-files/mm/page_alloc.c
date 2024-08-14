@@ -269,9 +269,13 @@ const char * const migratetype_names[MIGRATE_TYPES] = {
 #endif
 };
 
-int min_free_kbytes = 1024;
+int min_free_kbytes = 4096;
 int user_min_free_kbytes = -1;
+#ifdef CONFIG_PPC_PS3
+static int watermark_boost_factor __read_mostly;
+#else
 static int watermark_boost_factor __read_mostly = 15000;
+#endif
 static int watermark_scale_factor = 10;
 
 /* movable_zone is the "real" zone pages in ZONE_MOVABLE are taken from */

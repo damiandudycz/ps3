@@ -14,6 +14,7 @@
 
 #include <linux/types.h>
 #include <linux/export.h>
+#include <asm/interrupt.h>
 
 /* lv1 call declaration macros */
 
@@ -41,6 +42,7 @@
 #define LV1_5_IN_0_OUT_ARG_DECL LV1_5_IN_ARG_DECL
 #define LV1_6_IN_0_OUT_ARG_DECL LV1_6_IN_ARG_DECL
 #define LV1_7_IN_0_OUT_ARG_DECL LV1_7_IN_ARG_DECL
+#define LV1_8_IN_0_OUT_ARG_DECL LV1_8_IN_ARG_DECL
 
 #define LV1_0_IN_1_OUT_ARG_DECL                    LV1_1_OUT_ARG_DECL
 #define LV1_1_IN_1_OUT_ARG_DECL LV1_1_IN_ARG_DECL, LV1_1_OUT_ARG_DECL
@@ -131,6 +133,7 @@
 #define LV1_5_IN_0_OUT_ARGS LV1_5_IN_ARGS
 #define LV1_6_IN_0_OUT_ARGS LV1_6_IN_ARGS
 #define LV1_7_IN_0_OUT_ARGS LV1_7_IN_ARGS
+#define LV1_8_IN_0_OUT_ARGS LV1_8_IN_ARGS
 
 #define LV1_0_IN_1_OUT_ARGS                LV1_1_OUT_ARGS
 #define LV1_1_IN_1_OUT_ARGS LV1_1_IN_ARGS, LV1_1_OUT_ARGS
@@ -208,7 +211,7 @@
 #define LV1_CALL(name, in, out, num)                               \
   extern s64 _lv1_##name(LV1_##in##_IN_##out##_OUT_ARG_DECL);      \
   static inline int lv1_##name(LV1_##in##_IN_##out##_OUT_ARG_DECL) \
-    {return _lv1_##name(LV1_##in##_IN_##out##_OUT_ARGS);}
+    {srr_regs_clobbered(); return _lv1_##name(LV1_##in##_IN_##out##_OUT_ARGS);}
 #endif
 
 #endif /* !defined(__ASSEMBLY__) */
@@ -241,6 +244,7 @@ LV1_CALL(shutdown_logical_partition,                    1, 0,  44 )
 LV1_CALL(destruct_logical_spe,                          1, 0,  54 )
 LV1_CALL(construct_logical_spe,                         7, 6,  57 )
 LV1_CALL(set_spe_interrupt_mask,                        3, 0,  61 )
+LV1_CALL(undocumented_function_62,                      5, 0,  62 )
 LV1_CALL(set_spe_transition_notifier,                   3, 0,  64 )
 LV1_CALL(disable_logical_spe,                           2, 0,  65 )
 LV1_CALL(clear_spe_interrupt_status,                    4, 0,  66 )
@@ -251,13 +255,21 @@ LV1_CALL(get_logical_partition_id,                      0, 1,  74 )
 LV1_CALL(configure_execution_time_variable,             1, 0,  77 )
 LV1_CALL(get_spe_irq_outlet,                            2, 1,  78 )
 LV1_CALL(set_spe_privilege_state_area_1_register,       3, 0,  79 )
-LV1_CALL(create_repository_node,                        6, 0,  90 )
+LV1_CALL(create_repository_node,                        7, 0,  90 )
 LV1_CALL(read_repository_node,                          5, 2,  91 )
-LV1_CALL(write_repository_node,                         6, 0,  92 )
-LV1_CALL(delete_repository_node,                        4, 0,  93 )
+LV1_CALL(write_repository_node,                         7, 0,  92 )
+LV1_CALL(delete_repository_node,                        5, 0,  93 )
 LV1_CALL(read_htab_entries,                             2, 5,  95 )
 LV1_CALL(set_dabr,                                      2, 0,  96 )
+LV1_CALL(undocumented_function_99,                      2, 0,  99 )
 LV1_CALL(get_total_execution_time,                      2, 1, 103 )
+LV1_CALL(undocumented_function_105,                     7, 0, 105 )
+LV1_CALL(undocumented_function_106,                     1, 0, 106 )
+LV1_CALL(undocumented_function_107,                     6, 1, 107 )
+LV1_CALL(undocumented_function_108,                     1, 5, 108 )
+LV1_CALL(undocumented_function_109,                     1, 0, 109 )
+LV1_CALL(undocumented_function_114,                     3, 1, 114 )
+LV1_CALL(undocumented_function_115,                     1, 0, 115 )
 LV1_CALL(allocate_io_segment,                           3, 1, 116 )
 LV1_CALL(release_io_segment,                            2, 0, 117 )
 LV1_CALL(construct_io_irq_outlet,                       1, 1, 120 )
@@ -265,12 +277,15 @@ LV1_CALL(destruct_io_irq_outlet,                        1, 0, 121 )
 LV1_CALL(map_htab,                                      1, 1, 122 )
 LV1_CALL(unmap_htab,                                    1, 0, 123 )
 LV1_CALL(get_version_info,                              0, 2, 127 )
+LV1_CALL(undocumented_function_138,                     2, 0, 138 )
 LV1_CALL(insert_htab_entry,                             6, 3, 158 )
 LV1_CALL(read_virtual_uart,                             3, 1, 162 )
 LV1_CALL(write_virtual_uart,                            3, 1, 163 )
 LV1_CALL(set_virtual_uart_param,                        3, 0, 164 )
 LV1_CALL(get_virtual_uart_param,                        2, 1, 165 )
 LV1_CALL(configure_virtual_uart_irq,                    1, 1, 166 )
+LV1_CALL(undocumented_function_167,                     2, 1, 167 )
+LV1_CALL(undocumented_function_168,                     3, 0, 168 )
 LV1_CALL(open_device,                                   3, 0, 170 )
 LV1_CALL(close_device,                                  2, 0, 171 )
 LV1_CALL(map_device_mmio_region,                        5, 1, 172 )
@@ -291,8 +306,11 @@ LV1_CALL(net_control,                                   6, 2, 194 )
 LV1_CALL(connect_interrupt_event_receive_port,          4, 0, 197 )
 LV1_CALL(disconnect_interrupt_event_receive_port,       4, 0, 198 )
 LV1_CALL(get_spe_all_interrupt_statuses,                1, 1, 199 )
+LV1_CALL(undocumented_function_200,                     1, 0, 200 )
+LV1_CALL(undocumented_function_201,                     1, 0, 201 )
 LV1_CALL(deconfigure_virtual_uart_irq,                  0, 0, 202 )
 LV1_CALL(enable_logical_spe,                            2, 0, 207 )
+LV1_CALL(undocumented_function_209,                     8, 0, 209 )
 LV1_CALL(gpu_open,                                      1, 0, 210 )
 LV1_CALL(gpu_close,                                     0, 0, 211 )
 LV1_CALL(gpu_device_map,                                1, 2, 212 )
@@ -313,6 +331,10 @@ LV1_CALL(storage_read,                                  6, 1, 245 )
 LV1_CALL(storage_write,                                 6, 1, 246 )
 LV1_CALL(storage_send_device_command,                   6, 1, 248 )
 LV1_CALL(storage_get_async_status,                      1, 2, 249 )
+LV1_CALL(storage_create_region,                         5, 2, 250 )
+LV1_CALL(storage_delete_region,                         2, 1, 251 )
+LV1_CALL(storage_set_region_acl,                        4, 1, 252 )
+LV1_CALL(storage_get_region_acl,                        3, 2, 253 )
 LV1_CALL(storage_check_async_status,                    2, 1, 254 )
 LV1_CALL(panic,                                         1, 0, 255 )
 LV1_CALL(construct_lpm,                                 6, 3, 140 )

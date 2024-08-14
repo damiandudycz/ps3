@@ -185,8 +185,6 @@ struct cbe_spu_info {
 	atomic_t reserved_spus;
 };
 
-extern int spu_enum_shared(void);
-
 extern struct cbe_spu_info cbe_spu_info[];
 
 void spu_init_channels(struct spu *spu);

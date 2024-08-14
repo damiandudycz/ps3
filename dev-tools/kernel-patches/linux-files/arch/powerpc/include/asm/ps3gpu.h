@@ -12,6 +12,9 @@
 
 #include <asm/lv1call.h>
 
+#define L1GPU_CONTEXT_ATTRIBUTE_FIFO_SETUP	0x1
+#define L1GPU_CONTEXT_ATTRIBUTE_FIFO_PAUSE	0x2
+#define L1GPU_CONTEXT_ATTRIBUTE_FIFO_RESUME	0x3
 
 #define L1GPU_CONTEXT_ATTRIBUTE_DISPLAY_SYNC	0x101
 #define L1GPU_CONTEXT_ATTRIBUTE_DISPLAY_FLIP	0x102
@@ -32,11 +35,11 @@ extern struct mutex ps3_gpu_mutex;
 
 
 static inline int lv1_gpu_display_sync(u64 context_handle, u64 head,
-				       u64 ddr_offset)
+				       u64 sync_mode)
 {
 	return lv1_gpu_context_attribute(context_handle,
 					 L1GPU_CONTEXT_ATTRIBUTE_DISPLAY_SYNC,
-					 head, ddr_offset, 0, 0);
+					 head, sync_mode, 0, 0);
 }
 
 static inline int lv1_gpu_display_flip(u64 context_handle, u64 head,

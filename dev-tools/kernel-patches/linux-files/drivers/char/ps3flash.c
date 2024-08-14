@@ -34,9 +34,10 @@ static int ps3flash_read_write_sectors(struct ps3_storage_device *dev,
 				       u64 start_sector, int write)
 {
 	struct ps3flash_private *priv = ps3_system_bus_get_drvdata(&dev->sbd);
+	unsigned int region_idx = 0;
 	u64 res = ps3stor_read_write_sectors(dev, dev->bounce_lpar,
-					     start_sector, priv->chunk_sectors,
-					     write);
+					     region_idx, start_sector,
+					     priv->chunk_sectors, 0, write);
 	if (res) {
 		dev_err(&dev->sbd.core, "%s:%u: %s failed 0x%llx\n", __func__,
 			__LINE__, write ? "write" : "read", res);
@@ -86,8 +87,9 @@ static int ps3flash_fetch(struct ps3_storage_device *dev, u64 start_sector)
 static loff_t ps3flash_llseek(struct file *file, loff_t offset, int origin)
 {
 	struct ps3_storage_device *dev = ps3flash_dev;
+	unsigned int region_idx = 0;
 	return generic_file_llseek_size(file, offset, origin, MAX_LFS_FILESIZE,
-			dev->regions[dev->region_idx].size*dev->blk_size);
+			dev->regions[region_idx].size*dev->blk_size);
 }
 
 static ssize_t ps3flash_read(char __user *userbuf, void *kernelbuf,
@@ -95,6 +97,7 @@ static ssize_t ps3flash_read(char __user *userbuf, void *kernelbuf,
 {
 	struct ps3_storage_device *dev = ps3flash_dev;
 	struct ps3flash_private *priv = ps3_system_bus_get_drvdata(&dev->sbd);
+	unsigned int region_idx = 0;
 	u64 size, sector, offset;
 	int res;
 	size_t remaining, n;
@@ -104,7 +107,7 @@ static ssize_t ps3flash_read(char __user *userbuf, void *kernelbuf,
 		"%s:%u: Reading %zu bytes at position %lld to U0x%p/K0x%p\n",
 		__func__, __LINE__, count, *pos, userbuf, kernelbuf);
 
-	size = dev->regions[dev->region_idx].size*dev->blk_size;
+	size = dev->regions[region_idx].size*dev->blk_size;
 	if (*pos >= size || !count)
 		return 0;
 
@@ -164,6 +167,7 @@ static ssize_t ps3flash_write(const char __user *userbuf,
 {
 	struct ps3_storage_device *dev = ps3flash_dev;
 	struct ps3flash_private *priv = ps3_system_bus_get_drvdata(&dev->sbd);
+	unsigned int region_idx = 0;
 	u64 size, sector, offset;
 	int res = 0;
 	size_t remaining, n;
@@ -173,7 +177,7 @@ static ssize_t ps3flash_write(const char __user *userbuf,
 		"%s:%u: Writing %zu bytes at position %lld from U0x%p/K0x%p\n",
 		__func__, __LINE__, count, *pos, userbuf, kernelbuf);
 
-	size = dev->regions[dev->region_idx].size*dev->blk_size;
+	size = dev->regions[region_idx].size*dev->blk_size;
 	if (*pos >= size || !count)
 		return 0;
 
@@ -333,15 +337,16 @@ static int ps3flash_probe(struct ps3_system_bus_device *_dev)
 	struct ps3flash_private *priv;
 	int error;
 	unsigned long tmp;
+	unsigned int region_idx = 0;
 
-	tmp = dev->regions[dev->region_idx].start*dev->blk_size;
+	tmp = dev->regions[region_idx].start*dev->blk_size;
 	if (tmp % FLASH_BLOCK_SIZE) {
 		dev_err(&dev->sbd.core,
 			"%s:%u region start %lu is not aligned\n", __func__,
 			__LINE__, tmp);
 		return -EINVAL;
 	}
-	tmp = dev->regions[dev->region_idx].size*dev->blk_size;
+	tmp = dev->regions[region_idx].size*dev->blk_size;
 	if (tmp % FLASH_BLOCK_SIZE) {
 		dev_err(&dev->sbd.core,
 			"%s:%u region size %lu is not aligned\n", __func__,

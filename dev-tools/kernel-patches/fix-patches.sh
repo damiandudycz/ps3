@@ -17,10 +17,8 @@ for patch in ../patches/damiandudycz/*.patch; do
 
 done
 
-git diff development -- ../patches/damiandudycz
+cd ..
 
 git switch development
-
-git merge --squash fix-patches
-
+git checkout fix-patches -- patches
 git branch -D fix-patches

@@ -11,7 +11,6 @@
 
 #include <linux/interrupt.h>
 #include <linux/list.h>
-#include <linux/module.h>
 #include <linux/init.h>
 #include <linux/ptrace.h>
 #include <linux/slab.h>
@@ -26,10 +25,6 @@
 #include <asm/spu_csa.h>
 #include <asm/xmon.h>
 #include <asm/kexec.h>
-
-static int enum_shared = 0;
-module_param(enum_shared, int, S_IRUGO);
-MODULE_PARM_DESC(enum_shared, "Enumerate shared SPUs");
 
 const struct spu_management_ops *spu_management_ops;
 EXPORT_SYMBOL_GPL(spu_management_ops);
@@ -434,12 +429,6 @@ static void spu_free_irqs(struct spu *spu)
 	if (spu->irqs[2])
 		free_irq(spu->irqs[2], spu);
 }
-
-int spu_enum_shared(void)
-{
-	return (enum_shared);
-}
-EXPORT_SYMBOL_GPL(spu_enum_shared);
 
 void spu_init_channels(struct spu *spu)
 {

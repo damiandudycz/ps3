@@ -11,7 +11,7 @@ index 2d6c886..9f30d44 100644
  {
  	local_paca->srr_valid = 0;
 diff --git a/arch/powerpc/include/asm/lv1call.h b/arch/powerpc/include/asm/lv1call.h
-index e6563c6..c8d88a2 100644
+index b11501b..b2f19a6 100644
 --- a/arch/powerpc/include/asm/lv1call.h
 +++ b/arch/powerpc/include/asm/lv1call.h
 @@ -14,6 +14,7 @@
@@ -22,7 +22,7 @@ index e6563c6..c8d88a2 100644
  
  /* lv1 call declaration macros */
  
-@@ -210,7 +211,7 @@
+@@ -208,7 +209,7 @@
  #define LV1_CALL(name, in, out, num)                               \
    extern s64 _lv1_##name(LV1_##in##_IN_##out##_OUT_ARG_DECL);      \
    static inline int lv1_##name(LV1_##in##_IN_##out##_OUT_ARG_DECL) \

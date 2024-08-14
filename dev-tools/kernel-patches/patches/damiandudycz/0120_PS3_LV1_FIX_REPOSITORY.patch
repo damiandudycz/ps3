@@ -1,5 +1,5 @@
 diff --git a/arch/powerpc/include/asm/lv1call.h b/arch/powerpc/include/asm/lv1call.h
-index 5cddd73..e6563c6 100644
+index 5b9c432..06473e5 100644
 --- a/arch/powerpc/include/asm/lv1call.h
 +++ b/arch/powerpc/include/asm/lv1call.h
 @@ -254,10 +254,10 @@ LV1_CALL(get_logical_partition_id,                      0, 1,  74 )
@@ -15,7 +15,7 @@ index 5cddd73..e6563c6 100644
 +LV1_CALL(delete_repository_node,                        5, 0,  93 )
  LV1_CALL(read_htab_entries,                             2, 5,  95 )
  LV1_CALL(set_dabr,                                      2, 0,  96 )
- LV1_CALL(undocumented_function_99,                      2, 0,  99 )
+ LV1_CALL(get_total_execution_time,                      2, 1, 103 )
 diff --git a/arch/powerpc/platforms/ps3/repository.c b/arch/powerpc/platforms/ps3/repository.c
 index 1abe33f..28ef4da 100644
 --- a/arch/powerpc/platforms/ps3/repository.c

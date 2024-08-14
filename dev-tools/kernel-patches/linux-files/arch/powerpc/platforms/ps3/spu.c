@@ -404,7 +404,7 @@ static int __init ps3_enumerate_spus(int (*fn)(void *data))
 		if (result)
 			break;
 
-		if (resource_type == PS3_SPU_RESOURCE_TYPE_EXCLUSIVE || spu_enum_shared()) {
+		if (resource_type == PS3_SPU_RESOURCE_TYPE_EXCLUSIVE) {
 			result = fn((void*)(unsigned long)resource_id);
 
 			if (result)

@@ -1,3 +1,5 @@
+Adds support to make lv1 HV calls.
+
 diff --git a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kconfig
 index 706194e..5fd28c5 100644
 --- a/arch/powerpc/platforms/ps3/Kconfig

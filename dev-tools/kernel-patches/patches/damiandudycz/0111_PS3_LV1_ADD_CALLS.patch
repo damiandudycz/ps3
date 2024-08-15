@@ -1,3 +1,5 @@
+Adds missing lv calls.
+
 diff --git a/arch/powerpc/include/asm/lv1call.h b/arch/powerpc/include/asm/lv1call.h
 index 1f9683c..5cddd73 100644
 --- a/arch/powerpc/include/asm/lv1call.h

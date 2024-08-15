@@ -1,3 +1,5 @@
+Fixes ps3flash calls, to work with multiple regions.
+
 diff --git a/drivers/char/ps3flash.c b/drivers/char/ps3flash.c
 index 23871cd..8e473f5 100644
 --- a/drivers/char/ps3flash.c

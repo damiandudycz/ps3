@@ -1,3 +1,5 @@
+Fixes lv1 calls in PS3 repository module.
+
 diff --git a/arch/powerpc/include/asm/lv1call.h b/arch/powerpc/include/asm/lv1call.h
 index 5cddd73..e6563c6 100644
 --- a/arch/powerpc/include/asm/lv1call.h

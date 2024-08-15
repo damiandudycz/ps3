@@ -1,3 +1,6 @@
+Fixes issue with clobbered SRR0 and SRR1 registers after making lv1 calls.
+This issue resulted in dmesg warnings.
+
 diff --git a/arch/powerpc/include/asm/interrupt.h b/arch/powerpc/include/asm/interrupt.h
 index 2d6c886..9f30d44 100644
 --- a/arch/powerpc/include/asm/interrupt.h

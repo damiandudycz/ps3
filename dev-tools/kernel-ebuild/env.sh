@@ -3,6 +3,9 @@
 [ ${KE_ENV_LOADED} ] && return 0; readonly KE_ENV_LOADED=true
 register_usage "$0 [--unmask] [--save] [--edit] [--version <version>] [--use <use-flags>] [--patch <patch_set_name>] [--upload <username@ps3-host>]"
 
+# TODO: Remove when KE_FLAG_UNMASK should not be used by default
+KE_FLAG_UNMASK=true
+
 # Input parsing.
 while [ $# -gt 0 ]; do case "$1" in
     --unmask)         KE_FLAG_UNMASK=true;;               # Use masked ~ppc64 base ebuilds and unmask created ps3 ebuild ~ppc64 -> ppc64.
@@ -22,7 +25,7 @@ esac; shift; done
 # Read default configurations from main environment.
 [[ ${CONF_KERNEL_PACKAGE_AUTOUNMASK} = true ]] && KE_FLAG_UNMASK=true
 
-readonly KE_CONF_PATCH_DEFULT_NAME="psxplace"
+readonly KE_CONF_PATCH_DEFULT_NAME="damiandudycz"
 
 # Main Scripts in kernel-ebuild group.
 readonly KE_SCRIPT_NAME_FIND_VERSION="ebuild-00-find-version.sh" # Finds version of gentoo-kernel - stable or unstable, depending on KE_FLAG_UNMASK.
@@ -61,13 +64,14 @@ readonly KE_PATH_DATA_PATCHES_LISTS="${KE_PATH_DATA}/patches"
 readonly KE_PATH_EBUILD_PATCHES="${KE_PATH_DATA}/ebuild-patches"                                       # Location of patches to be applied to generated ebuild file.
 
 # Paths.
-readonly KE_PATH_WORK_SRC="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/src"                           # Location of gentoo-kernel ebuild extracted files main folder.
+readonly KE_PATH_WORK_VERSION="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}"
+readonly KE_PATH_WORK_SRC="${KE_PATH_WORK_VERSION}/src"                           # Location of gentoo-kernel ebuild extracted files main folder.
 readonly KE_PATH_WORK_SRC_LINUX="$(find ${KE_PATH_WORK_SRC}/portage/${CONF_KERNEL_PACKAGE_BASE}-${KE_PACKAGE_VERSION_SELECTED}/work/ -maxdepth 1 -name linux-* -type d -print -quit 2>/dev/null)" # Location of linux source code from gentoo-kernel ebuild extracted package.
-readonly KE_PATH_WORK_BINPKGS="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/${KE_NAME_FOLDER_BINPKGS}" # Location of folder containing binpkg created with crossdev.
+readonly KE_PATH_WORK_BINPKGS="${KE_PATH_WORK_VERSION}/${KE_NAME_FOLDER_BINPKGS}" # Location of folder containing binpkg created with crossdev.
 readonly KE_PATH_WORK_PATCHES="${PATH_WORK_KERNEL_EBUILD}/${KE_NAME_FOLDER_PATCHES}"
 readonly KE_PATH_WORK_PATCHES_SRC="${KE_PATH_WORK_PATCHES}/${KE_PATCH_SET_SELECTED}"
-readonly KE_PATH_WORK_VERSION_PATCHES="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/${KE_NAME_FOLDER_PS3_PATCHES}"
-readonly KE_PATH_WORK_LOCALBUILD="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/${KE_NAME_FOLDER_LOCALBUILD}"
+readonly KE_PATH_WORK_VERSION_PATCHES="${KE_PATH_WORK_VERSION}/${KE_NAME_FOLDER_PS3_PATCHES}"
+readonly KE_PATH_WORK_LOCALBUILD="${KE_PATH_WORK_VERSION}/${KE_NAME_FOLDER_LOCALBUILD}"
 
 # Work files location.
 readonly KE_PATH_WORK_EBUILD="${PATH_WORK_KERNEL_EBUILD}/${KE_PACKAGE_VERSION_SELECTED}/ebuild"                     # Location of ebuild generation workdir.

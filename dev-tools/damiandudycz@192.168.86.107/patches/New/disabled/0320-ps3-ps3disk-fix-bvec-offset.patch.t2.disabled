@@ -1,0 +1,13 @@
+T2
+
+diff --git a/drivers/block/ps3disk.c b/drivers/block/ps3disk.c
+index edc13876e..7bf5885c8 100644
+--- a/drivers/block/ps3disk.c
++++ b/drivers/block/ps3disk.c
+@@ -95,6 +95,7 @@ static void ps3disk_scatter_gather(struct ps3_storage_device *dev,
+ 			memcpy_from_bvec(dev->bounce_buf + offset, &bvec);
+ 		else
+ 			memcpy_to_bvec(&bvec, dev->bounce_buf + offset);
++		offset += bvec.bv_len;
+ 	}
+ }

@@ -1,0 +1,13 @@
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index 1dc6248..7374765 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -1753,7 +1753,7 @@ static inline bool movable_only_nodes(nodemask_t *nodes)
+ #define SECTION_BLOCKFLAGS_BITS \
+ 	((1UL << (PFN_SECTION_SHIFT - pageblock_order)) * NR_PAGEBLOCK_BITS)
+ 
+-#if (MAX_PAGE_ORDER + PAGE_SHIFT) > SECTION_SIZE_BITS
++#if (MAX_PAGE_ORDER - 1 + PAGE_SHIFT) > SECTION_SIZE_BITS
+ #error Allocator MAX_PAGE_ORDER exceeds SECTION_SIZE
+ #endif
+ 

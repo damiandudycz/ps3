@@ -31,6 +31,10 @@
 #define PS3FB_IOCTL_OFF           _IO('r', 5)        /* return to normal-flip */
 #define PS3FB_IOCTL_FSEL          _IOW('r', 6, int)  /* blit and flip request */
 
+#ifndef FBIO_WAITFORVSYNC
+#define FBIO_WAITFORVSYNC         _IOW('F', 0x20, __u32) /* wait for vsync */
+#endif
+
 struct ps3fb_ioctl_res {
 	__u32 xres; /* frame buffer x_size */
 	__u32 yres; /* frame buffer y_size */
@@ -38,85 +42,5 @@ struct ps3fb_ioctl_res {
 	__u32 yoff; /* margine y */
 	__u32 num_frames; /* num of frame buffers */
 };
-
-/*
-* ioctl
-*/
-struct ps3gpu_ioctl_info
-{	
-   __u32 ioif_base;
-   __u32 reset_start;
-   __u32 reset_size;
-   __u32 fifo_start;
-   __u32 fifo_size;
-   __u32 fifo_size_max;
-   __u32 gart_size;
-   __u32 report_size[2];
-   __u32 driver_size;
-   __u32 ctrl_size;
-   __u32 video_size;
-};
-
-struct ps3gpu_ioctl_set_attribute
-{
-   __u64 p0;
-   __u64 p1;
-   __u64 p2;
-};
-
-struct ps3gpu_ioctl_set_context_attribute
-{	
-   __u32 ctx;
-   __u32 reserved;
-   __u64 p0;
-   __u64 p1;
-   __u64 p2;
-   __u64 p3;
-   __u64 p4;
-};
-
-struct ps3gpu_ioctl_init_cursor
-{
-   int ctx;
-   int head;
-};
-
-struct ps3gpu_ioctl_set_cursor_image
-{
-   int ctx;	
-   int head;	
-   __u32 offset;
-   __u32 pad;	
-};
-
-struct ps3gpu_ioctl_set_cursor_position
-{
-   int ctx;
-   int head;
-   int x;
-   int y;
-};
-
-struct ps3gpu_ioctl_set_cursor_enable
-{
-   int ctx;
-   int head;
-   int enable;
-   int pad;
-};
-
-#define PS3GPU_IOCTL_INFO                    _IOR('r', 7, struct ps3gpu_ioctl_info)
-#define PS3GPU_IOCTL_EXIT                    _IOW('r', 8, int)
-#define PS3GPU_IOCTL_SET_ATTRIBUTE           _IOW('r', 9, struct ps3gpu_ioctl_set_attribute)
-#define PS3GPU_IOCTL_SET_CONTEXT_ATTRIBUTE   _IOW('r', 10, struct ps3gpu_ioctl_set_context_attribute)
-#define PS3GPU_IOCTL_INIT_CURSOR             _IOW('r', 11, struct ps3gpu_ioctl_init_cursor)
-#define PS3GPU_IOCTL_CURSOR_POS              _IOW('r', 12, struct ps3gpu_ioctl_set_cursor_position)
-#define PS3GPU_IOCTL_CURSOR_IMAGE            _IOW('r', 13, struct ps3gpu_ioctl_set_cursor_image)
-#define PS3GPU_IOCTL_CURSOR_ENABLE           _IOW('r', 14, struct ps3gpu_ioctl_set_cursor_enable)
-#define PS3GPU_IOCTL_ENTER                   _IOW('r', 15, int)
-
-#ifndef FBIO_WAITFORVSYNC
-#define FBIO_WAITFORVSYNC         _IOW('F', 0x20, __u32) /* wait for vsync */
-#endif
 
 #endif /* _ASM_POWERPC_PS3FB_H_ */

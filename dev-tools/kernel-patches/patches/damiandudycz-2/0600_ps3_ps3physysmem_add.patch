@@ -1,5 +1,5 @@
 diff --git a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kconfig
-index d05b874..dde7f68 100644
+index cc89c5d..afcfdd4 100644
 --- a/arch/powerpc/platforms/ps3/Kconfig
 +++ b/arch/powerpc/platforms/ps3/Kconfig
 @@ -181,6 +181,12 @@ config PS3_VRAM

@@ -36,7 +36,6 @@ _GLOBAL(_##API_NAME)				\
 #define LV1_5_IN_0_OUT LV1_N_IN_0_OUT
 #define LV1_6_IN_0_OUT LV1_N_IN_0_OUT
 #define LV1_7_IN_0_OUT LV1_N_IN_0_OUT
-#define LV1_8_IN_0_OUT LV1_N_IN_0_OUT
 
 #define LV1_0_IN_1_OUT(API_NAME, API_NUMBER)	\
 _GLOBAL(_##API_NAME)				\

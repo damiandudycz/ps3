@@ -9,13 +9,13 @@ index 34fbba9..d05b874 100644
  	  In general, all users will say Y or M.
  
 +config PS3_FLASH_NG
-+	tristate "PS3 Flash Storage Driver"
++	tristate "PS3 FLASH NG Storage Driver"
 +	depends on PPC_PS3 && BLOCK
 +	select PS3_STORAGE
 +	help
-+	  Include support for the PS3 Flash Storage.
++	  Include support for the PS3 NG Flash Storage.
 +
-+	  This support is required to access the PS3 flash.
++	  This support is required to access the PS3 NG flash.
 +	  In general, all users will say Y or M.
 +
  config PS3_VRAM

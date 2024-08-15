@@ -1,3 +1,5 @@
+Adds support for PS3FLASH-NG driver.
+
 diff --git a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kconfig
 index 34fbba9..d05b874 100644
 --- a/arch/powerpc/platforms/ps3/Kconfig

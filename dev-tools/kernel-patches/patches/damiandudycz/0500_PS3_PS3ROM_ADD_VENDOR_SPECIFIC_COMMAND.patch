@@ -1,3 +1,5 @@
+Adds support for PS3ROM vendor specific command.
+
 diff --git a/drivers/scsi/ps3rom.c b/drivers/scsi/ps3rom.c
 index 72eba0b..da2b3ae 100644
 --- a/drivers/scsi/ps3rom.c

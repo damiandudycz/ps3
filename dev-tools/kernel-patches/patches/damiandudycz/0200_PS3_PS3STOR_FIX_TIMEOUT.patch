@@ -1,3 +1,5 @@
+Adds timeout support in ps3stor library in ps3stor_send_command function.
+
 diff --git a/drivers/ps3/ps3stor_lib.c b/drivers/ps3/ps3stor_lib.c
 index a12a1ad..733aeba 100644
 --- a/drivers/ps3/ps3stor_lib.c

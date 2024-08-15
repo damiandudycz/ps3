@@ -1,3 +1,5 @@
+Adds 8 input parameters for lv1 calls.
+
 diff --git a/arch/powerpc/include/asm/lv1call.h b/arch/powerpc/include/asm/lv1call.h
 index b11501b..1f9683c 100644
 --- a/arch/powerpc/include/asm/lv1call.h

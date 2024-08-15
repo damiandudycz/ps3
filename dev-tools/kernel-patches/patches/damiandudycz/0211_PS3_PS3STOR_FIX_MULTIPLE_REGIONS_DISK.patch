@@ -1,3 +1,5 @@
+Fixes ps3disk calls, to work with multiple regions.
+
 diff --git a/drivers/block/ps3disk.c b/drivers/block/ps3disk.c
 index b810ac0..c620ee2 100644
 --- a/drivers/block/ps3disk.c

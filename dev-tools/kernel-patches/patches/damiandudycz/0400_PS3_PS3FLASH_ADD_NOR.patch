@@ -1,3 +1,5 @@
+Adds support for NOR flash memory.
+
 diff --git a/arch/powerpc/include/asm/ps3.h b/arch/powerpc/include/asm/ps3.h
 index d13d8fd..9e5af30 100644
 --- a/arch/powerpc/include/asm/ps3.h

@@ -1,3 +1,5 @@
+Adds support for detecting multiple regions in ps3stor library.
+
 diff --git a/arch/powerpc/include/asm/ps3stor.h b/arch/powerpc/include/asm/ps3stor.h
 index 1d82790..68af139 100644
 --- a/arch/powerpc/include/asm/ps3stor.h

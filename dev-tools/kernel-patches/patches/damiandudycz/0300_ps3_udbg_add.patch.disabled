@@ -1,3 +1,5 @@
+Adds support for UDBG - early debigging in lv1 console.
+
 diff --git a/arch/powerpc/Kconfig.debug b/arch/powerpc/Kconfig.debug
 index 8c80b15..ae7683f 100644
 --- a/arch/powerpc/Kconfig.debug

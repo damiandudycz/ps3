@@ -1,0 +1,12 @@
+diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c b/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c
+index c3d7c32..31243ad 100644
+--- a/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c
++++ b/drivers/net/ethernet/toshiba/ps3_gelic_wireless.c
+@@ -1479,7 +1479,6 @@ static int gelic_wl_start_scan(struct gelic_wl_info *wl, int always_scan,
+ 		wl->scan_stat = GELIC_WL_SCAN_STAT_INIT;
+ 		complete(&wl->scan_done);
+ 		ret = -ENOMEM;
+-		goto out;
+ 	}
+ 	kfree(cmd);
+ out:

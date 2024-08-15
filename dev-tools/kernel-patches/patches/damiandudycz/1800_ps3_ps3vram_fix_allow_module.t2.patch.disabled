@@ -1,0 +1,37 @@
+diff --git a/arch/powerpc/platforms/ps3/Kconfig b/arch/powerpc/platforms/ps3/Kconfig
+index 3be256d..f10d658 100644
+--- a/arch/powerpc/platforms/ps3/Kconfig
++++ b/arch/powerpc/platforms/ps3/Kconfig
+@@ -187,7 +187,7 @@ config PS3_FLASH_NG
+ 
+ config PS3_VRAM
+ 	tristate "PS3 Video RAM Storage Driver"
+-	depends on FB_PS3=y && BLOCK && m
++	depends on FB_PS3 && BLOCK && m
+ 	help
+ 	  This driver allows you to use excess PS3 video RAM as volatile
+ 	  storage or system swap.
+diff --git a/drivers/block/ps3vram.c b/drivers/block/ps3vram.c
+index bdcf083..2e5cbef 100644
+--- a/drivers/block/ps3vram.c
++++ b/drivers/block/ps3vram.c
+@@ -851,3 +851,4 @@ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("PS3 Video RAM Storage Driver");
+ MODULE_AUTHOR("Sony Corporation");
+ MODULE_ALIAS(PS3_MODULE_ALIAS_GPU_RAMDISK);
++MODULE_SOFTDEP("ps3fb");
+diff --git a/drivers/video/fbdev/ps3fb.c b/drivers/video/fbdev/ps3fb.c
+index dbcda30..83924f6 100644
+--- a/drivers/video/fbdev/ps3fb.c
++++ b/drivers/video/fbdev/ps3fb.c
+@@ -1255,10 +1255,6 @@ static int __init ps3fb_setup(void)
+ {
+ 	char *options;
+ 
+-#ifdef MODULE
+-	return 0;
+-#endif
+-
+ 	if (fb_get_options(DEVICE_NAME, &options))
+ 		return -ENXIO;
+ 

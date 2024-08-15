@@ -1,0 +1,34 @@
+Adds 8 input parameters for lv1 calls.
+
+diff --git a/arch/powerpc/include/asm/lv1call.h b/arch/powerpc/include/asm/lv1call.h
+index b11501b..1f9683c 100644
+--- a/arch/powerpc/include/asm/lv1call.h
++++ b/arch/powerpc/include/asm/lv1call.h
+@@ -41,6 +41,7 @@
+ #define LV1_5_IN_0_OUT_ARG_DECL LV1_5_IN_ARG_DECL
+ #define LV1_6_IN_0_OUT_ARG_DECL LV1_6_IN_ARG_DECL
+ #define LV1_7_IN_0_OUT_ARG_DECL LV1_7_IN_ARG_DECL
++#define LV1_8_IN_0_OUT_ARG_DECL LV1_8_IN_ARG_DECL
+ 
+ #define LV1_0_IN_1_OUT_ARG_DECL                    LV1_1_OUT_ARG_DECL
+ #define LV1_1_IN_1_OUT_ARG_DECL LV1_1_IN_ARG_DECL, LV1_1_OUT_ARG_DECL
+@@ -131,6 +132,7 @@
+ #define LV1_5_IN_0_OUT_ARGS LV1_5_IN_ARGS
+ #define LV1_6_IN_0_OUT_ARGS LV1_6_IN_ARGS
+ #define LV1_7_IN_0_OUT_ARGS LV1_7_IN_ARGS
++#define LV1_8_IN_0_OUT_ARGS LV1_8_IN_ARGS
+ 
+ #define LV1_0_IN_1_OUT_ARGS                LV1_1_OUT_ARGS
+ #define LV1_1_IN_1_OUT_ARGS LV1_1_IN_ARGS, LV1_1_OUT_ARGS
+diff --git a/arch/powerpc/platforms/ps3/hvcall.S b/arch/powerpc/platforms/ps3/hvcall.S
+index e8ab3d6..f3d5b01 100644
+--- a/arch/powerpc/platforms/ps3/hvcall.S
++++ b/arch/powerpc/platforms/ps3/hvcall.S
+@@ -36,6 +36,7 @@ _GLOBAL(_##API_NAME)				\
+ #define LV1_5_IN_0_OUT LV1_N_IN_0_OUT
+ #define LV1_6_IN_0_OUT LV1_N_IN_0_OUT
+ #define LV1_7_IN_0_OUT LV1_N_IN_0_OUT
++#define LV1_8_IN_0_OUT LV1_N_IN_0_OUT
+ 
+ #define LV1_0_IN_1_OUT(API_NAME, API_NUMBER)	\
+ _GLOBAL(_##API_NAME)				\

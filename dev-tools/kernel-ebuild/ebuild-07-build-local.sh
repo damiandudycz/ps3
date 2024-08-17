@@ -31,5 +31,4 @@ if [[ -n "${KE_UPLOAD_ADDRESS}" ]]; then
     echo "Uploading to: ${KE_UPLOAD_ADDRESS}"
     scp "${KE_PATH_WORK_LOCALBUILD}/linux-${KE_PACKAGE_VERSION_SELECTED}.tar.xz" "${KE_UPLOAD_ADDRESS}:~/"
     ssh "${KE_UPLOAD_ADDRESS}" "tar -xvpf linux-${KE_PACKAGE_VERSION_SELECTED}.tar.xz -C ~/"
-#    ssh "${KE_UPLOAD_ADDRESS}" "sudo tar -xvpf linux-${KE_PACKAGE_VERSION_SELECTED}.tar.xz -C /"
 fi

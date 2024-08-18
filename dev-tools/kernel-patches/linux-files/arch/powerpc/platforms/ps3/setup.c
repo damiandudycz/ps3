@@ -172,20 +172,6 @@ early_param("ps3flash", early_parse_ps3flash);
 #define prealloc_ps3flash_bounce_buffer()	do { } while (0)
 #endif
 
-long long RTCAdj = 0LL;
-EXPORT_SYMBOL_GPL(RTCAdj);
-static int __init early_parse_ps3_rtc_adj(char *p)
-{
-        int result;
-        if (!p)
-                return 1;
-
-        result = kstrtoll(p, 0, &RTCAdj);  /*printk(KERN_INFO "PS3 RTC:%lld\n", ps3_rtc_adj); */
-
-        return 0;
-}
-early_param("RTCAdj", early_parse_ps3_rtc_adj);
-
 static int ps3_set_dabr(unsigned long dabr, unsigned long dabrx)
 {
 	/* Have to set at least one bit in the DABRX */

@@ -92,6 +92,7 @@ readonly PATH_RELEASES="\${PATH_ROOT}/releases"
 readonly PATH_DEV_TOOLS_ENVIRONMENT="\${PATH_DEV_TOOLS}/environment"
 readonly PATH_DEV_TOOLS_PS3_INSTALLER="\${PATH_DEV_TOOLS}/ps3-installer"
 readonly PATH_DEV_TOOLS_KERNEL_EBUILD="\${PATH_DEV_TOOLS}/kernel-ebuild"
+readonly PATH_DEV_TOOLS_KERNEL_PATCHES="\${PATH_DEV_TOOLS}/kernel-patches"
 readonly PATH_DEV_TOOLS_DISTCC_DOCKER="\${PATH_DEV_TOOLS}/distcc-docker"
 readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng"
 readonly PATH_DEV_TOOLS_OVERLAY="\${PATH_DEV_TOOLS}/overlay"
@@ -138,6 +139,7 @@ readonly PATH_WORK_BINHOST="\${PATH_WORK}/binhost"
 # DEV Tools additional environments.
 readonly PATH_EXTRA_ENV_PS3_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/env.sh"
 readonly PATH_EXTRA_ENV_KERNEL_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/env.sh"
+readonly PATH_EXTRA_ENV_KERNEL_PATCHES="\${PATH_DEV_TOOLS_KERNEL_PATCHES}/env.sh"
 readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 
 # Catalyst.

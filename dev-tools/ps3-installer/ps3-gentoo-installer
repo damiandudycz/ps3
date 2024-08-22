@@ -584,7 +584,7 @@ download_stages() {
 	source_stage_basename=$(basename "${source_stage}")
         if [[ -n "$source_stage" ]]; then
             url_gentoo_tarball="$base_url_autobuilds/$source_stage"
-            local selected_stage_type="${trimmed_entry}"
+            local selected_stage_type=$(basename "${source_stage%-*}")
             echo "Proceeding with: ${source_stage}"
             # Determine if performing quick install (stage4)
             if [[ "$selected_stage_type" == stage3* ]]; then

@@ -61,6 +61,7 @@ setup_overlays           # Add overlays using eselect repository.
 install_updates          # Updates and rebuilds @world system including new use flags.
 install_other_tools      # Installs other selected tools.
 setup_conf_d             # Creates /etc/conf.d entries from config.
+setup_sysctl_d           # Creates /etc/sysctl.d entries from config.
 setup_autostart          # Adds init scripts to selected runlevels.
 setup_user               # Create default user if configured.
 setup_bootloader         # Updates entries in bootloader configuration file.
@@ -678,7 +679,11 @@ setup_packages_config() {
     for key in "${keys_use[@]}"; do
         mapfile -t lines < <(cfg --from "${use}" ".[\"${key}\"][]")
         for line in "${lines[@]}"; do
-            grep -qxF "$line" "$path_package_use/$key" || echo "$line" | tee -a "$path_package_use/$key" >/dev/null
+            if [[ -f "$path_package_use/$key" ]]; then
+                grep -qxF "$line" "$path_package_use/$key" || echo "$line" | tee -a "$path_package_use/$key" >/dev/null
+            else
+                echo "$line" | tee -a "$path_package_use/$key" >/dev/null
+            fi
         done
     done
     # Accept keywords
@@ -688,7 +693,11 @@ setup_packages_config() {
     for key in "${keys_accept[@]}"; do
         mapfile -t lines < <(cfg --from "${accept}" ".[\"${key}\"][]")
         for line in "${lines[@]}"; do
-            grep -qxF "$line" "$path_package_accept_keywords/$key" || echo "$line" | tee -a "$path_package_accekt_keywords/$key" >/dev/null
+            if [[ -f "$path_package_accept_kaywords/$key" ]]; then
+                grep -qxF "$line" "$path_package_accept_keywords/$key" || echo "$line" | tee -a "$path_package_accept_keywords/$key" >/dev/null
+            else
+                echo "$line" | tee -a "$path_package_accept_keywords/$key" >/dev/null
+            fi
         done
     done
 }
@@ -902,6 +911,21 @@ setup_conf_d() {
 	mapfile -t lines < <(cfg --from "${conf_d}" ".[\"${key}\"][]")
 	for line in "${lines[@]}"; do
             echo "$line" | try tee -a "$path_chroot/etc/conf.d/$key" >/dev/null
+        done
+    done
+}
+
+setup_sysctl_d() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
+    local sysctl_d=$(cfg .sysctl_d --asjson)
+    local keys=($(cfg --from "$sysctl_d" keys[]))
+    for key in "${keys[@]}"; do
+        echo "" | try tee "$path_chroot/etc/sysctl.d/${key}.conf" >/dev/null
+	mapfile -t lines < <(cfg --from "${sysctl_d}" ".[\"${key}\"][]")
+	for line in "${lines[@]}"; do
+            echo "$line" | try tee -a "$path_chroot/etc/sysctl.d/${key}.conf" >/dev/null
         done
     done
 }

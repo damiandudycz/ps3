@@ -92,6 +92,11 @@
 			"algo0=lz4"
 		]
 	},
+	"sysctl_d" : {
+		"99-vm-min_free_kbytes" : [
+			"vm.min_free_kbytes=4096"
+		]
+	},
 	"packages" : {
 		"initial" : [
 			"app-eselect/eselect-repository",

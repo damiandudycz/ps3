@@ -608,8 +608,11 @@ gentoo_download() {
 gentoo_extract() {
     free_memory
     local path_stage3or4="$path_chroot/gentoo.tar.xz"
-    try tar -I 'xz -T1' -xvpf "$path_stage3or4" --xattrs-include="*/*" --numeric-owner --blocking-factor=1 -C "$path_chroot/"
-    try rm "$path_stage3or4"
+    local path_stage3or4_decompressed="$path_chroot/gentoo.tar"
+    # Package is first decompressed and then extracted, so that OOM error doesn't happend.
+    try xz -v -d --memlimit-decompress=50% "$path_stage3or4"
+    try tar -xvpf "$path_stage3or4_decompressed" --xattrs-include="*/*" --numeric-owner --blocking-factor=1 -C "$path_chroot/"
+    try rm "$path_stage3or4_decompressed"
 }
 
 # Configuring system ============================================================================

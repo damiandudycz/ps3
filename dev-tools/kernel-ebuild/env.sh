@@ -4,7 +4,7 @@
 register_usage "$0 [--unmask] [--save] [--edit] [--version <version>] [--use <use-flags>] [--patch <patch_set_name>] [--upload <username@ps3-host>]"
 
 # TODO: Remove when KE_FLAG_UNMASK should not be used by default
-KE_FLAG_UNMASK=true
+#KE_FLAG_UNMASK=true
 
 # Input parsing.
 while [ $# -gt 0 ]; do case "$1" in

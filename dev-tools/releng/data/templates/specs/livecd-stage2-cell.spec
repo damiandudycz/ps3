@@ -34,7 +34,7 @@ boot/kernel/PS3/extraversion: PS3
 
 # RC Scripts
 livecd/rcadd:
-#	zram-init|boot
+	zram-init|boot
 	ps3vram-swap|boot
 	NetworkManager|default
  	ntpd|default

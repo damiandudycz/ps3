@@ -105,6 +105,7 @@ livecd/packages:
 	sys-fs/sysfsutils
 #	sys-fs/xfsdump
 #	sys-fs/xfsprogs
+	sys-fs/xfsprogs
 	sys-libs/gpm
 #	sys-process/htop
 	sys-process/lsof

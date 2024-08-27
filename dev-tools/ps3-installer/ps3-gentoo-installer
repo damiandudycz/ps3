@@ -501,6 +501,7 @@ disk_create_filesystems() {
         'ext3') try mkfs.ext3 -F $quiet_flag_short "$partition_device" ;;
         'ext4') try mkfs.ext4 -F $quiet_flag_short "$partition_device" ;;
         'btrfs') try mkfs.btrfs -f $quiet_flag_short "$partition_device" ;;
+        'xfs') try mkfs.xfs $quiet_flag_short "$partition_device";;
         'swap') try mkswap $quiet_flag_short "$partition_device" ;;
         *) error "Unknown partition filesystem $partition_data_filesystem" ;;
         esac
@@ -1003,7 +1004,7 @@ setup_bootloader() {
             local kernel=$(basename $kernel_path)
             local PV=$(echo $kernel | sed -n 's/^vmlinu[xz]-\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
 
-            kboot_entry="Gentoo-Kernel-${PV}='${vmlinux_path_prefix}/$kernel root=${root_partition} video=ps3fb:mode:133'"
+            kboot_entry="Gentoo-Kernel-${PV}='${vmlinux_path_prefix}/$kernel initrd=${vmlinux_path_prefix}/initramfs-${PV}-ps3-gentoo-dist.img root=${root_partition} video=ps3fb:mode:133'"
             if [ -f "${kboot_path}" ]; then
                 grep -qxF "${kboot_entry}" "${kboot_path}" 2>/dev/null || sed -i "1i ${kboot_entry}" "${kboot_path}"
             else

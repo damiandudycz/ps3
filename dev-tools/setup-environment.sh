@@ -211,6 +211,8 @@ readonly PATH_BINHOST_SCRIPT_SANITIZE="\${PATH_DEV_TOOLS_BINHOST}/binhost-02-san
 # Overlay
 readonly PATH_OVERLAY_SCRIPT_CREATE_PACKAGE="\${PATH_DEV_TOOLS_OVERLAY}/create-package.sh"
 readonly PATH_OVERLAY_SCRIPT_COPY_PS3_FILES="\${PATH_DEV_TOOLS_OVERLAY}/copy-ps3-distfiles.sh"
+# Releng
+readonly PATH_RELENG_SCRIPT_UPDATE_LATEST="\${PATH_DEV_TOOLS_RELENG}/releng-03-update-latest-targets.sh"
 # TODO: Add paths to other scripts.
 
 # ----------------------------------------------------------------------------------------------------------------------------------

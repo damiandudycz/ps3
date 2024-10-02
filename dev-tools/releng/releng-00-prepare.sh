@@ -8,26 +8,28 @@
 source ../../.env-shared.sh || exit 1
 source "${PATH_EXTRA_ENV_RELENG}" || failure "Failed to load env ${PATH_EXTRA_ENV_RELENG}"
 
+readonly SPEC_DIR="${PATH_WORK_RELENG}/specs"
+
+# Determine if target filtering is being used.
 if [[ -z "${RL_TARGETS}" ]]; then
 	FILTER_TARGETS=false
 else
 	FILTER_TARGETS=true
 fi
 
+# Clean build directories.
 if [[ "${RL_FLAG_CLEAN}" = true ]]; then
-	empty_directory "/var/tmp/catalyst/builds/23.0-default"
+	empty_directory "${PATH_CATALYST_TMP}/builds/${CONF_RELEASE_TYPE_DEFAULT}"
 fi
-empty_directory "/var/tmp/catalyst/tmp/23.0-default"
+empty_directory "${PATH_CATALYST_TMP}/tmp/${CONF_RELEASE_TYPE_DEFAULT}"
 empty_directory "${PATH_WORK_RELENG}"
+mkdir "${SPEC_DIR}"
 rm -rf "/tmp/catalyst-auto"*
 
 # Ask if should update installer if there are any changes pending.
 (source ${PATH_SCRIPT_PS3_INSTALLER_UPDATE} --ask)
 
-# Copy helper files.
-cp -rf "${PATH_RELENG_TEMPLATES}/"* "${PATH_WORK_RELENG}/"
-
-# Download stage3 seed.
+# Download stage3 seed if needed.
 readonly LATEST_GENTOO_CONTENT=$(wget -q -O - "${URL_STAGE3_INFO}" --no-http-keep-alive --no-cache --no-cookies --no-check-certificate) # TODO: Remove --no-check-certificate
 readonly LATEST_STAGE3=$(echo "${LATEST_GENTOO_CONTENT}" | grep "${CONF_TARGET_ARCH}-openrc" | head -n 1 | cut -d' ' -f1)
 readonly LATEST_STAGE3_FILENAME=$(basename "${LATEST_STAGE3}")
@@ -37,46 +39,34 @@ readonly URL_GENTOO_TARBALL="$URL_RELEASE_GENTOO/$LATEST_STAGE3"
 [[ -z "${LATEST_STAGE3}" ]] && failure "Failed to download Stage3 URL"
 [[ -f "${PATH_STAGE3_SEED}" ]] || wget "${URL_GENTOO_TARBALL}" -O "${PATH_STAGE3_SEED}" --no-check-certificate
 
-# Prepare portage directories - copy releng bases.
-for spec_dir in "${PATH_WORK_RELENG}/portage/"*; do
-    releng_base_file="$spec_dir/releng_base"
-    if [[ -f "$releng_base_file" ]]; then
-        releng_base=$(cat "$releng_base_file")
-        releng_base_dir="${PATH_RELENG_PORTAGE_CONFDIR}/${releng_base}${CONF_QEMU_RELENG_POSTFIX}"
-        cp -ru "${releng_base_dir}/"* "${spec_dir}/"
-        rm "$releng_base_file"
-    fi
+# Copy templates.
+cp -rf "${PATH_RELENG_TEMPLATES}/"* "${PATH_WORK_RELENG}/"
+
+# Move spec files to single directory.
+for stage_dir in "${PATH_WORK_RELENG}/${CONF_RELEASE_TYPE_DEFAULT}/"*; do
+	stage_name=$(basename "${stage_dir}")
+	spec_path="${stage_dir}/stage.spec"
+	if [[ -f "${spec_path}" ]]; then
+		mv "${spec_path}" "${SPEC_DIR}/${stage_name}.spec"
+	fi
+done
+
+# Prepare portage directories - copy releng bases over portage directories.
+for stage_dir in "${PATH_WORK_RELENG}/${CONF_RELEASE_TYPE_DEFAULT}/"*; do
+	portage_path="${stage_dir}/portage"
+	releng_base_file="${portage_path}/releng_base"
+	if [[ -f "$releng_base_file" ]]; then
+ 		releng_base=$(cat "$releng_base_file")
+		releng_base_dir="${PATH_RELENG_PORTAGE_CONFDIR}/${releng_base}${CONF_QEMU_RELENG_POSTFIX}"
+		cp -ru "${releng_base_dir}/"* "${portage_path}/"
+		rm "$releng_base_file"
+	fi
 done
 
 # Get the list of specs to build in order:
-
-readonly SPEC_DIR="${PATH_RELENG_TEMPLATES}/specs"
-
-sort_array() {
-    local array=("${!1}")
-    local sorted_array
-    IFS=$'\n' sorted_array=($(sort <<<"${array[*]}"))
-    unset IFS
-    echo "${sorted_array[@]}"
-}
-
-contains_string() {
-    local array=("${!1}")
-    local search_string="$2"
-    local found=0
-
-    for element in "${array[@]}"; do
-        if [[ "$element" == "$search_string" ]]; then
-            found=1
-            break
-        fi
-    done
-
-    if [[ $found -eq 1 ]]; then
-        return 0  # true
-    else
-        return 1  # false
-    fi
+get_spec_date() {
+	file="$1"
+	echo "${file##*-}" | cut -d'.' -f1
 }
 
 get_parent_source() {
@@ -105,13 +95,7 @@ while IFS= read -r file; do
     fi
 done < <(find "$SPEC_DIR" -type f -name "*.spec")
 spec_files=($(sort_array spec_files[@]))
-
-echo "ALL SPECS: ${spec_files[@]}"
-
-get_spec_date() {
-	file="$1"
-	echo "${file##*-}" | cut -d'.' -f1
-}
+#echo "MATCHING SPECS: [${spec_files[@]}]"
 
 # Find specs to skip, due to specyfying --use <spec> flag. Only will skip if build exists and it's not explicitly specified to be build.
 # Other specs will be updated to use existing source build instead of new one.
@@ -185,7 +169,7 @@ for spec in ${spec_files[@]}; do
 done
 SPECS_LIST_STRING="${SPECS_LIST[@]}"
 
-echo "BUILD SPECS: [${SPECS_LIST[@]}]"
+echo "SPECS TO BUILD: [${SPECS_LIST[@]}]"
 
 # Configure catalyst-auto-conf script.
 sed -i "s|@SPECS_DIR@|${PATH_WORK_RELENG}/specs|g" "${RL_PATH_CATALYST_AUTO_CONF_DST}"
@@ -196,10 +180,12 @@ sed -i "s|@EMAIL_PREPEND@|${CONF_RELEASE_EMAIL_PREPEND}|g" "${RL_PATH_CATALYST_A
 
 # Configure variables in spec files.
 for spec_file in "${PATH_WORK_RELENG}/specs/"*.spec; do
-echo "CONFIGURE SPEC: ${spec_file}"
+    spec_name=$(basename "${spec_file}" .spec)
+    echo "CONFIGURE SPEC: ${spec_file}"
     sed -i "s|@INTERPRETER@|${RL_VAL_INTERPRETER_ENTRY}|g" "${spec_file}"
     sed -i "s|@REPOS@|${PATH_OVERLAYS_PS3_GENTOO}|g" "${spec_file}"
-    sed -i "s|@PORTAGE_CONFDIR@|${PATH_WORK_RELENG}/portage|g" "${spec_file}"
+    sed -i "s|@PORTAGE_CONFDIR@|${PATH_WORK_RELENG}/${CONF_RELEASE_TYPE_DEFAULT}|g" "${spec_file}"
+    sed -i "s|@STAGE_NAME@|${spec_name}|g" "${spec_file}"
     sed -i "s|@FSSCRIPTS@|${PATH_WORK_RELENG}/fsscripts|g" "${spec_file}"
     sed -i "s|@OVERLAYS@|${PATH_WORK_RELENG}/overlays|g" "${spec_file}"
     sed -i "s|@ROOT_OVERLAYS@|${PATH_WORK_RELENG}/root_overlays|g" "${spec_file}"

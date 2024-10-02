@@ -3,7 +3,7 @@ target: stage1
 rel_type: 23.0-default
 version_stamp: base-openrc-@TIMESTAMP@
 profile: default/linux/ppc64/23.0
-portage_confdir: @PORTAGE_CONFDIR@/stage1-cell-base-openrc
+portage_confdir: @PORTAGE_CONFDIR@/@STAGE_NAME@/portage
 portage_prefix: releng
 source_subpath: 23.0-default/stage3-ppc64-openrc-latest
 snapshot_treeish: @TREEISH@

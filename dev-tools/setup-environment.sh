@@ -52,7 +52,7 @@ readonly CONF_QEMU_RELENG_POSTFIX=\$([[ \${CONF_QEMU_IS_NEEDED} ]] && echo "-qem
 
 readonly CONF_RELEASE_PROFILE="23.0"
 readonly CONF_RELEASE_TYPES=("\${CONF_RELEASE_PROFILE}-default")     # Supported release configurations, eq. default, lto, clang, etc.
-readonly CONF_RELEASE_TYPE_DFAULT="\${CONF_RELEASE_PROFILE}-default" # 23.0-default
+readonly CONF_RELEASE_TYPE_DEFAULT="\${CONF_RELEASE_PROFILE}-default" # 23.0-default
 readonly CONF_RELEASE_EMAIL_TO="damiandudycz@yahoo.com"
 readonly CONF_RELEASE_EMAIL_FROM="damiandudycz@yahoo.com"
 readonly CONF_RELEASE_EMAIL_PREPEND="[cell-auto]"
@@ -147,9 +147,9 @@ readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
 readonly PATH_CATALYST_TMP="\${PATH_VAR_TMP}/catalyst"
 readonly PATH_CATALYST_ETC="\${PATH_ETC}/catalyst"
 readonly PATH_CATALYST_BUILDS="\${PATH_CATALYST_TMP}/builds"
-readonly PATH_CATALYST_BUILDS_DEFAULT="\${PATH_CATALYST_BUILDS}/\${CONF_RELEASE_TYPE_DFAULT}"
+readonly PATH_CATALYST_BUILDS_DEFAULT="\${PATH_CATALYST_BUILDS}/\${CONF_RELEASE_TYPE_DEFAULT}"
 readonly PATH_CATALYST_STAGES="\${PATH_CATALYST_TMP}/config/stages"
-readonly PATH_CATALYST_STAGES_DEFAULT="\${PATH_CATALYST_STAGES}/\${CONF_RELEASE_TYPE_DFAULT}"
+readonly PATH_CATALYST_STAGES_DEFAULT="\${PATH_CATALYST_STAGES}/\${CONF_RELEASE_TYPE_DEFAULT}"
 readonly PATH_CATALYST_PACKAGES="\${PATH_CATALYST_TMP}/packages"
 readonly PATH_CATALYST_CONF="\${PATH_CATALYST_ETC}/catalyst.conf"
 readonly PATH_CATALYST_PPC_TOML="\${PATH_CATALYST_USR}/arch/ppc.toml"
@@ -168,7 +168,7 @@ readonly PATH_CROSSDEV_INSTALLATION="\${PATH_USR}/\${CONF_CROSSDEV_TARGET}"
 readonly PATH_CROSSDEV_BINPKGS="\${PATH_CROSSDEV_INSTALLATION}/\${PATH_VAR_CACHE}/binpkgs"
 
 # Releases paths.
-readonly PATH_RELEASES_PS3_GENTOO_DEFAULT="\${PATH_RELEASES_PS3_GENTOO}/\${CONF_RELEASE_TYPES}"
+readonly PATH_RELEASES_PS3_GENTOO_DEFAULT="\${PATH_RELEASES_PS3_GENTOO}/\${CONF_RELEASE_TYPE_DEFAULT}"
 readonly PATH_RELEASES_PS3_GENTOO_ARCH="\${PATH_RELEASES_PS3_GENTOO}/\${CONF_TARGET_ARCH_FAMILY}"                                                       # releases/ppc
 readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES="\${PATH_RELEASES_PS3_GENTOO_ARCH}/binpackages"                                                      # releases/ppc/binpackages
 readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE="\${PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES}/\${CONF_RELEASE_PROFILE}"                     # releases/ppc/binpackages/23.0

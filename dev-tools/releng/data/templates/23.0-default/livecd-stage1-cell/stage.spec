@@ -3,7 +3,7 @@ version_stamp: @TIMESTAMP@
 source_subpath: 23.0-default/stage3-cell-base-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
-portage_confdir: @PORTAGE_CONFDIR@/livecd-stage1-cell
+portage_confdir: @PORTAGE_CONFDIR@/@STAGE_NAME@/portage
 pkgcache_path: @PKGCACHE_PATH@/.livecd
 @INTERPRETER@
 

@@ -139,3 +139,30 @@ update_git_files_timestamps() {
 
     git submodule foreach --recursive "$(declare -f update_git_files_timestamps); update_git_files_timestamps \$toplevel/\$sm_path"
 }
+
+sort_array() {
+    local array=("${!1}")
+    local sorted_array
+    IFS=$'\n' sorted_array=($(sort <<<"${array[*]}"))
+    unset IFS
+    echo "${sorted_array[@]}"
+}
+
+contains_string() {
+    local array=("${!1}")
+    local search_string="$2"
+    local found=0
+
+    for element in "${array[@]}"; do
+        if [[ "$element" == "$search_string" ]]; then
+            found=1
+            break
+        fi
+    done
+
+    if [[ $found -eq 1 ]]; then
+        return 0  # true
+    else
+        return 1  # false
+    fi
+}

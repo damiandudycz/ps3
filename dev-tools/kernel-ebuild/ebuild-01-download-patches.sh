@@ -28,7 +28,7 @@ for file in "${KE_PATH_DATA_PATCHES_LISTS}"/*.txt; do
 		    URL="${URL_PATCH}"
 	            FILENAME="$(basename ${URL})"
             fi
-            wget ${URL} --quiet
+            wget -O ${FILENAME} ${URL} --quiet
         done
     fi
 

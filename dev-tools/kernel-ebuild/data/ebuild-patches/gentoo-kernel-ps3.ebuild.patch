@@ -1,7 +1,6 @@
 --- gentoo-kernel-6.6.51.ebuild	2024-09-30 20:00:01.086024002 -0000
 +++ gentoo-kernel-ps3-6.6.51.ebuild	2024-09-30 19:59:35.202688068 -0000
-@@ -15,7 +15,7 @@
- CONFIG_VER=6.6.12-gentoo
+@@ -16,6 +16,6 @@
  GENTOO_CONFIG_VER=g13
  
 -DESCRIPTION="Linux kernel built with Gentoo patches"

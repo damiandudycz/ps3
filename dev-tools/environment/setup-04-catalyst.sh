@@ -26,6 +26,7 @@ mkdir -p "${PATH_CATALYST_STAGES}"
 
 # Configure Catalyst
 sed -i 's/\(\s*\)# "pkgcache",/\1"pkgcache",/' "${PATH_CATALYST_CONF}"
+sed -i 's/\(\s*\)# "ccache",/\1"ccache",/' "${PATH_CATALYST_CONF}"
 update_config_assign_space jobs "${CONF_CATALYST_JOBS}" "${PATH_CATALYST_CONF}"
 update_config_assign_space load-average "${CONF_CATALYST_LOAD}" "${PATH_CATALYST_CONF}"
 update_config_assign_space var_tmpfs_portage "${CONF_CATALYST_TMPFS}" "${PATH_CATALYST_CONF}"

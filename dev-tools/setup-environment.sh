@@ -20,7 +20,7 @@ cat <<EOF > "${PATH_ENV_FILE}"
 
 # Project configuration ------------------------------------------------------------------------------------------------------------
 readonly CONF_PROJECT_NAME="PS3_Gentoo"
-readonly CONF_PROJECT_DEPENDENCIES=(app-portage/gentoolkit dev-lang/ruby dev-util/pkgdev sys-process/time net-dns/bind net-dns/bind-tools)
+readonly CONF_PROJECT_DEPENDENCIES=(app-portage/gentoolkit dev-lang/ruby dev-util/pkgdev sys-process/time net-dns/bind net-dns/bind-tools dev-util/ccache)
 
 readonly CONF_TARGET_ARCH="ppc64"
 readonly CONF_TARGET_ARCH_FAMILY="ppc"

@@ -182,13 +182,14 @@ sed -i "s|@EMAIL_PREPEND@|${CONF_RELEASE_EMAIL_PREPEND}|g" "${RL_PATH_CATALYST_A
 for spec_file in "${PATH_WORK_RELENG}/specs/"*.spec; do
     spec_name=$(basename "${spec_file}" .spec)
     echo "CONFIGURE SPEC: ${spec_file}"
+    sed -i "s|@REL_TYPE@|${CONF_RELEASE_TYPE_DEFAULT}|g" "${spec_file}"
     sed -i "s|@INTERPRETER@|${RL_VAL_INTERPRETER_ENTRY}|g" "${spec_file}"
     sed -i "s|@REPOS@|${PATH_OVERLAYS_PS3_GENTOO}|g" "${spec_file}"
-    sed -i "s|@PORTAGE_CONFDIR@|${PATH_WORK_RELENG}/${CONF_RELEASE_TYPE_DEFAULT}|g" "${spec_file}"
+    sed -i "s|@STAGEFILES_DIR@|${PATH_WORK_RELENG}/${CONF_RELEASE_TYPE_DEFAULT}|g" "${spec_file}"
     sed -i "s|@STAGE_NAME@|${spec_name}|g" "${spec_file}"
-    sed -i "s|@FSSCRIPTS@|${PATH_WORK_RELENG}/fsscripts|g" "${spec_file}"
-    sed -i "s|@OVERLAYS@|${PATH_WORK_RELENG}/overlays|g" "${spec_file}"
-    sed -i "s|@ROOT_OVERLAYS@|${PATH_WORK_RELENG}/root_overlays|g" "${spec_file}"
+#    sed -i "s|@FSSCRIPTS@|${PATH_WORK_RELENG}/fsscripts|g" "${spec_file}"
+#    sed -i "s|@OVERLAYS@|${PATH_WORK_RELENG}/overlays|g" "${spec_file}"
+#    sed -i "s|@ROOT_OVERLAYS@|${PATH_WORK_RELENG}/root_overlays|g" "${spec_file}"
     sed -i "s|@PKGCACHE_PATH@|${PATH_RELENG_RELEASES_BINPACKAGES}|g" "${spec_file}"
     # Replace skipped targets in all specs to match used skipped versions instead.
     for spec in ${spec_files_skipped[@]}; do

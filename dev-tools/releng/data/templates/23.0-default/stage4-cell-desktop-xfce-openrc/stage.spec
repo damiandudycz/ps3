@@ -1,10 +1,10 @@
 subarch: cell
 target: stage4
-rel_type: 23.0-default
+rel_type: @REL_TYPE@
 version_stamp: desktop-xfce-openrc-@TIMESTAMP@
-source_subpath: 23.0-default/stage4-cell-desktop-openrc-@TIMESTAMP@
+source_subpath: @REL_TYPE@/stage4-cell-desktop-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
-portage_confdir: @PORTAGE_CONFDIR@/@STAGE_NAME@/portage
+portage_confdir: @STAGEFILES_DIR@/@STAGE_NAME@/portage
 profile: default/linux/ppc64/23.0/desktop
 compression_mode: pixz
 portage_prefix: releng

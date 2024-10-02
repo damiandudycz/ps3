@@ -1,26 +1,26 @@
 # Release version details
 version_stamp: @TIMESTAMP@
-source_subpath: 23.0-default/livecd-stage1-cell-@TIMESTAMP@
+source_subpath: @REL_TYPE@/livecd-stage1-cell-@TIMESTAMP@
 livecd/iso: install-cell-minimal-@TIMESTAMP@.iso
 livecd/volid: Gentoo_PS3
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
-portage_confdir: @PORTAGE_CONFDIR@/@STAGE_NAME@/portage
+portage_confdir: @STAGEFILES_DIR@/@STAGE_NAME@/portage
 pkgcache_path: @PKGCACHE_PATH@/.livecd
 @INTERPRETER@
 
 # Architecture and profile
 subarch: cell
 target: livecd-stage2
-rel_type: 23.0-default
+rel_type: @REL_TYPE@
 profile: default/linux/ppc64/23.0
 
 # LiveCD config
 livecd/fstype: squashfs
 livecd/gk_mainargs: --all-ramdisk-modules
 livecd/type: gentoo-release-minimal
-livecd/overlay: @OVERLAYS@/livecd-stage2-cell
-livecd/root_overlay: @ROOT_OVERLAYS@/livecd-stage2-cell
+livecd/overlay: @STAGEFILES_DIR@/@STAGE_NAME@/overlay
+livecd/root_overlay: @STAGEFILES_DIR@/@STAGE_NAME@/root_overlay
 
 # Kernel
 boot/kernel: PS3

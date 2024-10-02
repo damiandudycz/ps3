@@ -1,10 +1,10 @@
 subarch: cell
 target: stage3
-rel_type: 23.0-default
+rel_type: @REL_TYPE@
 version_stamp: base-openrc-@TIMESTAMP@
-source_subpath: 23.0-default/stage1-cell-base-openrc-@TIMESTAMP@
+source_subpath: @REL_TYPE@/stage1-cell-base-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
-portage_confdir: @PORTAGE_CONFDIR@/@STAGE_NAME@/portage
+portage_confdir: @STAGEFILES_DIR@/@STAGE_NAME@/portage
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
 portage_prefix: releng

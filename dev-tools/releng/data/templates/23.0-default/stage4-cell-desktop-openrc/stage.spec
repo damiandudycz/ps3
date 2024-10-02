@@ -3,11 +3,11 @@
 
 subarch: cell
 target: stage4
-rel_type: 23.0-default
+rel_type: @REL_TYPE@
 version_stamp: desktop-openrc-@TIMESTAMP@
-source_subpath: 23.0-default/stage3-cell-desktop-openrc-@TIMESTAMP@
+source_subpath: @REL_TYPE@/stage3-cell-desktop-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
-portage_confdir: @PORTAGE_CONFDIR@/@STAGE_NAME@/portage
+portage_confdir: @STAGEFILES_DIR@/@STAGE_NAME@/portage
 profile: default/linux/ppc64/23.0/desktop
 compression_mode: pixz
 portage_prefix: releng
@@ -16,8 +16,8 @@ pkgcache_path: @PKGCACHE_PATH@/cell
 repos: @REPOS@
 @INTERPRETER@
 
-stage4/root_overlay: @ROOT_OVERLAYS@/stage4-cell-desktop-openrc
-#stage4/fsscript: @FSSCRIPTS@/stage4-cell-desktop-openrc.sh
+stage4/root_overlay: @STAGEFILES_DIR@/@STAGE_NAME@/root_overlay
+#stage4/fsscript: @STAGEFILES_DIR@/@STAGE_NAME@/fsscript.sh
 
 stage4/use:
 	ps3

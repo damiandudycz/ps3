@@ -31,7 +31,7 @@ function process_target {
 			mkdir -p "${DIR}"
 		fi
 		echo " + ${FNAME}"
-		cp "${FPATH}" "$DIR"/
+		mv "${FPATH}" "$DIR"/
         done
 }
 

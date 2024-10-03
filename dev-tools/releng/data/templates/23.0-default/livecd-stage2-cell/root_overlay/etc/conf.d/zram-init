@@ -1,0 +1,9 @@
+load_on_start="yes"
+unload_on_stop="yes"
+num_devices="1"
+
+type0="swap"
+flag0=
+size0="64"
+maxs0=2
+algo0=lz4

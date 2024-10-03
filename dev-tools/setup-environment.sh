@@ -52,17 +52,17 @@ readonly CONF_QEMU_RELENG_POSTFIX=\$([[ \${CONF_QEMU_IS_NEEDED} ]] && echo "-qem
 
 readonly CONF_RELEASE_PROFILE="23.0"
 readonly CONF_RELEASE_TYPES=("\${CONF_RELEASE_PROFILE}-default")     # Supported release configurations, eq. default, lto, clang, etc.
-readonly CONF_RELEASE_TYPE_DFAULT="\${CONF_RELEASE_PROFILE}-default" # 23.0-default
+readonly CONF_RELEASE_TYPE_DEFAULT="\${CONF_RELEASE_PROFILE}-default" # 23.0-default
 readonly CONF_RELEASE_EMAIL_TO="damiandudycz@yahoo.com"
 readonly CONF_RELEASE_EMAIL_FROM="damiandudycz@yahoo.com"
 readonly CONF_RELEASE_EMAIL_PREPEND="[cell-auto]"
 readonly CONF_RELEASE_USE_FLAGS='"altivec", "ibm", "ps3"'
 
 readonly CONF_CROSSDEV_ABI="altivec"
-readonly CONF_CROSSDEV_L="2.37-r7"
-readonly CONF_CROSSDEV_K="6.9"
-readonly CONF_CROSSDEV_G="13.2.1_p20240113-r1"
-readonly CONF_CROSSDEV_B="2.41-r3"
+readonly CONF_CROSSDEV_L="2.40-r9"
+readonly CONF_CROSSDEV_K="6.6"
+readonly CONF_CROSSDEV_G="13.3.1_p20240614"
+readonly CONF_CROSSDEV_B="2.42-r1"
 
 readonly CONF_KERNEL_PACKAGE_GROUP="sys-kernel"
 readonly CONF_KERNEL_PACKAGE_NAME_BASE="gentoo-kernel" # Name of raw gentoo kernel package
@@ -92,6 +92,7 @@ readonly PATH_RELEASES="\${PATH_ROOT}/releases"
 readonly PATH_DEV_TOOLS_ENVIRONMENT="\${PATH_DEV_TOOLS}/environment"
 readonly PATH_DEV_TOOLS_PS3_INSTALLER="\${PATH_DEV_TOOLS}/ps3-installer"
 readonly PATH_DEV_TOOLS_KERNEL_EBUILD="\${PATH_DEV_TOOLS}/kernel-ebuild"
+readonly PATH_DEV_TOOLS_KERNEL_PATCHES="\${PATH_DEV_TOOLS}/kernel-patches"
 readonly PATH_DEV_TOOLS_DISTCC_DOCKER="\${PATH_DEV_TOOLS}/distcc-docker"
 readonly PATH_DEV_TOOLS_RELENG="\${PATH_DEV_TOOLS}/releng"
 readonly PATH_DEV_TOOLS_OVERLAY="\${PATH_DEV_TOOLS}/overlay"
@@ -138,6 +139,7 @@ readonly PATH_WORK_BINHOST="\${PATH_WORK}/binhost"
 # DEV Tools additional environments.
 readonly PATH_EXTRA_ENV_PS3_INSTALLER="\${PATH_DEV_TOOLS_PS3_INSTALLER}/env.sh"
 readonly PATH_EXTRA_ENV_KERNEL_EBUILD="\${PATH_DEV_TOOLS_KERNEL_EBUILD}/env.sh"
+readonly PATH_EXTRA_ENV_KERNEL_PATCHES="\${PATH_DEV_TOOLS_KERNEL_PATCHES}/env.sh"
 readonly PATH_EXTRA_ENV_RELENG="\${PATH_DEV_TOOLS_RELENG}/env.sh"
 
 # Catalyst.
@@ -145,9 +147,9 @@ readonly PATH_CATALYST_USR="\${PATH_USR_SHARE}/catalyst"
 readonly PATH_CATALYST_TMP="\${PATH_VAR_TMP}/catalyst"
 readonly PATH_CATALYST_ETC="\${PATH_ETC}/catalyst"
 readonly PATH_CATALYST_BUILDS="\${PATH_CATALYST_TMP}/builds"
-readonly PATH_CATALYST_BUILDS_DEFAULT="\${PATH_CATALYST_BUILDS}/\${CONF_RELEASE_TYPE_DFAULT}"
+readonly PATH_CATALYST_BUILDS_DEFAULT="\${PATH_CATALYST_BUILDS}/\${CONF_RELEASE_TYPE_DEFAULT}"
 readonly PATH_CATALYST_STAGES="\${PATH_CATALYST_TMP}/config/stages"
-readonly PATH_CATALYST_STAGES_DEFAULT="\${PATH_CATALYST_STAGES}/\${CONF_RELEASE_TYPE_DFAULT}"
+readonly PATH_CATALYST_STAGES_DEFAULT="\${PATH_CATALYST_STAGES}/\${CONF_RELEASE_TYPE_DEFAULT}"
 readonly PATH_CATALYST_PACKAGES="\${PATH_CATALYST_TMP}/packages"
 readonly PATH_CATALYST_CONF="\${PATH_CATALYST_ETC}/catalyst.conf"
 readonly PATH_CATALYST_PPC_TOML="\${PATH_CATALYST_USR}/arch/ppc.toml"
@@ -166,7 +168,7 @@ readonly PATH_CROSSDEV_INSTALLATION="\${PATH_USR}/\${CONF_CROSSDEV_TARGET}"
 readonly PATH_CROSSDEV_BINPKGS="\${PATH_CROSSDEV_INSTALLATION}/\${PATH_VAR_CACHE}/binpkgs"
 
 # Releases paths.
-readonly PATH_RELEASES_PS3_GENTOO_DEFAULT="\${PATH_RELEASES_PS3_GENTOO}/\${CONF_RELEASE_TYPES}"
+readonly PATH_RELEASES_PS3_GENTOO_DEFAULT="\${PATH_RELEASES_PS3_GENTOO}/\${CONF_RELEASE_TYPE_DEFAULT}"
 readonly PATH_RELEASES_PS3_GENTOO_ARCH="\${PATH_RELEASES_PS3_GENTOO}/\${CONF_TARGET_ARCH_FAMILY}"                                                       # releases/ppc
 readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES="\${PATH_RELEASES_PS3_GENTOO_ARCH}/binpackages"                                                      # releases/ppc/binpackages
 readonly PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE="\${PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES}/\${CONF_RELEASE_PROFILE}"                     # releases/ppc/binpackages/23.0
@@ -209,6 +211,8 @@ readonly PATH_BINHOST_SCRIPT_SANITIZE="\${PATH_DEV_TOOLS_BINHOST}/binhost-02-san
 # Overlay
 readonly PATH_OVERLAY_SCRIPT_CREATE_PACKAGE="\${PATH_DEV_TOOLS_OVERLAY}/create-package.sh"
 readonly PATH_OVERLAY_SCRIPT_COPY_PS3_FILES="\${PATH_DEV_TOOLS_OVERLAY}/copy-ps3-distfiles.sh"
+# Releng
+readonly PATH_RELENG_SCRIPT_UPDATE_LATEST="\${PATH_DEV_TOOLS_RELENG}/releng-03-update-latest-targets.sh"
 # TODO: Add paths to other scripts.
 
 # ----------------------------------------------------------------------------------------------------------------------------------

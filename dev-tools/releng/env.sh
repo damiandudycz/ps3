@@ -4,9 +4,11 @@
 
 # Input parsing.
 declare -a RL_TARGETS
+declare -a RL_SKIP
 while [ $# -gt 0 ]; do case "$1" in
-    --clean) RL_FLAG_CLEAN=true;;
-    *) RL_TARGETS+=("$1")
+    --clean)        RL_FLAG_CLEAN=true;;
+    --use)   shift; RL_SKIP+=("$1");;
+    *)              RL_TARGETS+=("$1")
 esac; shift; done
 
 readonly RL_PUBLIC_STAGES=(3 4) # Create latest-stage<num>.txt for these stages.

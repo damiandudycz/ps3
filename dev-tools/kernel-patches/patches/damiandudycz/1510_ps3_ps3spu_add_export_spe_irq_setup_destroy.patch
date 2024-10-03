@@ -1,0 +1,21 @@
+diff --git a/arch/powerpc/platforms/ps3/interrupt.c b/arch/powerpc/platforms/ps3/interrupt.c
+index 4987142..bb22824 100644
+--- a/arch/powerpc/platforms/ps3/interrupt.c
++++ b/arch/powerpc/platforms/ps3/interrupt.c
+@@ -597,6 +597,7 @@ int ps3_spe_irq_setup(enum ps3_cpu_binding cpu, unsigned long spe_id,
+ 
+ 	return result;
+ }
++EXPORT_SYMBOL_GPL(ps3_spe_irq_setup);
+ 
+ int ps3_spe_irq_destroy(unsigned int virq)
+ {
+@@ -609,7 +610,7 @@ int ps3_spe_irq_destroy(unsigned int virq)
+ 
+ 	return result;
+ }
+-
++EXPORT_SYMBOL_GPL(ps3_spe_irq_destroy);
+ 
+ #define PS3_INVALID_OUTLET ((irq_hw_number_t)-1)
+ #define PS3_PLUG_MAX 63

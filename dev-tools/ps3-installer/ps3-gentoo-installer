@@ -61,6 +61,7 @@ setup_overlays           # Add overlays using eselect repository.
 install_updates          # Updates and rebuilds @world system including new use flags.
 install_other_tools      # Installs other selected tools.
 setup_conf_d             # Creates /etc/conf.d entries from config.
+setup_sysctl_d           # Creates /etc/sysctl.d entries from config.
 setup_autostart          # Adds init scripts to selected runlevels.
 setup_user               # Create default user if configured.
 setup_bootloader         # Updates entries in bootloader configuration file.
@@ -500,6 +501,7 @@ disk_create_filesystems() {
         'ext3') try mkfs.ext3 -F $quiet_flag_short "$partition_device" ;;
         'ext4') try mkfs.ext4 -F $quiet_flag_short "$partition_device" ;;
         'btrfs') try mkfs.btrfs -f $quiet_flag_short "$partition_device" ;;
+        'xfs') try mkfs.xfs $quiet_flag_short "$partition_device";;
         'swap') try mkswap $quiet_flag_short "$partition_device" ;;
         *) error "Unknown partition filesystem $partition_data_filesystem" ;;
         esac
@@ -576,14 +578,22 @@ download_stages() {
         echo "Available stage tarballs:"
         for key in $(printf "%s\n" "${!stage_sources[@]}" | sort -n); do
             entry="${stage_sources[$key]}"
-            trimmed_entry="${entry%-*}"
+            trimmed_entry=$(basename "${entry%-*}")
             echo "  [$key] $trimmed_entry"
         done
         read -p "Please select source stage tarball. In in doubt, select [1]: " selection
         source_stage="${stage_sources[$selection]}"
+	source_stage_basename=$(basename "${source_stage}")
         if [[ -n "$source_stage" ]]; then
             url_gentoo_tarball="$base_url_autobuilds/$source_stage"
+            local selected_stage_type=$(basename "${source_stage%-*}")
             echo "Proceeding with: ${source_stage}"
+            # Determine if performing quick install (stage4)
+            if [[ "$selected_stage_type" == stage3* ]]; then
+                full_installation=true
+            else
+                full_installation=false
+            fi
             break
         fi
     done
@@ -599,8 +609,11 @@ gentoo_download() {
 gentoo_extract() {
     free_memory
     local path_stage3or4="$path_chroot/gentoo.tar.xz"
-    try tar -I 'xz -T1' -xvpf "$path_stage3or4" --xattrs-include="*/*" --numeric-owner --blocking-factor=1 -C "$path_chroot/"
-    try rm "$path_stage3or4"
+    local path_stage3or4_decompressed="$path_chroot/gentoo.tar"
+    # Package is first decompressed and then extracted, so that OOM error doesn't happend.
+    try xz -v -d --memlimit-decompress=50% "$path_stage3or4"
+    try tar -xvpf "$path_stage3or4_decompressed" --xattrs-include="*/*" --numeric-owner --blocking-factor=1 -C "$path_chroot/"
+    try rm "$path_stage3or4_decompressed"
 }
 
 # Configuring system ============================================================================
@@ -619,6 +632,9 @@ prepare_chroot() {
 }
 
 setup_make_conf() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local path_make="$path_chroot/etc/portage/make.conf"
     local opts=$(cfg .portage.make_conf --asjson)
     local keys=($(cfg --from "$opts" keys[]))
@@ -637,6 +653,9 @@ setup_make_conf() {
 }
 
 setup_env() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     mkdir -p "$path_chroot/etc/portage/env"
     local path_env="$path_chroot/etc/portage/env"
     local envs=$(cfg .portage.env --asjson)
@@ -652,6 +671,9 @@ setup_env() {
 }
 
 setup_packages_config() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     mkdir -p "$path_chroot/etc/portage/package.accept_keywords"
     mkdir -p "$path_chroot/etc/portage/package.use"
     # USE
@@ -661,7 +683,11 @@ setup_packages_config() {
     for key in "${keys_use[@]}"; do
         mapfile -t lines < <(cfg --from "${use}" ".[\"${key}\"][]")
         for line in "${lines[@]}"; do
-            grep -qxF "$line" "$path_package_use/$key" || echo "$line" | tee -a "$path_package_use/$key" >/dev/null
+            if [[ -f "$path_package_use/$key" ]]; then
+                grep -qxF "$line" "$path_package_use/$key" || echo "$line" | tee -a "$path_package_use/$key" >/dev/null
+            else
+                echo "$line" | tee -a "$path_package_use/$key" >/dev/null
+            fi
         done
     done
     # Accept keywords
@@ -671,12 +697,19 @@ setup_packages_config() {
     for key in "${keys_accept[@]}"; do
         mapfile -t lines < <(cfg --from "${accept}" ".[\"${key}\"][]")
         for line in "${lines[@]}"; do
-            grep -qxF "$line" "$path_package_accept_keywords/$key" || echo "$line" | tee -a "$path_package_accekt_keywords/$key" >/dev/null
+            if [[ -f "$path_package_accept_kaywords/$key" ]]; then
+                grep -qxF "$line" "$path_package_accept_keywords/$key" || echo "$line" | tee -a "$path_package_accept_keywords/$key" >/dev/null
+            else
+                echo "$line" | tee -a "$path_package_accept_keywords/$key" >/dev/null
+            fi
         done
     done
 }
 
 setup_binhosts() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local path_binrepos="$path_chroot/etc/portage/binrepos.conf"
     if [ ! -d "$path_binrepos" ]; then
         try mkdir -p "$path_binrepos"
@@ -744,6 +777,9 @@ setup_distcc_client() {
 }
 
 setup_network_link() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local network_links=($(cfg .network.links[]))
     if [ -z "$network_links" ]; then
         return
@@ -824,6 +860,9 @@ install_updates() {
 }
 
 install_base_tools() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local packages=$(cfg .packages --asjson)
     local to_install=($(cfg .initial[] --from "$packages"))
     for package in "${to_install[@]}"; do
@@ -833,6 +872,9 @@ install_base_tools() {
 }
 
 install_other_tools() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local packages=$(cfg .packages --asjson)
     local to_install=($(cfg .other[] --from "$packages"))
     for package in "${to_install[@]}"; do
@@ -863,6 +905,9 @@ revdep_rebuild() {
 }
 
 setup_conf_d() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local conf_d=$(cfg .conf_d --asjson)
     local keys=($(cfg --from "$conf_d" keys[]))
     for key in "${keys[@]}"; do
@@ -874,7 +919,25 @@ setup_conf_d() {
     done
 }
 
+setup_sysctl_d() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
+    local sysctl_d=$(cfg .sysctl_d --asjson)
+    local keys=($(cfg --from "$sysctl_d" keys[]))
+    for key in "${keys[@]}"; do
+        echo "" | try tee "$path_chroot/etc/sysctl.d/${key}.conf" >/dev/null
+	mapfile -t lines < <(cfg --from "${sysctl_d}" ".[\"${key}\"][]")
+	for line in "${lines[@]}"; do
+            echo "$line" | try tee -a "$path_chroot/etc/sysctl.d/${key}.conf" >/dev/null
+        done
+    done
+}
+
 setup_autostart() {
+    if [[ "${full_installation}" != true ]]; then
+        return
+    fi
     local rc_scripts=$(cfg .rc_scripts --asjson)
 
     local rc_default=($(cfg .default[] --from "$rc_scripts"))
@@ -910,6 +973,9 @@ setup_user() {
 }
 
 setup_bootloader() {
+	if [ "$installation_type" != 'disk' ]; then
+		return
+	fi
         # Find root and boot partition
         root_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/" {print $1}' ${path_chroot}/etc/fstab)
         boot_partition=$(awk '!/^[[:space:]]*#/ && $2 == "/boot" {print $1}' ${path_chroot}/etc/fstab)
@@ -936,9 +1002,9 @@ setup_bootloader() {
 
         for kernel_path in ${kernels[@]}; do
             local kernel=$(basename $kernel_path)
-            local PV=$(kernel_version=$(echo $kernel | sed -n 's/^vmlinu[xz]-\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p'))
+            local PV=$(echo $kernel | sed -n 's/^vmlinu[xz]-\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/p')
 
-            kboot_entry="Gentoo-Kernel-${PV}='${vmlinux_path_prefix}/$kernel root=${root_partition} video=ps3fb:mode:133'"
+            kboot_entry="Gentoo-Kernel-${PV}='${vmlinux_path_prefix}/$kernel initrd=${vmlinux_path_prefix}/initramfs-${PV}-ps3-gentoo-dist.img root=${root_partition} video=ps3fb:mode:133'"
             if [ -f "${kboot_path}" ]; then
                 grep -qxF "${kboot_entry}" "${kboot_path}" 2>/dev/null || sed -i "1i ${kboot_entry}" "${kboot_path}"
             else

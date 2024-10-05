@@ -1,16 +1,13 @@
 # Release version details
 version_stamp: @TIMESTAMP@
-source_subpath: @REL_TYPE@/stage3-cell-base-openrc-@TIMESTAMP@
+source_subpath: @PLATFORM@/@REL_TYPE@/stage3-cell-base-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
 repos: @REPOS@
-portage_confdir: @STAGEFILES_DIR@/@STAGE_NAME@/portage
 pkgcache_path: @PKGCACHE_PATH@/.livecd
-@INTERPRETER@
 
 # Architecture and profile
 subarch: cell
 target: livecd-stage1
-rel_type: @REL_TYPE@
 profile: default/linux/ppc64/23.0
 compression_mode: pixz
 

@@ -8,7 +8,7 @@ source "./catalyst-lab.conf" # TODO: Store conf in /etc/catalyst-lab.sh
 declare -A TARGET_MAPPINGS=([livecd-stage1]=livecd [livecd-stage2]=livecd)
 readonly PKGCACHE_PATH=${PATH_RELENG_RELEASES_BINPACKAGES}
 readonly TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ") # Current timestamp.
-readonly WORK_PATH=/tmp/catalyst-lab-${TIMESTAMP}
+readonly WORK_PATH=/tmp/catalyst-lab/${TIMESTAMP}
 CLEAN_BUILD=false
 
 # Script arguments:
@@ -105,8 +105,9 @@ sanitize_spec_variable() {
 
 #  Get portage snapshot version and download new if needed.
 prepare_portage_snapshot() {
-# TODO: If it's empty, prevent loadind, so that console error doesn't appear
-	treeish=$(find ${PATH_CATALYST_TMP}/snapshots -type f -name "*.sqfs" -exec ls -t {} + | head -n 1 | xargs -n 1 basename -s .sqfs | cut -d '-' -f 2)
+	if [[ -d ${PATH_CATALYST_TMP}/snapshots && $(find ${PATH_CATALYST_TMP}/snapshots -type f -name "*.sqfs" | wc -l) -gt 0 ]]; then
+		treeish=$(find ${PATH_CATALYST_TMP}/snapshots -type f -name "*.sqfs" -exec ls -t {} + | head -n 1 | xargs -n 1 basename -s .sqfs | cut -d '-' -f 2)
+	fi
 	if [[ -z ${treeish} ]] || [[ ${FETCH_FRESH_SNAPSHOT} = true ]]; then
 		echo_color ${COLOR_TURQUOISE_BOLD} "[ Refreshing portage snapshot ]"
 		catalyst -s stable

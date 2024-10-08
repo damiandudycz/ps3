@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source ../../.env-shared.sh --silent || exit 1
+source "./catalyst-lab.conf" # TODO: Store conf in /etc/catalyst-lab.sh
 
 # Constants:
 
@@ -20,13 +21,6 @@ while [ $# -gt 0 ]; do case ${1} in
 	--*) echo "Unknown option ${1}"; exit;;
 	*) selected_stages_templates+=("${1}")
 esac; shift; done
-
-# Load main configuration:
-
-CONF_PATH="./catalyst-lab.conf" # TODO: Store conf in /etc/catalyst-lab.sh
-source ${CONF_PATH}
-#echo "${seeds_url}"
-#exit
 
 # Functions:
 

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# TODO: Determine if parent also builds, or should use available_source_subpath. Use this as calculated source_subpath
-
 source ../../.env-shared.sh --silent || exit 1
 
 # Constants:
@@ -100,11 +98,13 @@ sanitize_spec_variable() {
 
 #  Get portage snapshot version and download new if needed.
 prepare_portage_snapshot() {
+# TODO: If it's empty, prevent loadind, so that console error doesn't appear
 	treeish=$(find ${PATH_CATALYST_TMP}/snapshots -type f -name "*.sqfs" -exec ls -t {} + | head -n 1 | xargs -n 1 basename -s .sqfs | cut -d '-' -f 2)
 	if [[ -z ${treeish} ]] || [[ ${FETCH_FRESH_SNAPSHOT} = true ]]; then
+		echo_color ${COLOR_TURQUOISE_BOLD} "[ Refreshing portage snapshot ]"
 		catalyst -s stable
-		echo "" # New line
 		treeish=$(find ${PATH_CATALYST_TMP}/snapshots -type f -name "*.sqfs" -exec ls -t {} + | head -n 1 | xargs -n 1 basename -s .sqfs | cut -d '-' -f 2)
+		echo "" # New line
 	fi
 }
 
@@ -346,6 +346,7 @@ prepare_stages() {
 		set_spec_variable ${stage_spec_work_path} rel_type ${platform}/${release}
 		set_spec_variable ${stage_spec_work_path} portage_confdir ${portage_path}
 		set_spec_variable ${stage_spec_work_path} source_subpath ${source_subpath}
+		set_spec_variable ${stage_spec_work_path} snapshot_treeish ${treeish}
 		if [[ -d ${stage_overlay_path} ]]; then
 		        set_spec_variable ${stage_spec_work_path} ${target_mapping}/overlay ${stage_overlay_path}
 		fi
@@ -385,7 +386,6 @@ build_stages() {
 
 		# If stage doesn't have parent built or already existing as .tar.xz, download it's
 		if [[ -n ${source_url} ]] && [[ ! -f ${source_path} ]]; then
-			echo ""
 			echo "Downloading seed for: ${platform}/${release}/${stage}"
 			echo ""
 			wget ${source_url} -O ${source_path}
@@ -422,4 +422,5 @@ build_stages
 # TODO: Add releng managemnt - downloading, checking, updating.
 # TODO: If possible - add toml config management.
 # TODO: Link all specs to single work directory, and rename to 01-stage_name.spec, 02-stage_name.spec, etc
-# TODO: Only get links to missing stages first, download seeds only when starting build that needs it. Store URL in stages[]
+# TODO: Add possibility to specify in spec templates things that should be added only if they are not specified yet. For example: treeish
+# TODO: Copy catalyst.conf to templates and use it from there.

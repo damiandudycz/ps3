@@ -38,23 +38,22 @@ use_stage() {
 	for variable in ${STAGE_VARIABLES[@]}; do
 		eval ${prefix}${variable}=${stages[${1},${variable}]}
 	done
-}
-
-# Load details about parent of currently loaded stage. Remember to use_stage first to get correct parent.
-use_parent() {
-	parent_index=""
-	local i; for (( i=0; i<$stages_count; i++ )); do
-		use_stage ${i} parent_
-		local parent_product=${parent_platform}/${parent_release}/${parent_target}-${parent_subarch}-${parent_version_stamp}
-		if [[ ${source_subpath} == ${parent_product} ]]; then
-			parent_index=${i}
-			break
+	# Load parent info
+	if [[ -z ${prefix} ]]; then
+		parent_index=""
+		local i; for (( i=0; i<$stages_count; i++ )); do
+			use_stage ${i} parent_
+			local parent_product=${parent_platform}/${parent_release}/${parent_target}-${parent_subarch}-${parent_version_stamp}
+			if [[ ${source_subpath} == ${parent_product} ]]; then
+				parent_index=${i}
+				break
+			fi
+		done
+		if [[ -z ${parent_index} ]]; then # If parent not found, clean it's data
+		        for variable in ${STAGE_VARIABLES[@]}; do
+		                unset parent_${variable}
+		        done
 		fi
-	done
-	if [[ -z ${parent_index} ]]; then # If parent not found, clean it's data
-	        for variable in ${STAGE_VARIABLES[@]}; do
-	                unset parent_${variable}
-	        done
 	fi
 }
 
@@ -250,7 +249,6 @@ insert_stage_with_inheritance() { # arg - index, required_by_id
 	use_stage ${index}
 	if ! contains_string stages_order[@] ${index}; then
 		# If you can find a parent that produces target = this.source, add this parent first. After that add this stage.
-		use_parent
 		if [[ -n ${parent_index} ]]; then
 			stages[${index},parent]=${parent_platform}/${parent_release}/${parent_stage}
 			insert_stage_with_inheritance ${parent_index}
@@ -268,7 +266,6 @@ prepare_stages() {
 
 	local i; for (( i=0; i<$stages_count; i++ )); do
 		use_stage ${i}
-		use_parent
 		if [[ ${rebuild} = false ]]; then
 			continue
 		fi
@@ -421,7 +418,7 @@ fi
 prepare_portage_snapshot
 load_stages
 prepare_stages
-build_stages
+#build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Make this script independant of PS3 environment. Use configs in /etc/ instead.

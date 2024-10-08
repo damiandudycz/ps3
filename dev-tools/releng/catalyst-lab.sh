@@ -6,7 +6,6 @@ source "./catalyst-lab.conf" # TODO: Store conf in /etc/catalyst-lab.sh
 # Constants:
 
 declare -A TARGET_MAPPINGS=([livecd-stage1]=livecd [livecd-stage2]=livecd)
-readonly STAGE_VARIABLES=(platform release stage subarch target version_stamp source_subpath parent catalyst_conf source_url available_build rebuild)
 readonly PKGCACHE_PATH=${PATH_RELENG_RELEASES_BINPACKAGES}
 readonly TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ") # Current timestamp.
 readonly WORK_PATH=/tmp/catalyst-lab-${TIMESTAMP}
@@ -33,9 +32,12 @@ get_directories() {
 
 # Read variables of stage at index. Use this in functions that sould work with given stage, instead of loading all variables manually.
 # Use prefix if need to compare with other stage variables.
+# This function also loads platform config file related to selected stage.
 use_stage() {
 	local prefix=${2}
-	for variable in ${STAGE_VARIABLES[@]}; do
+	# Automatically determine all possible keys stored in stages, and load them to variables.
+	local keys=($(printf "%s\n" "${!stages[@]}" | sed 's/.*,//' | sort -u))
+	for variable in ${keys[@]}; do
 		eval ${prefix}${variable}=${stages[${1},${variable}]}
 	done
 	# Load parent info and platform config
@@ -50,7 +52,7 @@ use_stage() {
 			fi
 		done
 		if [[ -z ${parent_index} ]]; then # If parent not found, clean it's data
-		        for variable in ${STAGE_VARIABLES[@]}; do
+		        for variable in ${keys[@]}; do
 		                unset parent_${variable}
 		        done
 		fi
@@ -418,7 +420,7 @@ build_stages() {
 		if [[ -n ${catalyst_conf} ]]; then
 			args="${args} -c ${catalyst_conf}"
 		fi
-echo "		catalyst $args || exit 1"
+		catalyst $args || exit 1
 		echo ""
 	done
 }
@@ -434,7 +436,7 @@ fi
 prepare_portage_snapshot
 load_stages
 prepare_stages
-build_stages
+#build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Make this script independant of PS3 environment. Use configs in /etc/ instead.

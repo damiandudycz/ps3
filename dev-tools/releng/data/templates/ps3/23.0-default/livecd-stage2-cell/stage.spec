@@ -8,9 +8,10 @@ repos: @REPOS@
 pkgcache_path: @PKGCACHE_PATH@/.livecd
 
 # Architecture and profile
-subarch: cell
 target: livecd-stage2
-profile: default/linux/ppc64/23.0
+profile: default/linux/@BASE_ARCH@/23.0
+
+#subarch: cell
 
 # LiveCD config
 livecd/fstype: squashfs

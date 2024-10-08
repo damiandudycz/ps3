@@ -1,17 +1,18 @@
 # Base build for desktop profiles. Includes only xorg-server and adds basic rc-scripts.
 # Contains also base packages used in all desktop profiles, like kernel, sido, etc.
 
-subarch: cell
 target: stage4
 version_stamp: base-openrc-@TIMESTAMP@
 source_subpath: @PLATFORM@/@REL_TYPE@/stage3-cell-base-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
-profile: default/linux/ppc64/23.0
+profile: default/linux/@BASE_ARCH@/23.0
 compression_mode: pixz
-#portage_prefix: releng
 binrepo_path: ppc/binpackages/23.0/cell
 pkgcache_path: @PKGCACHE_PATH@/cell
 repos: @REPOS@
+
+#subarch: cell
+#portage_prefix: releng
 
 stage4/use:
 	ps3

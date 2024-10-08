@@ -6,10 +6,11 @@ repos: @REPOS@
 pkgcache_path: @PKGCACHE_PATH@/.livecd
 
 # Architecture and profile
-subarch: cell
 target: livecd-stage1
-profile: default/linux/ppc64/23.0
+profile: default/linux/@BASE_ARCH@/23.0
 compression_mode: pixz
+
+#subarch: cell
 
 # USE flags
 livecd/use:

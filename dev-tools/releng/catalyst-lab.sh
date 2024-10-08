@@ -111,8 +111,9 @@ sanitize_spec_variable() {
 	local platform="$1"
 	local release="$2"
 	local stage="$3"
-	local value="$4"
-	echo "${value}" | sed "s/@REL_TYPE@/${release}/g" | sed "s/@PLATFORM@/${platform}/g" | sed "s/@STAGE@/${stage}/g"
+	local base_arch="$4"
+	local value="$5"
+	echo "${value}" | sed "s/@REL_TYPE@/${release}/g" | sed "s/@PLATFORM@/${platform}/g" | sed "s/@STAGE@/${stage}/g" | sed "s/@BASE_ARCH@/${base_arch}/g"
 }
 
 #  Get portage snapshot version and download new if needed.
@@ -168,7 +169,7 @@ load_stages() {
 
 					# Find best matching local build available.
 					local stage_product=${platform}/${release}/${target}-${subarch}-${version_stamp}
-					local stage_product_regex=$(echo $(sanitize_spec_variable ${platform} ${release} ${stage} ${stage_product}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
+					local stage_product_regex=$(echo $(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${stage_product}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
 					local matching_stage_builds=($(printf "%s\n" "${available_builds[@]}" | grep -E "${stage_product_regex}"))
 					local stage_available_build=$(printf "%s\n" "${matching_stage_builds[@]}" | sort -r | head -n 1)
 
@@ -176,10 +177,10 @@ load_stages() {
 					stages[${stages_count},platform]=${platform}
 					stages[${stages_count},release]=${release}
 					stages[${stages_count},stage]=${stage}
-					stages[${stages_count},subarch]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${subarch})
-					stages[${stages_count},target]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${target})
-					stages[${stages_count},version_stamp]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${version_stamp})
-					stages[${stages_count},source_subpath]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${source_subpath})
+					stages[${stages_count},subarch]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${subarch})
+					stages[${stages_count},target]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${target})
+					stages[${stages_count},version_stamp]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${version_stamp})
+					stages[${stages_count},source_subpath]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${source_subpath})
 					stages[${stages_count},available_build]=${stage_available_build}
 
 					stages_count=$((stages_count + 1))
@@ -377,7 +378,6 @@ prepare_stages() {
 		elif [[ -f ${platform_catalyst_conf} ]]; then cp -n ${platform_catalyst_conf} ${platform_work_catalyst_conf}; catalyst_conf=${platform_work_catalyst_conf};
 		fi
 		stages[${i},catalyst_conf]=${catalyst_conf}
-		#use_stage ${i} # Reload data
 
 		# Setup spec entries.
 		local stage_overlay_path=${stage_work_path}/overlay
@@ -418,6 +418,7 @@ prepare_stages() {
 		update_spec_variable ${stage_spec_work_path} PLATFORM ${platform}
 		update_spec_variable ${stage_spec_work_path} REL_TYPE ${release}
 		update_spec_variable ${stage_spec_work_path} TREEISH ${treeish}
+                update_spec_variable ${stage_spec_work_path} BASE_ARCH ${arch_basearch}
 		update_spec_variable ${stage_spec_work_path} PKGCACHE_PATH ${PKGCACHE_PATH}
 		update_spec_variable ${stage_spec_work_path} REPOS ${PATH_OVERLAYS_PS3_GENTOO}
 
@@ -477,4 +478,4 @@ build_stages
 # TODO: Add releng managemnt - downloading, checking, updating.
 # TODO: If possible - add toml config management.
 # TODO: Link all specs to single work directory, and rename to 01-stage_name.spec, 02-stage_name.spec, etc
-# TODO: Add possibility to specify in spec templates things that should be added only if they are not specified yet. For example: treeish
+# TODO: Add possibility to include shared files anywhere into spec files. So for example keep single list of basic installCD tools, and use them across all livecd specs

@@ -38,7 +38,7 @@ use_stage() {
 	for variable in ${STAGE_VARIABLES[@]}; do
 		eval ${prefix}${variable}=${stages[${1},${variable}]}
 	done
-	# Load parent info
+	# Load parent info and platform config
 	if [[ -z ${prefix} ]]; then
 		parent_index=""
 		local i; for (( i=0; i<$stages_count; i++ )); do
@@ -54,11 +54,12 @@ use_stage() {
 		                unset parent_${variable}
 		        done
 		fi
+
+		# Platform config
+		local platform_conf_path=${PATH_RELENG_TEMPLATES}/${platform}/platform.conf
+		source ${platform_conf_path}
+		# TODO: If some properties are not set in config - unset them while loading new config
 	fi
-	# Load platform config
-	local platform_conf_path=${PATH_RELENG_TEMPLATES}/${platform}/platform.conf
-	source ${platform_conf_path}
-	# TODO: If some properties are not set in config - unset them while loading new config
 }
 
 # Return value of given property from given spec file.

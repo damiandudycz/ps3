@@ -7,7 +7,7 @@ source_subpath: ppc64/23.0-llvm/stage3-ppc64-musl-hardened-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
 profile: default/linux/ppc64/23.0/musl
 compression_mode: pixz
-portage_prefix: releng
+#portage_prefix: releng
 pkgcache_path: @PKGCACHE_PATH@/cell
 #repos: @REPOS@
 

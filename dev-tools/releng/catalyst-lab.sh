@@ -139,6 +139,9 @@ load_stages() {
 	readonly RL_VAL_PLATFORMS=$(get_directories ${PATH_RELENG_TEMPLATES})
 	for platform in ${RL_VAL_PLATFORMS[@]}; do
 		local platform_path=${PATH_RELENG_TEMPLATES}/${platform}
+		# Load platform config
+		local platform_conf_path=${platform_path}/platform.conf
+      		source ${platform_conf_path}
 		# Find list of releases. (23.0-default, 23.0-llvm, etc).
 		RL_VAL_RELEASES=$(get_directories ${platform_path})
 		# Collect information about stages in releases.
@@ -157,6 +160,11 @@ load_stages() {
 					local target=$(read_spec_variable ${stage_spec_path} target) # eq.: stage3
 					local version_stamp=$(read_spec_variable ${stage_spec_path} version_stamp) # eq.: base-openrc-@TIMESTAMP@
 					local source_subpath=$(read_spec_variable ${stage_spec_path} source_subpath)
+
+					# If subarch is not set in spec, update it with value from platform config.
+					if [[ -z ${subarch} ]]; then
+						subarch=${arch_subarch}
+					fi
 
 					# Find best matching local build available.
 					local stage_product=${platform}/${release}/${target}-${subarch}-${version_stamp}
@@ -331,7 +339,6 @@ prepare_stages() {
 				local latest_seed_timestamp=$(echo ${latest_seed} | sed -n 's/.*\([0-9]\{8\}T[0-9]\{6\}Z\).*/\1/p')
 				stages[${i},source_url]=${url_seed_tarball} # Store URL of source, to download right before build
 				stages[${i},source_subpath]=$(echo ${source_subpath} | sed "s/@TIMESTAMP@/${latest_seed_timestamp}/")
-				# TODO: Generate URL_RELEASE_GENTOO with currect family for given spec. Currentl'y it's all for ppc
 				# TODO: If getting parent url fails, stop script with erro
 			fi
 			# Reload variables, because after downloading details, they could have been changed
@@ -346,11 +353,15 @@ prepare_stages() {
 		local portage_path=${stage_work_path}/portage
 		local releng_base_file=${portage_path}/releng_base
 		if [[ -f ${releng_base_file} ]]; then
+			uses_releng=true
 			releng_base=$(cat ${releng_base_file})
 			releng_base_dir=${PATH_RELENG_PORTAGE_CONFDIR}/${releng_base}${CONF_QEMU_RELENG_POSTFIX}
 			cp -ru ${releng_base_dir}/* ${portage_path}/
 			rm ${releng_base_file}
+		else
+			uses_releng=false
 		fi
+		stage[${i},uses_releng]=${uses_releng}
 
 		# Find custom catalyst.conf if any
 		local platform_catalyst_conf=${platform_path}/catalyst.conf
@@ -399,6 +410,9 @@ prepare_stages() {
 		fi
 		if [[ -n ${interpreter} ]]; then
 			set_spec_variable_if_missing ${stage_spec_work_path} interpreter ${interpreter}
+		fi
+		if [[ ${uses_releng} = true ]]; then
+			set_spec_variable_if_missing ${stage_spec_work_path} portage_prefix releng
 		fi
 		update_spec_variable ${stage_spec_work_path} TIMESTAMP ${TIMESTAMP}
 		update_spec_variable ${stage_spec_work_path} PLATFORM ${platform}
@@ -455,7 +469,7 @@ fi
 prepare_portage_snapshot
 load_stages
 prepare_stages
-#build_stages
+build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Make this script independant of PS3 environment. Use configs in /etc/ instead.

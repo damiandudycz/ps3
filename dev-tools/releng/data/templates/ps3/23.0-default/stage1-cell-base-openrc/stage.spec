@@ -2,7 +2,7 @@
 target: stage1
 version_stamp: base-openrc-@TIMESTAMP@
 profile: default/linux/ppc64/23.0
-portage_prefix: releng
+#portage_prefix: releng
 source_subpath: ppc64/23.0-default/stage3-ppc64-openrc-@TIMESTAMP@
 compression_mode: pixz
 update_seed: yes

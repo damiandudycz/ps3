@@ -6,10 +6,12 @@ source "./catalyst-lab.conf" # TODO: Store conf in /etc/catalyst-lab.sh
 # Constants:
 
 declare -A TARGET_MAPPINGS=([livecd-stage1]=livecd [livecd-stage2]=livecd)
+declare -A ARCH_MAPPINGS=([aarch64]=arm64) # Map from arch command to release arch. TODO: Add more mappings if needed.
 readonly PKGCACHE_PATH=${PATH_RELENG_RELEASES_BINPACKAGES}
 readonly TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ") # Current timestamp.
 readonly WORK_PATH=/tmp/catalyst-lab/${TIMESTAMP}
 CLEAN_BUILD=false
+HOST_ARCH=${ARCH_MAPPINGS[$(arch)]:-$(arch)} # Mapped to release arch
 
 # Script arguments:
 
@@ -364,7 +366,7 @@ prepare_stages() {
 		elif [[ -f ${platform_catalyst_conf} ]]; then cp -n ${platform_catalyst_conf} ${platform_work_catalyst_conf}; catalyst_conf=${platform_work_catalyst_conf};
 		fi
 		stages[${i},catalyst_conf]=${catalyst_conf}
-		use_stage ${i} # Reload data
+		#use_stage ${i} # Reload data
 
 		# Setup spec entries.
 		local stage_overlay_path=${stage_work_path}/overlay
@@ -372,6 +374,12 @@ prepare_stages() {
 		local stage_fsscript_path=${stage_work_path}/fsscript.sh
 		local stage_spec_work_path=${stage_work_path}/stage.spec
 		local target_mapping="${TARGET_MAPPINGS[${target}]:-${target}}"
+
+		# Determine if needs to use qemu interpreter.
+		if [[ ${HOST_ARCH} != ${arch_basearch} ]]; then
+			interpreter=${arch_interpreter}
+			stages[${i},interpreter]=${arch_interpreter}
+		fi
 
 		# Replace spec templates with real data
 		echo "" >> ${stage_spec_work_path} # Add new line, to separate new entries
@@ -389,8 +397,8 @@ prepare_stages() {
 		if [[ -f ${stage_fsscript_path} ]]; then
 		        set_spec_variable_if_missing ${stage_spec_work_path} ${target_mapping}/fsscript ${stage_fsscript_path}
 		fi
-		if [[ ${CONF_QEMU_IS_NEEDED} ]]; then
-			set_spec_variable_if_missing ${stage_spec_work_path} interpreter ${CONF_QEMU_INTERPRETER}
+		if [[ -n ${interpreter} ]]; then
+			set_spec_variable_if_missing ${stage_spec_work_path} interpreter ${interpreter}
 		fi
 		update_spec_variable ${stage_spec_work_path} TIMESTAMP ${TIMESTAMP}
 		update_spec_variable ${stage_spec_work_path} PLATFORM ${platform}

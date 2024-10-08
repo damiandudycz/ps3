@@ -7,7 +7,7 @@ source ../../.env-shared.sh || exit 1
 # Constants:
 
 declare -A TARGET_MAPPINGS=([livecd-stage1]=livecd [livecd-stage2]=livecd)
-readonly STAGE_VARIABLES=(platform release stage subarch target version_stamp source_subpath parent catalyst_conf source_url available_source_subpath rebuild)
+readonly STAGE_VARIABLES=(platform release stage subarch target version_stamp source_subpath parent catalyst_conf source_url available_source_subpath available_build_subpath rebuild)
 readonly PKGCACHE_PATH=${PATH_RELENG_RELEASES_BINPACKAGES}
 readonly TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ") # Current timestamp.
 readonly WORK_PATH=/tmp/catalyst-lab-${TIMESTAMP}
@@ -146,10 +146,16 @@ load_stages() {
 					elif [[ -f ${release_catalyst_conf} ]]; then catalyst_conf=${release_catalyst_conf};
 					elif [[ -f ${platform_catalyst_conf} ]]; then catalyst_conf=${platform_catalyst_conf};
 					fi
-					# Find best matching local build available
+					# Find best matching local build available of both - this build and source
 					local source_subpath_regex=$(echo $(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_source_subpath}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
 					local matching_source_builds=($(printf "%s\n" "${available_builds[@]}" | grep -E "${source_subpath_regex}"))
 					local stage_available_source_subpath=$(printf "%s\n" "${matching_source_builds[@]}" | sort -r | head -n 1)
+							# TODO: Reduct to only stage_available_build_subpath, remove stage_available_source_subpath
+					local stage_product=${PLATFORM}/${RELEASE}/${stage_target}-${stage_subarch}-${stage_stamp}
+					local stage_subpath_regex=$(echo $(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_product}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
+					local matching_stage_builds=($(printf "%s\n" "${available_builds[@]}" | grep -E "${stage_subpath_regex}"))
+					local stage_available_build_subpath=$(printf "%s\n" "${matching_stage_builds[@]}" | sort -r | head -n 1)
+
 					# Store variables
 					stages[${stages_count},platform]=${PLATFORM}
 					stages[${stages_count},release]=${RELEASE}
@@ -160,6 +166,7 @@ load_stages() {
 					stages[${stages_count},source_subpath]=$(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_source_subpath})
 					stages[${stages_count},catalyst_conf]=${catalyst_conf}
 					stages[${stages_count},available_source_subpath]=${stage_available_source_subpath}
+					stages[${stages_count},available_build_subpath]=${stage_available_build_subpath}
 					stages_count=$((stages_count + 1))
 
 				fi
@@ -215,9 +222,10 @@ load_stages() {
 			else
 				# Check if this stage is required as a source for another stage.
 				# In this situation it's marked as required only if local build is also not available or CLEAN_BUILD is set.
-				if contains_string required_seeds[@] ${stage_subpath} && [[ -z ${available_source_subpath} || ${CLEAN_BUILD} = true ]]; then
+											# TODO: replace available_source_subpath with this build available subpath
+				if contains_string required_seeds[@] ${stage_subpath} && [[ -z ${available_build_subpath} || ${CLEAN_BUILD} = true ]]; then
 					stages[${i},rebuild]=true
-					stages[${i},available_source_subpath]="" # If rebuilding, forget about available source subpath, as new release will be created anyway.
+					stages[${i},available_build_subpath]="" # If rebuilding, forget about available build subpath, as new release will be created anyway.
 					required_seeds+=(${parent}) # Remember that current stage source need's to exist or be build.
 				else
 					stages[${i},rebuild]=false

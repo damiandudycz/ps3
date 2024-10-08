@@ -5,7 +5,7 @@ source ../../.env-shared.sh || exit 1
 # Constants:
 
 declare -A TARGET_MAPPINGS=([livecd-stage1]=livecd [livecd-stage2]=livecd)
-readonly STAGE_VARIABLES=(platform release stage subarch target version_stamp source_subpath has_parent catalyst_conf source_url)
+readonly STAGE_VARIABLES=(platform release stage subarch target version_stamp source_subpath has_parent catalyst_conf source_url available_source_subpath)
 readonly PKGCACHE_PATH=${PATH_RELENG_RELEASES_BINPACKAGES}
 readonly TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ") # Current timestamp.
 readonly WORK_PATH=/tmp/catalyst-lab-${TIMESTAMP}
@@ -88,8 +88,9 @@ prepare_portage_snapshot() {
 # Sort stages based on their inheritance.
 load_stages() {
 	declare -gA stages # Some details of stages retreived from scanning. (release,stage,target,source,has_parent).
-	stages_count=0 # Number of stages to build. Script will determine this value automatically.
 	local available_builds=$(find ${PATH_CATALYST_BUILDS} -type f -name "*.tar.xz" -printf '%P\n')
+	stages_count=0 # Number of stages to build. Script will determine this value automatically.
+
 	readonly RL_VAL_PLATFORMS=$(get_directories ${PATH_RELENG_TEMPLATES})
 	for PLATFORM in ${RL_VAL_PLATFORMS[@]}; do
 		local platform_path=${PATH_RELENG_TEMPLATES}/${PLATFORM}
@@ -121,6 +122,10 @@ load_stages() {
 					elif [[ -f ${release_catalyst_conf} ]]; then catalyst_conf=${release_catalyst_conf};
 					elif [[ -f ${platform_catalyst_conf} ]]; then catalyst_conf=${platform_catalyst_conf};
 					fi
+					# Find best matching local build available
+					local source_subpath_regex=$(echo $(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_source_subpath}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
+					local matching_source_builds=($(printf "%s\n" "${available_builds[@]}" | grep -E "${source_subpath_regex}"))
+					local stage_available_source_subpath=$(printf "%s\n" "${matching_source_builds[@]}" | sort -r | head -n 1)
 					# Store variables
 					stages[${stages_count},platform]=${PLATFORM}
 					stages[${stages_count},release]=${RELEASE}
@@ -130,7 +135,9 @@ load_stages() {
 					stages[${stages_count},version_stamp]=$(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_stamp})
 					stages[${stages_count},source_subpath]=$(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_source_subpath})
 					stages[${stages_count},catalyst_conf]=${catalyst_conf}
+					stages[${stages_count},available_source_subpath]=${stage_available_source_subpath}
 					stages_count=$((stages_count + 1))
+
 				fi
 			done
 		done
@@ -166,9 +173,7 @@ load_stages() {
 	unset stages_temp
 
 	# List stages to build
-	echo "######################################################################"
-	echo "### Stages to build                                                ###"
-	echo ""
+	echo_color ${COLOR_TURQUOISE_BOLD} "[ Stages to build ]"
 	local i; for (( i=0; i<$stages_count; i++ )); do
 		echo "$((i+1)):	${stages[${i},'platform']}/${stages[${i},'release']}/${stages[${i},'stage']}"
 	done
@@ -290,7 +295,6 @@ prepare_stages() {
 	done
 
 	echo ""
-	echo "######################################################################"
 	echo "### Stages templates prepared in: ${WORK_PATH}"
 	echo ""
 }
@@ -306,7 +310,6 @@ build_stages() {
 		# If stage doesn't have parent built or already existing as .tar.xz, download it's
 		if [[ -n ${source_url} ]] && [[ ! -f ${source_path} ]]; then
 			echo ""
-			echo "######################################################################"
 			echo "### Downloading seed for: ${platform}/${release}/${stage}"
 			echo ""
 			wget ${source_url} -O ${source_path}
@@ -314,7 +317,6 @@ build_stages() {
 		fi
 
 		echo ""
-		echo "######################################################################"
 		echo "### Building stage: ${platform}/${release}/${stage}"
 		echo ""
 		local args="-af ${stage_spec_work_path}"
@@ -336,7 +338,7 @@ fi
 prepare_portage_snapshot
 load_stages
 prepare_stages
-build_stages
+#build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Make this script independant of PS3 environment. Use configs in /etc/ instead.

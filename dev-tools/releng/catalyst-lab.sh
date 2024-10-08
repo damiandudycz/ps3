@@ -55,6 +55,10 @@ use_stage() {
 		        done
 		fi
 	fi
+	# Load platform config
+	local platform_conf_path=${PATH_RELENG_TEMPLATES}/${platform}/platform.conf
+	source ${platform_conf_path}
+	# TODO: If some properties are not set in config - unset them while loading new config
 }
 
 # Return value of given property from given spec file.
@@ -137,6 +141,8 @@ load_stages() {
 					local stage_target=$(read_spec_variable ${stage_spec_path} target) # eq.: stage3
 					local stage_stamp=$(read_spec_variable ${stage_spec_path} version_stamp) # eq.: base-openrc-@TIMESTAMP@
 					local stage_source_subpath=$(read_spec_variable ${stage_spec_path} source_subpath)
+
+					# TODO: Move to prepare_stage if possible
 					# Find custom catalyst.conf if any
 					local platform_catalyst_conf=${platform_path}/catalyst.conf
 					local release_catalyst_conf=${release_path}/catalyst.conf
@@ -147,6 +153,7 @@ load_stages() {
 					elif [[ -f ${release_catalyst_conf} ]]; then catalyst_conf=${release_catalyst_conf};
 					elif [[ -f ${platform_catalyst_conf} ]]; then catalyst_conf=${platform_catalyst_conf};
 					fi
+
 					# Find best matching local build available.
 					local stage_product=${PLATFORM}/${RELEASE}/${stage_target}-${stage_subarch}-${stage_stamp}
 					local stage_product_regex=$(echo $(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_product}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
@@ -269,11 +276,6 @@ prepare_stages() {
 		if [[ ${rebuild} = false ]]; then
 			continue
 		fi
-
-		# Load platform config
-		local platform_conf_path=${PATH_RELENG_TEMPLATES}/${platform}/platform.conf
-		source ${platform_conf_path}
-		# TODO: If some properties are not set in config - unset them while loading new config
 
 		# Prepare stage catalyst parent dir
 		local source_path=${PATH_CATALYST_BUILDS}/${source_subpath}.tar.xz

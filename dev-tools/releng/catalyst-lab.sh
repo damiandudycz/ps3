@@ -143,18 +143,6 @@ load_stages() {
 					local stage_stamp=$(read_spec_variable ${stage_spec_path} version_stamp) # eq.: base-openrc-@TIMESTAMP@
 					local stage_source_subpath=$(read_spec_variable ${stage_spec_path} source_subpath)
 
-					# TODO: Move to prepare_stage if possible
-					# Find custom catalyst.conf if any
-					local platform_catalyst_conf=${platform_path}/catalyst.conf
-					local release_catalyst_conf=${release_path}/catalyst.conf
-					local stage_catalyst_conf=${stage_path}/catalyst.conf
-					local catalyst_conf=""
-					if
-					     [[ -f ${stage_catalyst_conf} ]]; then catalyst_conf=${stage_catalyst_conf};
-					elif [[ -f ${release_catalyst_conf} ]]; then catalyst_conf=${release_catalyst_conf};
-					elif [[ -f ${platform_catalyst_conf} ]]; then catalyst_conf=${platform_catalyst_conf};
-					fi
-
 					# Find best matching local build available.
 					local stage_product=${PLATFORM}/${RELEASE}/${stage_target}-${stage_subarch}-${stage_stamp}
 					local stage_product_regex=$(echo $(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_product}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
@@ -169,8 +157,8 @@ load_stages() {
 					stages[${stages_count},target]=$(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_target})
 					stages[${stages_count},version_stamp]=$(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_stamp})
 					stages[${stages_count},source_subpath]=$(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_source_subpath})
-					stages[${stages_count},catalyst_conf]=${catalyst_conf}
 					stages[${stages_count},available_build]=${stage_available_build}
+
 					stages_count=$((stages_count + 1))
 
 				fi
@@ -278,10 +266,16 @@ prepare_stages() {
 			continue
 		fi
 
-		# Prepare stage catalyst parent dir
-		local source_path=${PATH_CATALYST_BUILDS}/${source_subpath}.tar.xz
-		local source_build_dir=$(dirname ${source_path})
-		mkdir -p ${source_build_dir}
+		local platform_path=${PATH_RELENG_TEMPLATES}/${platform}
+		local release_path=${platform_path}/${release}
+		local stage_path=${release_path}/${stage}
+
+		local platform_work_path=${WORK_PATH}/${platform}
+		local release_work_path=${platform_work_path}/${release}
+		local stage_work_path=${release_work_path}/${stage}
+
+		local source_build_path=${PATH_CATALYST_BUILDS}/${source_subpath}.tar.xz
+
 		# Determine if stage's parent will also be rebuild, to know if it should use available_source_subpath or new parent build.
 		if [[ -n "${parent_index}" ]] && [[ "${parent_rebuild}" = false ]] && [[ -n ${parent_available_build} ]]; then
 			echo "Using existing source ${parent_available_build} for ${platform}/${release}/${stage}"
@@ -291,10 +285,14 @@ prepare_stages() {
 		# Check if should download seed and download if needed.
 		local use_remote_build=false
 		if [[ -z ${parent} ]]; then
-			if [[ ! -f ${source_path} ]]; then
+			if [[ ! -f ${source_build_path} ]]; then
 				use_remote_build=true
 			fi
 		fi
+
+		# Prepare stage catalyst parent build dir
+		local source_build_dir=$(dirname ${source_build_path})
+		mkdir -p ${source_build_dir}
 
 		# Download seed if needed.
 		if [[ ${use_remote_build} = true ]]; then
@@ -326,8 +324,6 @@ prepare_stages() {
 		fi
 
 		# Copy stage template workfiles to work_path.
-		local stage_path=${PATH_RELENG_TEMPLATES}/${platform}/${release}/${stage}
-		local stage_work_path=${WORK_PATH}/${platform}/${release}/${stage}
 		mkdir -p ${stage_work_path}
 		cp -rf ${stage_path}/* ${stage_work_path}/
 
@@ -340,6 +336,23 @@ prepare_stages() {
 			cp -ru ${releng_base_dir}/* ${portage_path}/
 			rm ${releng_base_file}
 		fi
+
+		# TODO: Move to prepare_stage if possible
+		# Find custom catalyst.conf if any
+		local platform_catalyst_conf=${platform_path}/catalyst.conf
+		local release_catalyst_conf=${release_path}/catalyst.conf
+		local stage_catalyst_conf=${stage_path}/catalyst.conf
+		local platform_work_catalyst_conf=${platform_work_path}/catalyst.conf
+		local release_work_catalyst_conf=${release_work_path}/catalyst.conf
+		local stage_work_catalyst_conf=${stage_work_path}/catalyst.conf
+		local catalyst_conf=""
+		if
+		     [[ -f ${stage_catalyst_conf} ]]; then cp -n ${stage_catalyst_conf} ${stage_work_catalyst_conf}; catalyst_conf=${stage_catalyst_conf};
+		elif [[ -f ${release_catalyst_conf} ]]; then cp -n ${release_catalyst_conf} ${release_work_catalyst_conf}; catalyst_conf=${release_catalyst_conf};
+		elif [[ -f ${platform_catalyst_conf} ]]; then cp -n ${platform_catalyst_conf} ${platform_work_catalyst_conf}; catalyst_conf=${platform_catalyst_conf};
+		fi
+		stages[${i},catalyst_conf]=${catalyst_conf}
+		use_stage ${i} # Reload data
 
 		# Setup spec entries.
 		local stage_overlay_path=${stage_work_path}/overlay
@@ -405,7 +418,7 @@ build_stages() {
 		if [[ -n ${catalyst_conf} ]]; then
 			args="${args} -c ${catalyst_conf}"
 		fi
-		catalyst $args || exit 1
+echo "		catalyst $args || exit 1"
 		echo ""
 	done
 }
@@ -421,7 +434,7 @@ fi
 prepare_portage_snapshot
 load_stages
 prepare_stages
-#build_stages
+build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Make this script independant of PS3 environment. Use configs in /etc/ instead.

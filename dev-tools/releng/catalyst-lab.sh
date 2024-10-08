@@ -1,11 +1,13 @@
 #!/bin/bash
 
+# TODO: Determine if parent also builds, or should use available_source_subpath. Use this as calculated source_subpath
+
 source ../../.env-shared.sh || exit 1
 
 # Constants:
 
 declare -A TARGET_MAPPINGS=([livecd-stage1]=livecd [livecd-stage2]=livecd)
-readonly STAGE_VARIABLES=(platform release stage subarch target version_stamp source_subpath has_parent catalyst_conf source_url available_source_subpath)
+readonly STAGE_VARIABLES=(platform release stage subarch target version_stamp source_subpath parent catalyst_conf source_url available_source_subpath rebuild)
 readonly PKGCACHE_PATH=${PATH_RELENG_RELEASES_BINPACKAGES}
 readonly TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ") # Current timestamp.
 readonly WORK_PATH=/tmp/catalyst-lab-${TIMESTAMP}
@@ -36,6 +38,24 @@ use_stage() {
 	for variable in ${STAGE_VARIABLES[@]}; do
 		eval ${prefix}${variable}=${stages[${1},${variable}]}
 	done
+}
+
+# Load details about parent of currently loaded stage. Remember to use_stage first to get correct parent.
+use_parent() {
+	parent_index=""
+	local i; for (( i=0; i<$stages_count; i++ )); do
+		use_stage ${i} parent_
+		local parent_product=${parent_platform}/${parent_release}/${parent_target}-${parent_subarch}-${parent_version_stamp}
+		if [[ ${source_subpath} == ${parent_product} ]]; then
+			parent_index=${i}
+			break
+		fi
+	done
+	if [[ -z ${parent_index} ]]; then # If parent not found, clean it's data
+	        for variable in ${STAGE_VARIABLES[@]}; do
+	                unset parent_${variable}
+	        done
+	fi
 }
 
 # Return value of given property from given spec file.
@@ -151,12 +171,12 @@ load_stages() {
 	stages_order=() # Order in which stages should be build, for inheritance to work. (1,5,2,0,...).
 	# Prepare stages order by inheritance.
 	local i; for (( i=0; i<${stages_count}; i++ )); do
-		insert_stage_with_inheritance $i
+		insert_stage_with_inheritance ${i}
 	done
 	# Sort stages by inheritance order in temp array..
 	declare -A stages_temp
 	local i; for (( i=0; i<${stages_count}; i++ )); do
-		index=${stages_order[$i]}
+		local index=${stages_order[${i}]}
 		for key in ${!stages[@]}; do
 			if [[ ${key} == ${index},* ]]; then
 				field=${key#*,}
@@ -176,10 +196,44 @@ load_stages() {
 	unset stages_order
 	unset stages_temp
 
+	# Determine if state needs to be rebuilt or can local build be used instead.
+	# Depends on selected stages and local builds availibility.
+	if [[ ${#selected_stages_templates[@]} -eq 0 ]]; then
+		# If no specific builds were selected, it means that all should be rebuild.
+		local i; for (( i=0; i<${stages_count}; i++ )); do
+			stages[${i},rebuild]=true
+		done
+	else
+		local required_seeds=() # List of stages that are needed to be build, as stage for another required stages
+		# If specified list of stages - build only if listed or if it's needed by another stage and has no local build available.
+		local i; for (( i=(( ${stages_count} - 1 )); i>=0; i-- )); do # Go in reverse order, to find required parent seeds too
+			use_stage ${i}
+			local stage_subpath=${platform}/${release}/${stage}
+			if contains_string selected_stages_templates[@] ${stage_subpath}; then
+				stages[${i},rebuild]=true
+				required_seeds+=(${parent}) # Remember that current stage source need's to exist or be build.
+			else
+				# Check if this stage is required as a source for another stage.
+				# In this situation it's marked as required only if local build is also not available or CLEAN_BUILD is set.
+				if contains_string required_seeds[@] ${stage_subpath} && [[ -z ${available_source_subpath} || ${CLEAN_BUILD} = true ]]; then
+					stages[${i},rebuild]=true
+					stages[${i},available_source_subpath]="" # If rebuilding, forget about available source subpath, as new release will be created anyway.
+					required_seeds+=(${parent}) # Remember that current stage source need's to exist or be build.
+				else
+					stages[${i},rebuild]=false
+				fi
+			fi
+		done
+	fi
+
 	# List stages to build
 	echo_color ${COLOR_TURQUOISE_BOLD} "[ Stages to build ]"
-	local i; for (( i=0; i<$stages_count; i++ )); do
-		echo "$((i+1)):	${stages[${i},'platform']}/${stages[${i},'release']}/${stages[${i},'stage']}"
+	local i; local j=1; for (( i=0; i<$stages_count; i++ )); do
+		local rebuild=${stages[${i},rebuild]}
+		if [[ ${rebuild} = true ]]; then
+			echo "$((j)): ${stages[${i},'platform']}/${stages[${i},'release']}/${stages[${i},'stage']}"
+			((j++))
+		fi
 	done
 	echo "" # New line
 }
@@ -187,25 +241,17 @@ load_stages() {
 # Prepare array that describes the order of stages based on inheritance.
 # Store information if stage has local parents.
 # This is function uses requrency to process all required parents before selected stage is processed.
-insert_stage_with_inheritance() { # arg - index
+insert_stage_with_inheritance() { # arg - index, required_by_id
 	local index=${1}
 	use_stage ${index}
 	if ! contains_string stages_order[@] ${index}; then
 		# If you can find a parent that produces target = this.source, add this parent first. After that add this stage.
-		local parent_index=""
-		local i; for (( i=0; i<$stages_count; i++ )); do
-			use_stage ${i} parent_
-			local parent_product=${parent_platform}/${parent_release}/${parent_target}-${parent_subarch}-${parent_version_stamp}
-			if [[ ${source_subpath} == ${parent_product} ]]; then
-				parent_index=${i}
-				break
-			fi
-		done
+		use_parent
 		if [[ -n ${parent_index} ]]; then
+			stages[${index},parent]=${parent_platform}/${parent_release}/${parent_stage}
 			insert_stage_with_inheritance ${parent_index}
-			stages[${index},has_parent]=true
 		else
-			stages[${index},has_parent]=false
+			stages[${index},parent]=""
 		fi
 		stages_order+=(${index})
 	fi
@@ -214,21 +260,34 @@ insert_stage_with_inheritance() { # arg - index
 # Setup templates of stages.
 prepare_stages() {
 	empty_directory ${WORK_PATH}
+
 	local i; for (( i=0; i<$stages_count; i++ )); do
 		use_stage ${i}
+		use_parent
+		if [[ ${rebuild} = false ]]; then
+			continue
+		fi
 
 		# Prepare stage catalyst parent dir
 		local source_path=${PATH_CATALYST_BUILDS}/${source_subpath}.tar.xz
 		local source_build_dir=$(dirname ${source_path})
 		mkdir -p ${source_build_dir}
-
+		# Determine if stage's parent will also be rebuild, to know if it should use available_source_subpath or new parent build.
+		if [[ -n "${parent_index}" ]] && [[ "${parent_rebuild}" = false ]] && [[ -n ${available_source_subpath} ]]; then
+			echo "Using existing source ${available_source_subpath} for ${platform}/${release}/${stage}"
+			stages[${i},source_subpath]=${available_source_subpath%.tar.xz}
+			use_stage ${i} # Reload data
+		fi
 		# Check if should download seed and download if needed.
 		local should_download=false
-		if [[ ${has_parent} = false ]]; then
+		if [[ -z ${parent} ]]; then
 			if [[ ! -f ${source_path} ]]; then
 				should_download=true
 			fi
 		fi
+
+# TODO: If available_source_subpath exists for this stage, and specs vere specified, skip refreshing, and use available_source_subpath fo source_subpath instead
+
 		# Download seed if needed.
 		if [[ ${should_download} = true ]]; then
 			# Download seed for ${source_subpath} to file ${source_filename}
@@ -341,7 +400,7 @@ fi
 
 prepare_portage_snapshot
 load_stages
-#prepare_stages
+prepare_stages
 #build_stages
 
 # TODO: Add lock file preventing multiple runs at once.

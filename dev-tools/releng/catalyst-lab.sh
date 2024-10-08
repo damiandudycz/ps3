@@ -85,6 +85,17 @@ set_spec_variable() {
 	fi
 }
 
+# Set variable in spec only if it's not specified yet.
+# Use this for example for treeish - you can sepcify selected one or leave it out to get automatic value.
+set_spec_variable_if_missing() {
+        local spec_path=${1}
+        local key=${2}
+        local new_value="${3}"
+        if ! grep -q "^$key:" "${spec_path}"; then
+		echo "$key: $new_value" >> "${spec_path}"
+        fi
+}
+
 # Fill tmp data in spec (@TIMESTAMP@, etc)
 update_spec_variable() {
 	local spec_path=${1}
@@ -100,7 +111,6 @@ sanitize_spec_variable() {
 	local stage="$3"
 	local value="$4"
 	echo "${value}" | sed "s/@REL_TYPE@/${release}/g" | sed "s/@PLATFORM@/${platform}/g" | sed "s/@STAGE@/${stage}/g"
-	# TODO: Decide if add more variables. But be careful, with some variables it's better to leave intact until the end, like timestamp
 }
 
 #  Get portage snapshot version and download new if needed.
@@ -340,7 +350,6 @@ prepare_stages() {
 			rm ${releng_base_file}
 		fi
 
-		# TODO: Move to prepare_stage if possible
 		# Find custom catalyst.conf if any
 		local platform_catalyst_conf=${platform_path}/catalyst.conf
 		local release_catalyst_conf=${release_path}/catalyst.conf
@@ -350,9 +359,9 @@ prepare_stages() {
 		local stage_work_catalyst_conf=${stage_work_path}/catalyst.conf
 		local catalyst_conf=""
 		if
-		     [[ -f ${stage_catalyst_conf} ]]; then cp -n ${stage_catalyst_conf} ${stage_work_catalyst_conf}; catalyst_conf=${stage_catalyst_conf};
-		elif [[ -f ${release_catalyst_conf} ]]; then cp -n ${release_catalyst_conf} ${release_work_catalyst_conf}; catalyst_conf=${release_catalyst_conf};
-		elif [[ -f ${platform_catalyst_conf} ]]; then cp -n ${platform_catalyst_conf} ${platform_work_catalyst_conf}; catalyst_conf=${platform_catalyst_conf};
+		     [[ -f ${stage_catalyst_conf} ]]; then cp -n ${stage_catalyst_conf} ${stage_work_catalyst_conf}; catalyst_conf=${stage_work_catalyst_conf};
+		elif [[ -f ${release_catalyst_conf} ]]; then cp -n ${release_catalyst_conf} ${release_work_catalyst_conf}; catalyst_conf=${release_work_catalyst_conf};
+		elif [[ -f ${platform_catalyst_conf} ]]; then cp -n ${platform_catalyst_conf} ${platform_work_catalyst_conf}; catalyst_conf=${platform_work_catalyst_conf};
 		fi
 		stages[${i},catalyst_conf]=${catalyst_conf}
 		use_stage ${i} # Reload data
@@ -366,21 +375,22 @@ prepare_stages() {
 
 		# Replace spec templates with real data
 		echo "" >> ${stage_spec_work_path} # Add new line, to separate new entries
-		set_spec_variable ${stage_spec_work_path} rel_type ${platform}/${release}
-		set_spec_variable ${stage_spec_work_path} portage_confdir ${portage_path}
-		set_spec_variable ${stage_spec_work_path} source_subpath ${source_subpath}
-		set_spec_variable ${stage_spec_work_path} snapshot_treeish ${treeish}
+		set_spec_variable_if_missing ${stage_spec_work_path} rel_type ${platform}/${release}
+		set_spec_variable_if_missing ${stage_spec_work_path} subarch ${arch_subarch}
+		set_spec_variable_if_missing ${stage_spec_work_path} portage_confdir ${portage_path}
+		set_spec_variable_if_missing ${stage_spec_work_path} snapshot_treeish ${treeish}
+		set_spec_variable ${stage_spec_work_path} source_subpath ${source_subpath} # source_subpath shoud always be replaced with calculated value, to take into consideration existing old builds usage.
 		if [[ -d ${stage_overlay_path} ]]; then
-		        set_spec_variable ${stage_spec_work_path} ${target_mapping}/overlay ${stage_overlay_path}
+		        set_spec_variable_if_missing ${stage_spec_work_path} ${target_mapping}/overlay ${stage_overlay_path}
 		fi
 		if [[ -d ${stage_root_overlay_path} ]]; then
-		        set_spec_variable ${stage_spec_work_path} ${target_mapping}/root_overlay ${stage_root_overlay_path}
+		        set_spec_variable_if_missing ${stage_spec_work_path} ${target_mapping}/root_overlay ${stage_root_overlay_path}
 		fi
 		if [[ -f ${stage_fsscript_path} ]]; then
-		        set_spec_variable ${stage_spec_work_path} ${target_mapping}/fsscript ${stage_fsscript_path}
+		        set_spec_variable_if_missing ${stage_spec_work_path} ${target_mapping}/fsscript ${stage_fsscript_path}
 		fi
 		if [[ ${CONF_QEMU_IS_NEEDED} ]]; then
-			set_spec_variable ${stage_spec_work_path} interpreter ${CONF_QEMU_INTERPRETER}
+			set_spec_variable_if_missing ${stage_spec_work_path} interpreter ${CONF_QEMU_INTERPRETER}
 		fi
 		update_spec_variable ${stage_spec_work_path} TIMESTAMP ${TIMESTAMP}
 		update_spec_variable ${stage_spec_work_path} PLATFORM ${platform}
@@ -437,7 +447,7 @@ fi
 prepare_portage_snapshot
 load_stages
 prepare_stages
-build_stages
+#build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Make this script independant of PS3 environment. Use configs in /etc/ instead.
@@ -446,4 +456,3 @@ build_stages
 # TODO: If possible - add toml config management.
 # TODO: Link all specs to single work directory, and rename to 01-stage_name.spec, 02-stage_name.spec, etc
 # TODO: Add possibility to specify in spec templates things that should be added only if they are not specified yet. For example: treeish
-# TODO: Copy catalyst.conf to templates and use it from there.

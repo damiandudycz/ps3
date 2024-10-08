@@ -1,4 +1,4 @@
-subarch: cell
+#subarch: cell
 target: stage1
 version_stamp: base-openrc-@TIMESTAMP@
 profile: default/linux/ppc64/23.0

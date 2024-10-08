@@ -12,8 +12,12 @@ readonly WORK_PATH=/tmp/catalyst-lab-${TIMESTAMP}
 
 # Script arguments:
 
+declare -a selected_stages_templates
 while [ $# -gt 0 ]; do case ${1} in
-    --update-snapshot) FETCH_FRESH_SNAPSHOT=true;;
+	--update-snapshot) FETCH_FRESH_SNAPSHOT=true;;
+	--clean) CLEAN_BUILD=true;; # Perform clean build - don't use any existing sources even if available (Except for downloaded seeds).
+	--*) echo "Unknown option ${1}"; exit;;
+	*) selected_stages_templates+=("${1}")
 esac; shift; done
 
 # Functions:
@@ -337,12 +341,11 @@ fi
 
 prepare_portage_snapshot
 load_stages
-prepare_stages
+#prepare_stages
 #build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Make this script independant of PS3 environment. Use configs in /etc/ instead.
-# TODO: Check seeds timestamp when downloading and only download if it's changed.
 # TODO: Add functions to manage platforms, releases and stages - add new, edit config, print config, etc.
 # TODO: Add releng managemnt - downloading, checking, updating.
 # TODO: If possible - add toml config management.

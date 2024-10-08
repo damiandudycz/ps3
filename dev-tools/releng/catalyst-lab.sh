@@ -306,7 +306,7 @@ prepare_stages() {
 			local source_available_build=$(printf "%s\n" "${matching_source_builds[@]}" | sort -r | head -n 1)
 			if [[ ${#selected_stages_templates[@]} -ne 0 ]] && [[ -n ${source_available_build} ]] && [[ ${CLEAN_BUILD} = false ]]; then
 				echo "Using existing source ${source_available_build} for ${platform}/${release}/${stage}"
-				stages[${i},source_subpath]=${parent_available_build%.tar.xz}
+				stages[${i},source_subpath]=${source_available_build%.tar.xz}
 			else
 				# Download seed for ${source_subpath} to file ${source_filename}
 				echo "Get seed info: ${platform}/${release}/${stage}"
@@ -437,7 +437,7 @@ fi
 prepare_portage_snapshot
 load_stages
 prepare_stages
-#build_stages
+build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Make this script independant of PS3 environment. Use configs in /etc/ instead.

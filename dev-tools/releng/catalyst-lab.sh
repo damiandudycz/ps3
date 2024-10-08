@@ -444,8 +444,7 @@ build_stages() {
 		if [[ -n ${source_url} ]] && [[ ! -f ${source_path} ]]; then
 			echo "Downloading seed for: ${platform}/${release}/${stage}"
 			echo ""
-			wget ${source_url} -O ${source_path}
-			# TODO: Failure if can't download seed
+			wget ${source_url} -O ${source_path} || exit 1
 		fi
 
 		echo "Building stage: ${platform}/${release}/${stage}"

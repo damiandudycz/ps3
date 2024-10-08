@@ -11,6 +11,7 @@ readonly STAGE_VARIABLES=(platform release stage subarch target version_stamp so
 readonly PKGCACHE_PATH=${PATH_RELENG_RELEASES_BINPACKAGES}
 readonly TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ") # Current timestamp.
 readonly WORK_PATH=/tmp/catalyst-lab-${TIMESTAMP}
+CLEAN_BUILD=false
 
 # Script arguments:
 
@@ -112,7 +113,7 @@ prepare_portage_snapshot() {
 # Sort stages based on their inheritance.
 load_stages() {
 	declare -gA stages # Some details of stages retreived from scanning. (release,stage,target,source,has_parent).
-	local available_builds=$(find ${PATH_CATALYST_BUILDS} -type f -name "*.tar.xz" -printf '%P\n')
+	available_builds=$(find ${PATH_CATALYST_BUILDS} -type f -name "*.tar.xz" -printf '%P\n')
 	stages_count=0 # Number of stages to build. Script will determine this value automatically.
 
 	readonly RL_VAL_PLATFORMS=$(get_directories ${PATH_RELENG_TEMPLATES})
@@ -229,7 +230,7 @@ load_stages() {
 	fi
 
 	# List stages to build
-	echo_color ${COLOR_TURQUOISE_BOLD} "[ Stages to build ]"
+	echo_color ${COLOR_TURQUOISE_BOLD} "[ Stages to rebuild ]"
 	local i; local j=1; for (( i=0; i<$stages_count; i++ )); do
 		local rebuild=${stages[${i},rebuild]}
 		if [[ ${rebuild} = true ]]; then
@@ -261,6 +262,7 @@ insert_stage_with_inheritance() { # arg - index, required_by_id
 
 # Setup templates of stages.
 prepare_stages() {
+	echo_color ${COLOR_TURQUOISE_BOLD} "[ Preparing stages ]"
 	empty_directory ${WORK_PATH}
 
 	local i; for (( i=0; i<$stages_count; i++ )); do
@@ -281,31 +283,37 @@ prepare_stages() {
 			use_stage ${i} # Reload data
 		fi
 		# Check if should download seed and download if needed.
-		local should_download=false
+		local use_remote_build=false
 		if [[ -z ${parent} ]]; then
 			if [[ ! -f ${source_path} ]]; then
-				should_download=true
+				use_remote_build=true
 			fi
 		fi
 
-# TODO: If available_source_subpath exists for this stage, and specs vere specified, skip refreshing, and use available_source_subpath fo source_subpath instead
-
 		# Download seed if needed.
-		if [[ ${should_download} = true ]]; then
-			# Download seed for ${source_subpath} to file ${source_filename}
-			echo "Get seed info: ${platform}/${release}/${stage}"
+		if [[ ${use_remote_build} = true ]]; then
 			local source_target_stripped=$(echo ${source_subpath} | awk -F '/' '{print $NF}' | sed 's/-@TIMESTAMP@//')
 			local source_target_regex=$(echo ${source_subpath} | awk -F '/' '{print $NF}' | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
-			local metadata_url=${URL_RELEASE_GENTOO}/latest-${source_target_stripped}.txt
-			local metadata_content=$(wget -q -O - ${metadata_url} --no-http-keep-alive --no-cache --no-cookies)
-			local latest_seed=$(echo "${metadata_content}" | grep -E ${source_target_regex} | head -n 1 | cut -d ' ' -f 1)
-			local url_seed_tarball=${URL_RELEASE_GENTOO}/${latest_seed}
-			# Extract available timestamp from available seed name and update @TIMESTAMP@ in source_subpath with it.
-			local latest_seed_timestamp=$(echo ${latest_seed} | sed -n 's/.*\([0-9]\{8\}T[0-9]\{6\}Z\).*/\1/p')
-			stages[${i},source_url]=${url_seed_tarball} # Store URL of source, to download right before build
-			stages[${i},source_subpath]=$(echo ${source_subpath} | sed "s/@TIMESTAMP@/${latest_seed_timestamp}/")
-			# TODO: Generate URL_RELEASE_GENTOO with currect family for given spec. Currentl'y it's all for ppc
-			# TODO: If getting parent url fails, stop script with erro
+			# Check if build for this seed exists already, only if building specified list of stages (otherwise always get latest details).
+			local matching_source_builds=($(printf "%s\n" "${available_builds[@]}" | grep -E "${source_target_regex}"))
+			local source_available_build=$(printf "%s\n" "${matching_source_builds[@]}" | sort -r | head -n 1)
+			if [[ ${#selected_stages_templates[@]} -ne 0 ]] && [[ -n ${source_available_build} ]] && [[ ${CLEAN_BUILD} = false ]]; then
+				echo "Using existing source ${source_available_build} for ${platform}/${release}/${stage}"
+				stages[${i},source_subpath]=${parent_available_build%.tar.xz}
+			else
+				# Download seed for ${source_subpath} to file ${source_filename}
+				echo "Get seed info: ${platform}/${release}/${stage}"
+				local metadata_url=${URL_RELEASE_GENTOO}/latest-${source_target_stripped}.txt
+				local metadata_content=$(wget -q -O - ${metadata_url} --no-http-keep-alive --no-cache --no-cookies)
+				local latest_seed=$(echo "${metadata_content}" | grep -E ${source_target_regex} | head -n 1 | cut -d ' ' -f 1)
+				local url_seed_tarball=${URL_RELEASE_GENTOO}/${latest_seed}
+				# Extract available timestamp from available seed name and update @TIMESTAMP@ in source_subpath with it.
+				local latest_seed_timestamp=$(echo ${latest_seed} | sed -n 's/.*\([0-9]\{8\}T[0-9]\{6\}Z\).*/\1/p')
+				stages[${i},source_url]=${url_seed_tarball} # Store URL of source, to download right before build
+				stages[${i},source_subpath]=$(echo ${source_subpath} | sed "s/@TIMESTAMP@/${latest_seed_timestamp}/")
+				# TODO: Generate URL_RELEASE_GENTOO with currect family for given spec. Currentl'y it's all for ppc
+				# TODO: If getting parent url fails, stop script with erro
+			fi
 			# Reload variables, because after downloading details, they could have been changed
 			use_stage ${i}
 		fi
@@ -359,15 +367,18 @@ prepare_stages() {
 
 	done
 
-	echo ""
-	echo "### Stages templates prepared in: ${WORK_PATH}"
+	echo "Stages templates prepared in: ${WORK_PATH}"
 	echo ""
 }
 
 # Build stages.
 build_stages() {
+	echo_color ${COLOR_TURQUOISE_BOLD} "[ Building stages ]"
 	local i; for (( i=0; i<$stages_count; i++ )); do
 		use_stage ${i}
+		if [[ ${rebuild} = false ]]; then
+			continue
+                fi
 		local stage_work_path=${WORK_PATH}/${platform}/${release}/${stage}
 		local stage_spec_work_path=${stage_work_path}/stage.spec
 		local source_path=${PATH_CATALYST_BUILDS}/${source_subpath}.tar.xz
@@ -375,20 +386,20 @@ build_stages() {
 		# If stage doesn't have parent built or already existing as .tar.xz, download it's
 		if [[ -n ${source_url} ]] && [[ ! -f ${source_path} ]]; then
 			echo ""
-			echo "### Downloading seed for: ${platform}/${release}/${stage}"
+			echo "Downloading seed for: ${platform}/${release}/${stage}"
 			echo ""
 			wget ${source_url} -O ${source_path}
 			# TODO: Failure if can't download seed
 		fi
 
-		echo ""
-		echo "### Building stage: ${platform}/${release}/${stage}"
+		echo "Building stage: ${platform}/${release}/${stage}"
 		echo ""
 		local args="-af ${stage_spec_work_path}"
 		if [[ -n ${catalyst_conf} ]]; then
 			args="${args} -c ${catalyst_conf}"
 		fi
 		catalyst $args || exit 1
+		echo ""
 	done
 }
 
@@ -403,7 +414,7 @@ fi
 prepare_portage_snapshot
 load_stages
 prepare_stages
-#build_stages
+build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Make this script independant of PS3 environment. Use configs in /etc/ instead.

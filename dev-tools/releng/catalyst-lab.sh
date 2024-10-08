@@ -41,7 +41,7 @@ use_stage() {
 	# Load parent info and platform config
 	if [[ -z ${prefix} ]]; then
 		parent_index=""
-		local i; for (( i=0; i<$stages_count; i++ )); do
+		local i; for (( i=0; i<${stages_count}; i++ )); do
 			use_stage ${i} parent_
 			local parent_product=${parent_platform}/${parent_release}/${parent_target}-${parent_subarch}-${parent_version_stamp}
 			if [[ ${source_subpath} == ${parent_product} ]]; then
@@ -122,41 +122,41 @@ load_stages() {
 	stages_count=0 # Number of stages to build. Script will determine this value automatically.
 
 	readonly RL_VAL_PLATFORMS=$(get_directories ${PATH_RELENG_TEMPLATES})
-	for PLATFORM in ${RL_VAL_PLATFORMS[@]}; do
-		local platform_path=${PATH_RELENG_TEMPLATES}/${PLATFORM}
+	for platform in ${RL_VAL_PLATFORMS[@]}; do
+		local platform_path=${PATH_RELENG_TEMPLATES}/${platform}
 		# Find list of releases. (23.0-default, 23.0-llvm, etc).
 		RL_VAL_RELEASES=$(get_directories ${platform_path})
 		# Collect information about stages in releases.
-		for RELEASE in ${RL_VAL_RELEASES[@]}; do
+		for release in ${RL_VAL_RELEASES[@]}; do
 			# (data/templates/23.0-default)
-			local release_path=${platform_path}/${RELEASE}
+			local release_path=${platform_path}/${release}
 			# Find list of stages in current releass. (stage1-cell-base-openrc stage3-cell-base-openrc, ...)
 			RL_VAL_RELEASE_STAGES=$(get_directories ${release_path})
-			for STAGE in ${RL_VAL_RELEASE_STAGES[@]}; do
+			for stage in ${RL_VAL_RELEASE_STAGES[@]}; do
 				# (data/templates/23.0-default/stage1-openrc-cell-base)
-				local stage_path=${PATH_RELENG_TEMPLATES}/${PLATFORM}/${RELEASE}/${STAGE}
+				local stage_path=${PATH_RELENG_TEMPLATES}/${platform}/${release}/${stage}
 				# (data/templates/23.0-default/stage1-openrc-cell-base/stage.spec)
 				local stage_spec_path=${stage_path}/stage.spec
 				if [[ -f ${stage_spec_path} ]]; then
-					local stage_subarch=$(read_spec_variable ${stage_spec_path} subarch) # eq.: cell
-					local stage_target=$(read_spec_variable ${stage_spec_path} target) # eq.: stage3
-					local stage_stamp=$(read_spec_variable ${stage_spec_path} version_stamp) # eq.: base-openrc-@TIMESTAMP@
-					local stage_source_subpath=$(read_spec_variable ${stage_spec_path} source_subpath)
+					local subarch=$(read_spec_variable ${stage_spec_path} subarch) # eq.: cell
+					local target=$(read_spec_variable ${stage_spec_path} target) # eq.: stage3
+					local version_stamp=$(read_spec_variable ${stage_spec_path} version_stamp) # eq.: base-openrc-@TIMESTAMP@
+					local source_subpath=$(read_spec_variable ${stage_spec_path} source_subpath)
 
 					# Find best matching local build available.
-					local stage_product=${PLATFORM}/${RELEASE}/${stage_target}-${stage_subarch}-${stage_stamp}
-					local stage_product_regex=$(echo $(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_product}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
+					local stage_product=${platform}/${release}/${target}-${subarch}-${version_stamp}
+					local stage_product_regex=$(echo $(sanitize_spec_variable ${platform} ${release} ${stage} ${stage_product}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
 					local matching_stage_builds=($(printf "%s\n" "${available_builds[@]}" | grep -E "${stage_product_regex}"))
 					local stage_available_build=$(printf "%s\n" "${matching_stage_builds[@]}" | sort -r | head -n 1)
 
 					# Store variables
-					stages[${stages_count},platform]=${PLATFORM}
-					stages[${stages_count},release]=${RELEASE}
-					stages[${stages_count},stage]=${STAGE}
-					stages[${stages_count},subarch]=$(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_subarch})
-					stages[${stages_count},target]=$(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_target})
-					stages[${stages_count},version_stamp]=$(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_stamp})
-					stages[${stages_count},source_subpath]=$(sanitize_spec_variable ${PLATFORM} ${RELEASE} ${STAGE} ${stage_source_subpath})
+					stages[${stages_count},platform]=${platform}
+					stages[${stages_count},release]=${release}
+					stages[${stages_count},stage]=${stage}
+					stages[${stages_count},subarch]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${subarch})
+					stages[${stages_count},target]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${target})
+					stages[${stages_count},version_stamp]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${version_stamp})
+					stages[${stages_count},source_subpath]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${source_subpath})
 					stages[${stages_count},available_build]=${stage_available_build}
 
 					stages_count=$((stages_count + 1))
@@ -227,7 +227,7 @@ load_stages() {
 
 	# List stages to build
 	echo_color ${COLOR_TURQUOISE_BOLD} "[ Stages to rebuild ]"
-	local i; local j=1; for (( i=0; i<$stages_count; i++ )); do
+	local i; local j=1; for (( i=0; i<${stages_count}; i++ )); do
 		local rebuild=${stages[${i},rebuild]}
 		if [[ ${rebuild} = true ]]; then
 			echo "$((j)): ${stages[${i},'platform']}/${stages[${i},'release']}/${stages[${i},'stage']}"
@@ -260,7 +260,7 @@ prepare_stages() {
 	echo_color ${COLOR_TURQUOISE_BOLD} "[ Preparing stages ]"
 	empty_directory ${WORK_PATH}
 
-	local i; for (( i=0; i<$stages_count; i++ )); do
+	local i; for (( i=0; i<${stages_count}; i++ )); do
 		use_stage ${i}
 		if [[ ${rebuild} = false ]]; then
 			continue
@@ -395,7 +395,7 @@ prepare_stages() {
 # Build stages.
 build_stages() {
 	echo_color ${COLOR_TURQUOISE_BOLD} "[ Building stages ]"
-	local i; for (( i=0; i<$stages_count; i++ )); do
+	local i; for (( i=0; i<${stages_count}; i++ )); do
 		use_stage ${i}
 		if [[ ${rebuild} = false ]]; then
 			continue

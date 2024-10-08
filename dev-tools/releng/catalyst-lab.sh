@@ -21,6 +21,13 @@ while [ $# -gt 0 ]; do case ${1} in
 	*) selected_stages_templates+=("${1}")
 esac; shift; done
 
+# Load main configuration:
+
+CONF_PATH="./catalyst-lab.conf" # TODO: Store conf in /etc/catalyst-lab.sh
+source ${CONF_PATH}
+#echo "${seeds_url}"
+#exit
+
 # Functions:
 
 # Get list of directories in given directory.
@@ -272,6 +279,11 @@ prepare_stages() {
 			continue
 		fi
 
+		# Load platform config
+		local platform_conf_path=${PATH_RELENG_TEMPLATES}/${platform}/platform.conf
+		source ${platform_conf_path}
+		# TODO: If some properties are not set in config - unset them while loading new config
+
 		# Prepare stage catalyst parent dir
 		local source_path=${PATH_CATALYST_BUILDS}/${source_subpath}.tar.xz
 		local source_build_dir=$(dirname ${source_path})
@@ -303,10 +315,11 @@ prepare_stages() {
 			else
 				# Download seed for ${source_subpath} to file ${source_filename}
 				echo "Get seed info: ${platform}/${release}/${stage}"
-				local metadata_url=${URL_RELEASE_GENTOO}/latest-${source_target_stripped}.txt
+				local seeds_arch_url=$(echo ${seeds_url} | sed "s/@ARCH_FAMILY@/${arch_family}/")
+				local metadata_url=${seeds_arch_url}/latest-${source_target_stripped}.txt
 				local metadata_content=$(wget -q -O - ${metadata_url} --no-http-keep-alive --no-cache --no-cookies)
 				local latest_seed=$(echo "${metadata_content}" | grep -E ${source_target_regex} | head -n 1 | cut -d ' ' -f 1)
-				local url_seed_tarball=${URL_RELEASE_GENTOO}/${latest_seed}
+				local url_seed_tarball=${seeds_arch_url}/${latest_seed}
 				# Extract available timestamp from available seed name and update @TIMESTAMP@ in source_subpath with it.
 				local latest_seed_timestamp=$(echo ${latest_seed} | sed -n 's/.*\([0-9]\{8\}T[0-9]\{6\}Z\).*/\1/p')
 				stages[${i},source_url]=${url_seed_tarball} # Store URL of source, to download right before build

@@ -3,7 +3,7 @@
 subarch: cell
 target: stage4
 version_stamp: seed-llvm-openrc-@TIMESTAMP@
-source_subpath: @PLATFORM@/@REL_TYPE@/stage3-ppc64-musl-hardened-openrc-@TIMESTAMP@
+source_subpath: ppc/23.0-llvm/stage3-ppc64-musl-hardened-openrc-@TIMESTAMP@
 snapshot_treeish: @TREEISH@
 profile: default/linux/ppc64/23.0/musl
 compression_mode: pixz

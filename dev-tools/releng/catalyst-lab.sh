@@ -47,6 +47,7 @@ while [ $# -gt 0 ]; do case ${1} in
 	--update-releng) FETCH_FRESH_RELENG=true;;
 	--clean) CLEAN_BUILD=true;; # Perform clean build - don't use any existing sources even if available (Except for downloaded seeds).
 	--*) echo "Unknown option ${1}"; exit;;
+	-*) echo "Unknown option ${1}"; exit;;
 	*) selected_stages_templates+=("${1}")
 esac; shift; done
 
@@ -546,3 +547,5 @@ prepare_stages
 # TODO: If possible - add toml config management.
 # TODO: Link all specs to single work directory, and rename to 01-stage_name.spec, 02-stage_name.spec, etc
 # TODO: Add possibility to include shared files anywhere into spec files. So for example keep single list of basic installCD tools, and use them across all livecd specs
+# TODO: REPOS management
+# TODO: BETTER PKGCACHE MANAGEMENT

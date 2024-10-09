@@ -33,6 +33,7 @@ pkgcache_base_path=/var/cache/catalyst-binpkgs
 tmp_path=/tmp/catalyst-lab
 EOF
 	echo "Default config file created: /etc/catalyst-lab/catalyst-lab.conf"
+	echo ""
 fi
 source /etc/catalyst-lab/catalyst-lab.conf
 
@@ -91,7 +92,8 @@ use_stage() {
 	# Automatically determine all possible keys stored in stages, and load them to variables.
 	local keys=($(printf "%s\n" "${!stages[@]}" | sed 's/.*,//' | sort -u))
 	for variable in ${keys[@]}; do
-		eval ${prefix}${variable}=${stages[${1},${variable}]}
+		local value=${stages[${1},${variable}]}
+		eval "${prefix}${variable}='${value}'"
 	done
 	# Load parent info and platform config
 	if [[ -z ${prefix} ]]; then
@@ -111,9 +113,10 @@ use_stage() {
 		fi
 
 		# Platform config
+		# If some properties are not set in config - unset them while loading new config
+		unset repos; unset arch_family; unset arch_basearch; unset arch_subarch; unset arch_interpreter
 		local platform_conf_path=${templates_path}/${platform}/platform.conf
 		source ${platform_conf_path}
-		# TODO: If some properties are not set in config - unset them while loading new config
 	fi
 }
 
@@ -207,6 +210,7 @@ load_stages() {
 	for platform in ${RL_VAL_PLATFORMS[@]}; do
 		local platform_path=${templates_path}/${platform}
 		# Load platform config
+		unset repos; unset arch_family; unset arch_basearch; unset arch_subarch; unset arch_interpreter
 		local platform_conf_path=${platform_path}/platform.conf
       		source ${platform_conf_path}
 		# Find list of releases. (23.0-default, 23.0-llvm, etc).
@@ -227,6 +231,7 @@ load_stages() {
 					local target=$(read_spec_variable ${stage_spec_path} target) # eq.: stage3
 					local version_stamp=$(read_spec_variable ${stage_spec_path} version_stamp) # eq.: base-openrc-@TIMESTAMP@
 					local source_subpath=$(read_spec_variable ${stage_spec_path} source_subpath)
+					local spec_repos=$(read_spec_variable ${stage_spec_path} repos)
 
 					# If subarch is not set in spec, update it with value from platform config.
 					if [[ -z ${subarch} ]]; then
@@ -247,6 +252,7 @@ load_stages() {
 					stages[${stages_count},target]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${target})
 					stages[${stages_count},version_stamp]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${version_stamp})
 					stages[${stages_count},source_subpath]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${source_subpath})
+					stages[${stages_count},overlays]=${spec_repos:-${repos}}
 					stages[${stages_count},available_build]=${stage_available_build}
 
 					stages_count=$((stages_count + 1))
@@ -386,7 +392,7 @@ prepare_stages() {
 		local source_build_dir=$(dirname ${source_build_path})
 		mkdir -p ${source_build_dir}
 
-		# Download seed if needed.
+		# Get seed URL if needed.
 		if [[ ${use_remote_build} = true ]]; then
 			local source_target_stripped=$(echo ${source_subpath} | awk -F '/' '{print $NF}' | sed 's/-@TIMESTAMP@//')
 			local source_target_regex=$(echo ${source_subpath} | awk -F '/' '{print $NF}' | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
@@ -408,10 +414,33 @@ prepare_stages() {
 				local latest_seed_timestamp=$(echo ${latest_seed} | sed -n 's/.*\([0-9]\{8\}T[0-9]\{6\}Z\).*/\1/p')
 				stages[${i},source_url]=${url_seed_tarball} # Store URL of source, to download right before build
 				stages[${i},source_subpath]=$(echo ${source_subpath} | sed "s/@TIMESTAMP@/${latest_seed_timestamp}/")
-				# TODO: If getting parent url fails, stop script with erro
+				# If getting parent url fails, stop script with erro
+				if [[ -z ${latest_seed} ]]; then
+					echo "Failed to get seed URL for ${source_subpath}"
+					exit 1
+				fi
 			fi
 			# Reload variables, because after downloading details, they could have been changed
 			use_stage ${i}
+		fi
+
+		# Prepare repos information
+		if [[ -n ${overlays} ]]; then
+			local repos_list
+			IFS=',' read -ra repos_list <<< ${overlays}
+			overlays=()
+			for repo in ${repos_list[@]}; do
+				if [[ ${repo} =~ ^(http|https):// || ${repo} =~ ^git@ ]]; then
+					# Convert remote path to remote|local
+					local local_repo_path=${tmp_path}/repos/$(echo ${repo} | sed -e 's/[^A-Za-z0-9._-]/_/g')
+					overlays+=("${repo}|${local_repo_path}")
+				else
+					# Handle local path
+					overlays+=(${repo})
+				fi
+			done
+			overlays=$(echo ${overlays[@]} | sed 's/ /,/')
+			stages[${i},overlays]=${overlays}
 		fi
 
 		# Determine if needs to use qemu interpreter.
@@ -483,8 +512,17 @@ prepare_stages() {
 		if [[ -n ${interpreter} ]]; then
 			set_spec_variable_if_missing ${stage_spec_work_path} interpreter ${interpreter}
 		fi
-		if [[ -n ${repos} ]]; then
-			set_spec_variable_if_missing ${stage_spec_work_path} repos ${repos}
+		if [[ -n ${overlays} ]]; then
+			# Convert remote repos to local pathes, and use , to separate repos
+			local repos_list
+			IFS=',' read -ra repos_list <<< ${overlays}
+			local repos_local_paths=()
+			for repo in ${repos_list[@]}; do
+				local local_path_for_remote=$(echo ${repo} | awk -F'|' '{if (NF>1) print $2; else print ""}')
+				repos_local_paths+=(${local_path_for_remote:-${repo}})
+			done
+			repos_local_paths=$(echo ${repos_local_paths[@]} | sed 's/ /,/')
+			set_spec_variable_if_missing ${stage_spec_work_path} repos ${repos_local_paths}
 		fi
 		if [[ ${uses_releng} = true ]]; then
 			set_spec_variable_if_missing ${stage_spec_work_path} portage_prefix releng
@@ -527,6 +565,19 @@ build_stages() {
 			wget ${source_url} -O ${source_path} || exit 1
 		fi
 
+		# Download missing remote repos
+		local repos_list
+		IFS=',' read -ra repos_list <<< ${overlays}
+		for repo in ${repos_list[@]}; do
+			local local_path_for_remote=$(echo ${repo} | awk -F '|' '{if (NF>1) print $2; else print ""}')
+			if [[ -n ${local_path_for_remote} ]] && [[ ! -d ${local_path_for_remote} ]]; then
+				local repo_url=$(echo ${repo} | cut -d '|' -f 1)
+				echo "Clone overlay repo ${repo_url}"
+				mkdir -p ${local_path_for_remote}
+				git clone ${repo_url} ${local_path_for_remote}
+			fi
+		done
+
 		echo "Building stage: ${platform}/${release}/${stage}"
 		echo ""
 		local args="-af ${stage_spec_work_path}"
@@ -548,9 +599,5 @@ build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Add functions to manage platforms, releases and stages - add new, edit config, print config, etc.
-# TODO: Add releng managemnt - downloading, checking, updating.
 # TODO: If possible - add toml config management.
-# TODO: Link all specs to single work directory, and rename to 01-stage_name.spec, 02-stage_name.spec, etc
 # TODO: Add possibility to include shared files anywhere into spec files. So for example keep single list of basic installCD tools, and use them across all livecd specs
-# TODO: REPOS management
-# TODO: BETTER PKGCACHE MANAGEMENT

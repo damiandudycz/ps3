@@ -12,6 +12,8 @@ compression_mode: pixz
 #pkgcache_path: @PKGCACHE_PATH@/cell
 #snapshot_treeish: @TREEISH@
 
+repos: /opt/releng
+
 stage4/packages:
 	llvm
 	clang

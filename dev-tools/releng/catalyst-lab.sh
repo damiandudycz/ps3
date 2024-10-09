@@ -540,11 +540,11 @@ build_stages() {
 
 # Main program:
 
+load_stages
 prepare_portage_snapshot
 prepare_releng
-load_stages
 prepare_stages
-#build_stages
+build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Add functions to manage platforms, releases and stages - add new, edit config, print config, etc.

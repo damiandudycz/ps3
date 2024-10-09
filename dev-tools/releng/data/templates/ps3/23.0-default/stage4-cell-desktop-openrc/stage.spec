@@ -4,15 +4,15 @@
 target: stage4
 version_stamp: desktop-openrc-@TIMESTAMP@
 source_subpath: @PLATFORM@/@REL_TYPE@/stage3-cell-desktop-openrc-@TIMESTAMP@
-snapshot_treeish: @TREEISH@
 profile: default/linux/@BASE_ARCH@/23.0/desktop
 compression_mode: pixz
 binrepo_path: ppc/binpackages/23.0/cell
-pkgcache_path: @PKGCACHE_PATH@/cell
 repos: @REPOS@
 
 #subarch: cell
 #portage_prefix: releng
+#pkgcache_path: @PKGCACHE_PATH@/cell
+#snapshot_treeish: @TREEISH@
 
 stage4/use:
 	ps3

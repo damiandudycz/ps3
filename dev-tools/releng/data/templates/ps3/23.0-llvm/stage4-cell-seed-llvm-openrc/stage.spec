@@ -3,14 +3,14 @@
 target: stage4
 version_stamp: seed-llvm-openrc-@TIMESTAMP@
 source_subpath: @BASE_ARCH@/stage3-@BASE_ARCH@-musl-hardened-openrc-@TIMESTAMP@
-snapshot_treeish: @TREEISH@
 profile: default/linux/@BASE_ARCH@/23.0/musl
 compression_mode: pixz
-pkgcache_path: @PKGCACHE_PATH@/cell
 
 #subarch: cell
 #portage_prefix: releng
 #repos: @REPOS@
+#pkgcache_path: @PKGCACHE_PATH@/cell
+#snapshot_treeish: @TREEISH@
 
 stage4/packages:
 	llvm

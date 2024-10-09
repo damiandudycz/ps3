@@ -483,6 +483,9 @@ prepare_stages() {
 		if [[ -n ${interpreter} ]]; then
 			set_spec_variable_if_missing ${stage_spec_work_path} interpreter ${interpreter}
 		fi
+		if [[ -n ${repos} ]]; then
+			set_spec_variable_if_missing ${stage_spec_work_path} repos ${repos}
+		fi
 		if [[ ${uses_releng} = true ]]; then
 			set_spec_variable_if_missing ${stage_spec_work_path} portage_prefix releng
 		fi
@@ -541,7 +544,7 @@ prepare_portage_snapshot
 prepare_releng
 load_stages
 prepare_stages
-build_stages
+#build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Add functions to manage platforms, releases and stages - add new, edit config, print config, etc.

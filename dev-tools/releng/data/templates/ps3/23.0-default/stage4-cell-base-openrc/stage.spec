@@ -7,12 +7,12 @@ source_subpath: @PLATFORM@/@REL_TYPE@/stage3-cell-base-openrc-@TIMESTAMP@
 profile: default/linux/@BASE_ARCH@/23.0
 compression_mode: pixz
 binrepo_path: ppc/binpackages/23.0/cell
-repos: @REPOS@
 
 #subarch: cell
 #portage_prefix: releng
 #pkgcache_path: @PKGCACHE_PATH@/cell
 #snapshot_treeish: @TREEISH@
+#repos: @REPOS@
 
 stage4/use:
 	ps3

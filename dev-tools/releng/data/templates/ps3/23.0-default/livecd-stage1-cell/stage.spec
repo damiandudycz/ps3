@@ -1,7 +1,6 @@
 # Release version details
 version_stamp: @TIMESTAMP@
 source_subpath: @PLATFORM@/@REL_TYPE@/stage3-cell-base-openrc-@TIMESTAMP@
-repos: @REPOS@
 
 # Architecture and profile
 target: livecd-stage1
@@ -11,6 +10,7 @@ compression_mode: pixz
 #subarch: cell
 #pkgcache_path: @PKGCACHE_PATH@/.livecd
 #snapshot_treeish: @TREEISH@
+#repos: @REPOS@
 
 # USE flags
 livecd/use:

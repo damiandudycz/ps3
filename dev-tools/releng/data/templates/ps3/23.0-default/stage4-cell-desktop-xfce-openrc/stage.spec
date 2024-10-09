@@ -3,12 +3,12 @@ version_stamp: desktop-xfce-openrc-@TIMESTAMP@
 source_subpath: @PLATFORM@/@REL_TYPE@/stage4-cell-desktop-openrc-@TIMESTAMP@
 profile: default/linux/@BASE_ARCH@/23.0/desktop
 compression_mode: pixz
-repos: @REPOS@
 
 #subarch: cell
 #portage_prefix: releng
 #pkgcache_path: @PKGCACHE_PATH@/cell
 #snapshot_treeish: @TREEISH@
+#repos: @REPOS@
 
 stage4/use:
 	ps3

@@ -3,7 +3,6 @@ version_stamp: desktop-mate-openrc-@TIMESTAMP@
 source_subpath: @PLATFORM@/@REL_TYPE@/stage4-cell-desktop-openrc-@TIMESTAMP@
 profile: default/linux/@BASE_ARCH@/23.0/desktop
 compression_mode: pixz
-repos: @REPOS@
 
 stage4/use:
 	ps3
@@ -23,3 +22,4 @@ stage4/rm:
 #portage_prefix: releng
 #pkgcache_path: @PKGCACHE_PATH@/cell
 #snapshot_treeish: @TREEISH@
+#repos: @REPOS@

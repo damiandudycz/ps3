@@ -3,7 +3,6 @@ version_stamp: @TIMESTAMP@
 source_subpath: @PLATFORM@/@REL_TYPE@/livecd-stage1-cell-@TIMESTAMP@
 livecd/iso: install-cell-minimal-@TIMESTAMP@.iso
 livecd/volid: Gentoo_PS3
-repos: @REPOS@
 
 # Architecture and profile
 target: livecd-stage2
@@ -12,6 +11,7 @@ profile: default/linux/@BASE_ARCH@/23.0
 #subarch: cell
 #pkgcache_path: @PKGCACHE_PATH@/.livecd
 #snapshot_treeish: @TREEISH@
+#repos: @REPOS@
 
 # LiveCD config
 livecd/fstype: squashfs

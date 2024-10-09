@@ -1,17 +1,42 @@
 #!/bin/bash
 
-source ../../.env-shared.sh --silent || exit 1
-source "./catalyst-lab.conf" # TODO: Store conf in /etc/catalyst-lab.sh
-
-# Constants:
+# Check for root privilages.
+if [[ $EUID -ne 0 ]]; then
+	echo "This script must be run as root"
+	exit 1
+fi
 
 declare -A TARGET_MAPPINGS=([livecd-stage1]=livecd [livecd-stage2]=livecd)
 declare -A ARCH_MAPPINGS=([aarch64]=arm64) # Map from arch command to release arch. TODO: Add more mappings if needed.
-readonly PKGCACHE_PATH=${PATH_RELENG_RELEASES_BINPACKAGES}
-readonly TIMESTAMP=$(date -u +"%Y%m%dT%H%M%SZ") # Current timestamp.
-readonly WORK_PATH=/tmp/catalyst-lab/${TIMESTAMP}
-CLEAN_BUILD=false
-HOST_ARCH=${ARCH_MAPPINGS[$(arch)]:-$(arch)} # Mapped to release arch
+
+readonly host_arch=${ARCH_MAPPINGS[$(arch)]:-$(arch)} # Mapped to release arch
+readonly timestamp=$(date -u +"%Y%m%dT%H%M%SZ") # Current timestamp.
+
+readonly color_red='\033[0;31m'
+readonly color_green='\033[0;32m'
+readonly color_turquoise='\033[0;36m'
+readonly color_turquoise_bold='\033[1;36m'
+readonly color_nc='\033[0m' # No Color
+
+# Load/create config.
+if [[ ! -f /etc/catalyst-lab/catalyst-lab.conf ]]; then
+    # Create default config if not available
+    mkdir -p /etc/catalyst-lab
+    cat <<EOF | tee /etc/catalyst-lab/catalyst-lab.conf > /dev/null || exit 1
+# Main configuration for catalyst-lab.
+seeds_url=https://gentoo.osuosl.org/releases/@ARCH_FAMILY@/autobuilds
+templates_path=./data/templates
+releng_path=/usr/share/releng
+catalyst_path=/var/tmp/catalyst
+pkgcache_path=/home/damiandudycz/ps3/releases/ppc/binpackages/23.0
+tmp_path=/tmp/catalyst-lab
+EOF
+    echo "Default config file created: /etc/catalyst-lab/catalyst-lab.conf"
+fi
+source /etc/catalyst-lab/catalyst-lab.conf
+
+readonly work_path=${tmp_path}/${timestamp}
+readonly catalyst_builds_path=${catalyst_path}/builds
 
 # Script arguments:
 
@@ -24,6 +49,29 @@ while [ $# -gt 0 ]; do case ${1} in
 esac; shift; done
 
 # Functions:
+
+echo_color() { # Usage: echo_color COLOR MESSAGE
+    echo -e "${1}${2}${color_nc}"
+}
+
+contains_string() {
+    local array=("${!1}")
+    local search_string="$2"
+    local found=0
+
+    for element in "${array[@]}"; do
+        if [[ "$element" == "$search_string" ]]; then
+            found=1
+            break
+        fi
+    done
+
+    if [[ $found -eq 1 ]]; then
+        return 0  # true
+    else
+        return 1  # false
+    fi
+}
 
 # Get list of directories in given directory.
 get_directories() {
@@ -60,7 +108,7 @@ use_stage() {
 		fi
 
 		# Platform config
-		local platform_conf_path=${PATH_RELENG_TEMPLATES}/${platform}/platform.conf
+		local platform_conf_path=${templates_path}/${platform}/platform.conf
 		source ${platform_conf_path}
 		# TODO: If some properties are not set in config - unset them while loading new config
 	fi
@@ -106,7 +154,7 @@ update_spec_variable() {
 	sed -i "s|@${key}@|${new_value}|g" ${spec_path}
 }
 
-# Replace variables in given stage variable, by replacing some strings with calculated end results - TIMESTAMP, PLATFORM, STAGE.
+# Replace variables in given stage variable, by replacing some strings with calculated end results - timestamp, PLATFORM, STAGE.
 sanitize_spec_variable() {
 	local platform="$1"
 	local release="$2"
@@ -118,13 +166,13 @@ sanitize_spec_variable() {
 
 #  Get portage snapshot version and download new if needed.
 prepare_portage_snapshot() {
-	if [[ -d ${PATH_CATALYST_TMP}/snapshots && $(find ${PATH_CATALYST_TMP}/snapshots -type f -name "*.sqfs" | wc -l) -gt 0 ]]; then
-		treeish=$(find ${PATH_CATALYST_TMP}/snapshots -type f -name "*.sqfs" -exec ls -t {} + | head -n 1 | xargs -n 1 basename -s .sqfs | cut -d '-' -f 2)
+	if [[ -d ${catalyst_path}/snapshots && $(find ${catalyst_path}/snapshots -type f -name "*.sqfs" | wc -l) -gt 0 ]]; then
+		treeish=$(find ${catalyst_path}/snapshots -type f -name "*.sqfs" -exec ls -t {} + | head -n 1 | xargs -n 1 basename -s .sqfs | cut -d '-' -f 2)
 	fi
 	if [[ -z ${treeish} ]] || [[ ${FETCH_FRESH_SNAPSHOT} = true ]]; then
-		echo_color ${COLOR_TURQUOISE_BOLD} "[ Refreshing portage snapshot ]"
+		echo_color ${color_turquoise_bold} "[ Refreshing portage snapshot ]"
 		catalyst -s stable
-		treeish=$(find ${PATH_CATALYST_TMP}/snapshots -type f -name "*.sqfs" -exec ls -t {} + | head -n 1 | xargs -n 1 basename -s .sqfs | cut -d '-' -f 2)
+		treeish=$(find ${catalyst_path}/snapshots -type f -name "*.sqfs" -exec ls -t {} + | head -n 1 | xargs -n 1 basename -s .sqfs | cut -d '-' -f 2)
 		echo "" # New line
 	fi
 }
@@ -134,12 +182,12 @@ prepare_portage_snapshot() {
 # Sort stages based on their inheritance.
 load_stages() {
 	declare -gA stages # Some details of stages retreived from scanning. (release,stage,target,source,has_parent).
-	available_builds=$(find ${PATH_CATALYST_BUILDS} -type f -name "*.tar.xz" -printf '%P\n')
+	available_builds=$(find ${catalyst_builds_path} -type f -name "*.tar.xz" -printf '%P\n')
 	stages_count=0 # Number of stages to build. Script will determine this value automatically.
 
-	readonly RL_VAL_PLATFORMS=$(get_directories ${PATH_RELENG_TEMPLATES})
+	readonly RL_VAL_PLATFORMS=$(get_directories ${templates_path})
 	for platform in ${RL_VAL_PLATFORMS[@]}; do
-		local platform_path=${PATH_RELENG_TEMPLATES}/${platform}
+		local platform_path=${templates_path}/${platform}
 		# Load platform config
 		local platform_conf_path=${platform_path}/platform.conf
       		source ${platform_conf_path}
@@ -153,7 +201,7 @@ load_stages() {
 			RL_VAL_RELEASE_STAGES=$(get_directories ${release_path})
 			for stage in ${RL_VAL_RELEASE_STAGES[@]}; do
 				# (data/templates/23.0-default/stage1-openrc-cell-base)
-				local stage_path=${PATH_RELENG_TEMPLATES}/${platform}/${release}/${stage}
+				local stage_path=${templates_path}/${platform}/${release}/${stage}
 				# (data/templates/23.0-default/stage1-openrc-cell-base/stage.spec)
 				local stage_spec_path=${stage_path}/stage.spec
 				if [[ -f ${stage_spec_path} ]]; then
@@ -250,7 +298,7 @@ load_stages() {
 	fi
 
 	# List stages to build
-	echo_color ${COLOR_TURQUOISE_BOLD} "[ Stages to rebuild ]"
+	echo_color ${color_turquoise_bold} "[ Stages to rebuild ]"
 	local i; local j=1; for (( i=0; i<${stages_count}; i++ )); do
 		local rebuild=${stages[${i},rebuild]}
 		if [[ ${rebuild} = true ]]; then
@@ -281,8 +329,9 @@ insert_stage_with_inheritance() { # arg - index, required_by_id
 
 # Setup templates of stages.
 prepare_stages() {
-	echo_color ${COLOR_TURQUOISE_BOLD} "[ Preparing stages ]"
-	empty_directory ${WORK_PATH}
+	echo_color ${color_turquoise_bold} "[ Preparing stages ]"
+
+	mkdir -p ${work_path}
 
 	local i; for (( i=0; i<${stages_count}; i++ )); do
 		use_stage ${i}
@@ -290,15 +339,15 @@ prepare_stages() {
 			continue
 		fi
 
-		local platform_path=${PATH_RELENG_TEMPLATES}/${platform}
+		local platform_path=${templates_path}/${platform}
 		local release_path=${platform_path}/${release}
 		local stage_path=${release_path}/${stage}
 
-		local platform_work_path=${WORK_PATH}/${platform}
+		local platform_work_path=${work_path}/${platform}
 		local release_work_path=${platform_work_path}/${release}
 		local stage_work_path=${release_work_path}/${stage}
 
-		local source_build_path=${PATH_CATALYST_BUILDS}/${source_subpath}.tar.xz
+		local source_build_path=${catalyst_builds_path}/${source_subpath}.tar.xz
 
 		# Determine if stage's parent will also be rebuild, to know if it should use available_source_subpath or new parent build.
 		if [[ -n "${parent_index}" ]] && [[ "${parent_rebuild}" = false ]] && [[ -n ${parent_available_build} ]]; then
@@ -325,7 +374,7 @@ prepare_stages() {
 			# Check if build for this seed exists already, only if building specified list of stages (otherwise always get latest details).
 			local matching_source_builds=($(printf "%s\n" "${available_builds[@]}" | grep -E "${source_target_regex}"))
 			local source_available_build=$(printf "%s\n" "${matching_source_builds[@]}" | sort -r | head -n 1)
-			if [[ ${#selected_stages_templates[@]} -ne 0 ]] && [[ -n ${source_available_build} ]] && [[ ${CLEAN_BUILD} = false ]]; then
+			if [[ ${#selected_stages_templates[@]} -ne 0 ]] && [[ -n ${source_available_build} ]] && [[ ! ${CLEAN_BUILD} = true ]]; then
 				echo "Using existing source ${source_available_build} for ${platform}/${release}/${stage}"
 				stages[${i},source_subpath]=${source_available_build%.tar.xz}
 			else
@@ -346,6 +395,14 @@ prepare_stages() {
 			use_stage ${i}
 		fi
 
+		# Determine if needs to use qemu interpreter.
+		unset interpreter_portage_postfix
+		if [[ ${host_arch} != ${arch_basearch} ]]; then
+			interpreter_portage_postfix='-qemu'
+			interpreter=${arch_interpreter}
+			stages[${i},interpreter]=${arch_interpreter}
+		fi
+
 		# Copy stage template workfiles to work_path.
 		mkdir -p ${stage_work_path}
 		cp -rf ${stage_path}/* ${stage_work_path}/
@@ -356,7 +413,7 @@ prepare_stages() {
 		if [[ -f ${releng_base_file} ]]; then
 			uses_releng=true
 			releng_base=$(cat ${releng_base_file})
-			releng_base_dir=${PATH_RELENG_PORTAGE_CONFDIR}/${releng_base}${CONF_QEMU_RELENG_POSTFIX}
+			releng_base_dir=${releng_path}/releases/portage/${releng_base}${interpreter_portage_postfix}
 			cp -ru ${releng_base_dir}/* ${portage_path}/
 			rm ${releng_base_file}
 		else
@@ -384,13 +441,7 @@ prepare_stages() {
 		local stage_root_overlay_path=${stage_work_path}/root_overlay
 		local stage_fsscript_path=${stage_work_path}/fsscript.sh
 		local stage_spec_work_path=${stage_work_path}/stage.spec
-		local target_mapping="${TARGET_MAPPINGS[${target}]:-${target}}"
-
-		# Determine if needs to use qemu interpreter.
-		if [[ ${HOST_ARCH} != ${arch_basearch} ]]; then
-			interpreter=${arch_interpreter}
-			stages[${i},interpreter]=${arch_interpreter}
-		fi
+		local target_mapping=${TARGET_MAPPINGS[${target}]:-${target}}
 
 		# Replace spec templates with real data
 		echo "" >> ${stage_spec_work_path} # Add new line, to separate new entries
@@ -414,31 +465,29 @@ prepare_stages() {
 		if [[ ${uses_releng} = true ]]; then
 			set_spec_variable_if_missing ${stage_spec_work_path} portage_prefix releng
 		fi
-		update_spec_variable ${stage_spec_work_path} TIMESTAMP ${TIMESTAMP}
+		update_spec_variable ${stage_spec_work_path} TIMESTAMP ${timestamp}
 		update_spec_variable ${stage_spec_work_path} PLATFORM ${platform}
 		update_spec_variable ${stage_spec_work_path} REL_TYPE ${release}
 		update_spec_variable ${stage_spec_work_path} TREEISH ${treeish}
                 update_spec_variable ${stage_spec_work_path} BASE_ARCH ${arch_basearch}
-		update_spec_variable ${stage_spec_work_path} PKGCACHE_PATH ${PKGCACHE_PATH}
-		update_spec_variable ${stage_spec_work_path} REPOS ${PATH_OVERLAYS_PS3_GENTOO}
-
+		update_spec_variable ${stage_spec_work_path} PKGCACHE_PATH ${pkgcache_path}
 	done
 
-	echo "Stages templates prepared in: ${WORK_PATH}"
+	echo "Stages templates prepared in: ${work_path}"
 	echo ""
 }
 
 # Build stages.
 build_stages() {
-	echo_color ${COLOR_TURQUOISE_BOLD} "[ Building stages ]"
+	echo_color ${color_turquoise_bold} "[ Building stages ]"
 	local i; for (( i=0; i<${stages_count}; i++ )); do
 		use_stage ${i}
 		if [[ ${rebuild} = false ]]; then
 			continue
                 fi
-		local stage_work_path=${WORK_PATH}/${platform}/${release}/${stage}
+		local stage_work_path=${work_path}/${platform}/${release}/${stage}
 		local stage_spec_work_path=${stage_work_path}/stage.spec
-		local source_path=${PATH_CATALYST_BUILDS}/${source_subpath}.tar.xz
+		local source_path=${catalyst_builds_path}/${source_subpath}.tar.xz
 
 		# If stage doesn't have parent built or already existing as .tar.xz, download it's
 		if [[ -n ${source_url} ]] && [[ ! -f ${source_path} ]]; then
@@ -460,19 +509,12 @@ build_stages() {
 
 # Main program:
 
-# Check for root privilages.
-if [[ $EUID -ne 0 ]]; then
-	echo "This script must be run as root"
-	exit 1
-fi
-
 prepare_portage_snapshot
 load_stages
 prepare_stages
 build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
-# TODO: Make this script independant of PS3 environment. Use configs in /etc/ instead.
 # TODO: Add functions to manage platforms, releases and stages - add new, edit config, print config, etc.
 # TODO: Add releng managemnt - downloading, checking, updating.
 # TODO: If possible - add toml config management.

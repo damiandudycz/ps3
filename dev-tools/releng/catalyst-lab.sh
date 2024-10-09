@@ -20,18 +20,19 @@ readonly color_nc='\033[0m' # No Color
 
 # Load/create config.
 if [[ ! -f /etc/catalyst-lab/catalyst-lab.conf ]]; then
-    # Create default config if not available
-    mkdir -p /etc/catalyst-lab
-    cat <<EOF | tee /etc/catalyst-lab/catalyst-lab.conf > /dev/null || exit 1
+	# Create default config if not available
+	mkdir -p /etc/catalyst-lab
+	mkdir -p /etc/catalyst-lab/templates
+	cat <<EOF | tee /etc/catalyst-lab/catalyst-lab.conf > /dev/null || exit 1
 # Main configuration for catalyst-lab.
 seeds_url=https://gentoo.osuosl.org/releases/@ARCH_FAMILY@/autobuilds
-templates_path=./data/templates
-releng_path=/usr/share/releng
+templates_path=/etc/catalyst-lab/templates
+releng_path=/opt/releng
 catalyst_path=/var/tmp/catalyst
 pkgcache_path=/home/damiandudycz/ps3/releases/ppc/binpackages/23.0
 tmp_path=/tmp/catalyst-lab
 EOF
-    echo "Default config file created: /etc/catalyst-lab/catalyst-lab.conf"
+	echo "Default config file created: /etc/catalyst-lab/catalyst-lab.conf"
 fi
 source /etc/catalyst-lab/catalyst-lab.conf
 
@@ -43,6 +44,7 @@ readonly catalyst_builds_path=${catalyst_path}/builds
 declare -a selected_stages_templates
 while [ $# -gt 0 ]; do case ${1} in
 	--update-snapshot) FETCH_FRESH_SNAPSHOT=true;;
+	--update-releng) FETCH_FRESH_RELENG=true;;
 	--clean) CLEAN_BUILD=true;; # Perform clean build - don't use any existing sources even if available (Except for downloaded seeds).
 	--*) echo "Unknown option ${1}"; exit;;
 	*) selected_stages_templates+=("${1}")
@@ -76,7 +78,7 @@ contains_string() {
 # Get list of directories in given directory.
 get_directories() {
 	local path=${1}
-	local directories=($(find ${path} -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort))
+	local directories=($(find ${path}/ -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort))
 	echo ${directories[@]}
 }
 
@@ -174,6 +176,21 @@ prepare_portage_snapshot() {
 		catalyst -s stable
 		treeish=$(find ${catalyst_path}/snapshots -type f -name "*.sqfs" -exec ls -t {} + | head -n 1 | xargs -n 1 basename -s .sqfs | cut -d '-' -f 2)
 		echo "" # New line
+	fi
+}
+
+# Get latest releng release if needed.
+prepare_releng() {
+	# If releng directory doesn't exists - download new version
+	# If it exists and FETCH_FRESH_RELENG is set, pull changes.
+	if [[ ! -d ${releng_path} ]]; then
+		echo_color ${color_turquoise_bold} "[ Downloading releng ]"
+		git clone https://github.com/gentoo/releng.git ${releng_path}
+		echo ""
+	elif [[ ${FETCH_FRESH_RELENG} = true ]]; then
+		echo_color ${color_turquoise_bold} "[ Updating releng ]"
+		git -C ${releng_path} pull
+		echo ""
 	fi
 }
 
@@ -332,6 +349,7 @@ prepare_stages() {
 	echo_color ${color_turquoise_bold} "[ Preparing stages ]"
 
 	mkdir -p ${work_path}
+	mkdir -p ${work_path}/spec_files
 
 	local i; for (( i=0; i<${stages_count}; i++ )); do
 		use_stage ${i}
@@ -471,6 +489,13 @@ prepare_stages() {
 		update_spec_variable ${stage_spec_work_path} TREEISH ${treeish}
                 update_spec_variable ${stage_spec_work_path} BASE_ARCH ${arch_basearch}
 		update_spec_variable ${stage_spec_work_path} PKGCACHE_PATH ${pkgcache_path}
+
+		# Create links to spec files and optionally to catalyst_conf if using custom.
+		spec_link=$(echo ${work_path}/spec_files/$(printf "%03d\n" $((i + 1))).${platform}-${release}-${target}-${version_stamp} | sed "s/@TIMESTAMP@/${timestamp}/")
+		ln -s ${stage_spec_work_path} ${spec_link}.spec
+		if [[ -f ${catalyst_conf} ]]; then
+			ln -s ${catalyst_conf} ${spec_link}.catalyst.conf
+		fi
 	done
 
 	echo "Stages templates prepared in: ${work_path}"
@@ -510,9 +535,10 @@ build_stages() {
 # Main program:
 
 prepare_portage_snapshot
+prepare_releng
 load_stages
 prepare_stages
-build_stages
+#build_stages
 
 # TODO: Add lock file preventing multiple runs at once.
 # TODO: Add functions to manage platforms, releases and stages - add new, edit config, print config, etc.

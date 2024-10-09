@@ -29,7 +29,7 @@ seeds_url=https://gentoo.osuosl.org/releases/@ARCH_FAMILY@/autobuilds
 templates_path=/etc/catalyst-lab/templates
 releng_path=/opt/releng
 catalyst_path=/var/tmp/catalyst
-pkgcache_path=/home/damiandudycz/ps3/releases/ppc/binpackages/23.0
+pkgcache_base_path=/var/cache/catalyst-binpkgs
 tmp_path=/tmp/catalyst-lab
 EOF
 	echo "Default config file created: /etc/catalyst-lab/catalyst-lab.conf"
@@ -131,10 +131,10 @@ set_spec_variable() {
 	local spec_path=${1}
 	local key=${2}
 	local new_value="${3}"
-	if grep -q "^$key:" "${spec_path}"; then
+	if grep -q "^$key:" ${spec_path}; then
 		sed -i "s|^$key: .*|$key: $new_value|" ${spec_path}
 	else
-		echo "$key: $new_value" >> "${spec_path}"
+		echo "$key: $new_value" >> ${spec_path}
 	fi
 }
 
@@ -186,11 +186,11 @@ prepare_releng() {
 	# If it exists and FETCH_FRESH_RELENG is set, pull changes.
 	if [[ ! -d ${releng_path} ]]; then
 		echo_color ${color_turquoise_bold} "[ Downloading releng ]"
-		git clone https://github.com/gentoo/releng.git ${releng_path}
+		git clone https://github.com/gentoo/releng.git ${releng_path} || exit 1
 		echo ""
 	elif [[ ${FETCH_FRESH_RELENG} = true ]]; then
 		echo_color ${color_turquoise_bold} "[ Updating releng ]"
-		git -C ${releng_path} pull
+		git -C ${releng_path} pull || exit 1
 		echo ""
 	fi
 }
@@ -461,6 +461,7 @@ prepare_stages() {
 		local stage_fsscript_path=${stage_work_path}/fsscript.sh
 		local stage_spec_work_path=${stage_work_path}/stage.spec
 		local target_mapping=${TARGET_MAPPINGS[${target}]:-${target}}
+		local stage_default_pkgcache_path=${pkgcache_base_path}/${platform}/${release}
 
 		# Replace spec templates with real data
 		echo "" >> ${stage_spec_work_path} # Add new line, to separate new entries
@@ -468,6 +469,7 @@ prepare_stages() {
 		set_spec_variable_if_missing ${stage_spec_work_path} subarch ${arch_subarch}
 		set_spec_variable_if_missing ${stage_spec_work_path} portage_confdir ${portage_path}
 		set_spec_variable_if_missing ${stage_spec_work_path} snapshot_treeish ${treeish}
+		set_spec_variable_if_missing ${stage_spec_work_path} pkgcache_path ${stage_default_pkgcache_path}
 		set_spec_variable ${stage_spec_work_path} source_subpath ${source_subpath} # source_subpath shoud always be replaced with calculated value, to take into consideration existing old builds usage.
 		if [[ -d ${stage_overlay_path} ]]; then
 		        set_spec_variable_if_missing ${stage_spec_work_path} ${target_mapping}/overlay ${stage_overlay_path}
@@ -489,7 +491,7 @@ prepare_stages() {
 		update_spec_variable ${stage_spec_work_path} REL_TYPE ${release}
 		update_spec_variable ${stage_spec_work_path} TREEISH ${treeish}
                 update_spec_variable ${stage_spec_work_path} BASE_ARCH ${arch_basearch}
-		update_spec_variable ${stage_spec_work_path} PKGCACHE_PATH ${pkgcache_path}
+		update_spec_variable ${stage_spec_work_path} PKGCACHE_PATH ${pkgcache_base_path}
 
 		# Create links to spec files and optionally to catalyst_conf if using custom.
 		spec_link=$(echo ${work_path}/spec_files/$(printf "%03d\n" $((i + 1))).${platform}-${release}-${target}-${version_stamp} | sed "s/@TIMESTAMP@/${timestamp}/")

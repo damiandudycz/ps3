@@ -166,8 +166,9 @@ sanitize_spec_variable() {
 	local release="$2"
 	local stage="$3"
 	local base_arch="$4"
-	local value="$5"
-	echo "${value}" | sed "s/@REL_TYPE@/${release}/g" | sed "s/@PLATFORM@/${platform}/g" | sed "s/@STAGE@/${stage}/g" | sed "s/@BASE_ARCH@/${base_arch}/g"
+	local sub_arch="$5"
+	local value="$6"
+	echo "${value}" | sed "s/@REL_TYPE@/${release}/g" | sed "s/@PLATFORM@/${platform}/g" | sed "s/@STAGE@/${stage}/g" | sed "s/@BASE_ARCH@/${base_arch}/g" | sed "s/@SUB_ARCH@/${sub_arch}/g"
 }
 
 #  Get portage snapshot version and download new if needed.
@@ -240,7 +241,7 @@ load_stages() {
 
 					# Find best matching local build available.
 					local stage_product=${platform}/${release}/${target}-${subarch}-${version_stamp}
-					local stage_product_regex=$(echo $(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${stage_product}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
+					local stage_product_regex=$(echo $(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${subarch} ${stage_product}) | sed 's/@TIMESTAMP@/[0-9]{8}T[0-9]{6}Z/')
 					local matching_stage_builds=($(printf "%s\n" "${available_builds[@]}" | grep -E "${stage_product_regex}"))
 					local stage_available_build=$(printf "%s\n" "${matching_stage_builds[@]}" | sort -r | head -n 1)
 
@@ -248,10 +249,10 @@ load_stages() {
 					stages[${stages_count},platform]=${platform}
 					stages[${stages_count},release]=${release}
 					stages[${stages_count},stage]=${stage}
-					stages[${stages_count},subarch]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${subarch})
-					stages[${stages_count},target]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${target})
-					stages[${stages_count},version_stamp]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${version_stamp})
-					stages[${stages_count},source_subpath]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${source_subpath})
+					stages[${stages_count},subarch]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${subarch} ${subarch})
+					stages[${stages_count},target]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${subarch} ${target})
+					stages[${stages_count},version_stamp]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${subarch} ${version_stamp})
+					stages[${stages_count},source_subpath]=$(sanitize_spec_variable ${platform} ${release} ${stage} ${arch_basearch} ${subarch} ${source_subpath})
 					stages[${stages_count},overlays]=${spec_repos:-${repos}}
 					stages[${stages_count},available_build]=${stage_available_build}
 
@@ -449,6 +450,9 @@ prepare_stages() {
 			interpreter_portage_postfix='-qemu'
 			interpreter=${arch_interpreter}
 			stages[${i},interpreter]=${arch_interpreter}
+			if [[ ! -f ${arch_interpreter} ]]; then
+				echo "Required interpreter: ${arch_interpreter} is not found"
+			fi
 		fi
 
 		# Copy stage template workfiles to work_path.
@@ -532,6 +536,7 @@ prepare_stages() {
 		update_spec_variable ${stage_spec_work_path} REL_TYPE ${release}
 		update_spec_variable ${stage_spec_work_path} TREEISH ${treeish}
                 update_spec_variable ${stage_spec_work_path} BASE_ARCH ${arch_basearch}
+                update_spec_variable ${stage_spec_work_path} SUB_ARCH ${arch_subarch}
 		update_spec_variable ${stage_spec_work_path} PKGCACHE_PATH ${pkgcache_base_path}
 
 		# Create links to spec files and optionally to catalyst_conf if using custom.
@@ -578,7 +583,7 @@ build_stages() {
 			fi
 		done
 
-		echo "Building stage: ${platform}/${release}/${stage}"
+		echo_color ${color_turquoise_bold} "Building stage: ${platform}/${release}/${stage}"
 		echo ""
 		local args="-af ${stage_spec_work_path}"
 		if [[ -n ${catalyst_conf} ]]; then

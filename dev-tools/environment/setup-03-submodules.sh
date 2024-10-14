@@ -4,6 +4,13 @@ source ../../.env-shared.sh || exit 1
 
 rm -f "${PATH_GIT_HOOK_RELEASES}"
 
+# Update links to github for guest or user
+github_link="${CONF_GIT_GITHUB_LINK_GUEST}"
+if [[ ${CONF_OWNER} = true ]]; then
+	github_link="${CONF_GIT_GITHUB_LINK_OWNER}"
+fi
+sed -i "s/@GITHUB_LINK@/${github_link}/g" "${PATH_GIT_MODULES}"
+
 cd "${PATH_ROOT}"
 git submodule foreach 'git config submodule.$name.depth 1'
 git submodule update --init --recursive

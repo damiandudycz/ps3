@@ -8,6 +8,11 @@
 readonly PATH_ROOT_INITIAL="$(realpath -m '..')"
 readonly PATH_ENV_FILE="${PATH_ROOT_INITIAL}/.env-shared.sh"
 
+CONF_OWNER=false
+while [ $# -gt 0 ]; do case "$1" in
+	--owner) CONF_OWNER=true;;
+esac; shift; done
+
 # Clear old environment file if exists.
 rm -f "${PATH_ENV_FILE}" || exit 1
 
@@ -21,6 +26,7 @@ cat <<EOF > "${PATH_ENV_FILE}"
 # Project configuration ------------------------------------------------------------------------------------------------------------
 readonly CONF_PROJECT_NAME="PS3_Gentoo"
 readonly CONF_PROJECT_DEPENDENCIES=(app-portage/gentoolkit dev-lang/ruby dev-util/pkgdev sys-process/time net-dns/bind net-dns/bind-tools)
+readonly CONF_OWNER=${CONF_OWNER}
 
 readonly CONF_TARGET_ARCH="ppc64"
 readonly CONF_TARGET_ARCH_FAMILY="ppc"
@@ -36,9 +42,11 @@ readonly CONF_HOST_ARCH="$(uname -m)"
 readonly CONF_HOST_ARCH_PORTAGE="$(portageq envvar ARCH)"
 
 readonly CONF_GIT_FILE_SIZE_LIMIT="100M"
-readonly CONF_GIT_USER="Damian Dudycz"
-readonly CONF_GIT_EMAIL="damiandudycz@yahoo.com"
-readonly CONF_GIT_EDITOR="nano"
+readonly CONF_GIT_GITHUB_LINK_GUEST="https://github.com/"
+readonly CONF_GIT_GITHUB_LINK_OWNER="git@github.com:"
+#readonly CONF_GIT_USER="Damian Dudycz"
+#readonly CONF_GIT_EMAIL="damiandudycz@yahoo.com"
+#readonly CONF_GIT_EDITOR="nano"
 
 readonly CONF_CATALYST_JOBS="8"
 readonly CONF_CATALYST_LOAD="12.0"
@@ -87,6 +95,7 @@ readonly PATH_ROOT="${PATH_ROOT_INITIAL}"
 readonly PATH_DEV_TOOLS="\${PATH_ROOT}/dev-tools"
 readonly PATH_OVERLAYS="\${PATH_ROOT}/overlays"
 readonly PATH_RELEASES="\${PATH_ROOT}/releases"
+readonly PATH_GIT_MODULES="\${PATH_ROOT}/.gitmodules"
 
 # Dev tools patchs.
 readonly PATH_DEV_TOOLS_ENVIRONMENT="\${PATH_DEV_TOOLS}/environment"

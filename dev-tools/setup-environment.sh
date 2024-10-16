@@ -7,11 +7,13 @@
 # These variables are used only by this script itself, others will have patchs loaded from .env-shared.sh.
 readonly PATH_ROOT_INITIAL="$(realpath -m '..')"
 readonly PATH_ENV_FILE="${PATH_ROOT_INITIAL}/.env-shared.sh"
+readonly REPO_PROTOCOL=$(cat ${PATH_ROOT_INITIAL}/.git/config | grep "url =" | sed "s/.*url = //g" | cut -d ':' -f 1)
 
-CONF_OWNER=false
-while [ $# -gt 0 ]; do case "$1" in
-	--owner) CONF_OWNER=true;;
-esac; shift; done
+if [[ ${REPO_PROTOCOL} = 'git@github.com' ]]; then
+	CONF_OWNER=true
+else
+	CONF_OWNER=false
+fi
 
 # Clear old environment file if exists.
 rm -f "${PATH_ENV_FILE}" || exit 1

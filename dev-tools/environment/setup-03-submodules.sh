@@ -33,3 +33,9 @@ chmod +x "${PATH_GIT_HOOK_RELEASES}"
 echo "[Initialize GIT LFS for releases]"
 cd "${PATH_ROOT}/releases"
 git lfs install
+
+# Create link to catalyst-binpkgs if possible
+mkdir -p /var/cache/catalyst-binpkgs
+if [[ ! -e /var/cache/catalyst-binpkgs/ps3 ]]; then
+	ln -s ${PATH_RELEASES_PS3_GENTOO_ARCH_BINPACKAGES_PROFILE} /var/cache/catalyst-binpkgs/ps3
+fi

@@ -3,7 +3,7 @@
 	"stage_types" : ["stage3", "stage4"],
 	"init_system" : "openrc",
 	"hostname" : "PS3",
-	"base_url_autobuilds" : "https://github.com/damiandudycz/ps3-gentoo-releases/raw/main/23.0-default",
+	"base_url_autobuilds" : "https://github.com/damiandudycz/gentoo-releases/raw/main/releases/ps3/23.0-lto",
 	"disk" : {
 		"scheme" : "gpt",
 		"partitions" : [
@@ -18,7 +18,7 @@
 			},
 			{
 				"order" : 0,
-				"filesystem" : "btrfs",
+				"filesystem" : "ext4",
 				"mount_point" : "/",
 				"size" : "-4100MiB",
 				"options" : "defaults,noatime",
@@ -71,13 +71,13 @@
 			"+USE" : "ps3 dist-kernel"
 		},
 		"overlays" : {
-			"eselect" : [],
-			"manual" : {
-				"ps3" : "https://github.com/damiandudycz/ps3-gentoo-overlay"
-			}
+			"eselect" : [
+				ps3
+			],
+			"manual" : {}
 		},
 		"binhosts" : {
-			"gentoobinhost" : "https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-releases/main/ppc/binpackages/23.0/cell"
+			"gentoobinhost" : "https://raw.githubusercontent.com/damiandudycz/gentoo-releases/main/binhosts/ps3/23.0-lto"
 		}
 	},
 	"conf_d" : {

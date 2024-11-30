@@ -1,7 +1,19 @@
 {
 	"supported_arch" : ["ppc64", "cell"],
-	"stage_types" : ["stage3", "stage4"],
-	"init_system" : "openrc",
+	"stage_types" : [
+		"stage3-cell-openrc",
+		"stage3-cell-systemd",
+		"stage3-cell-desktop-openrc",
+		"stage3-cell-desktop-systemd",
+		"stage4-cell-openrc",
+		"stage4-cell-systemd",
+		"stage4-cell-desktop-openrc",
+		"stage4-cell-desktop-systemd",
+		"stage4-cell-desktop-mate-openrc",
+		"stage4-cell-desktop-mate-systemd",
+		"stage4-cell-desktop-xfce-openrc",
+		"stage4-cell-desktop-xfce-systemd"
+	],
 	"hostname" : "PS3",
 	"base_url_autobuilds" : "https://github.com/damiandudycz/gentoo-releases/raw/main/releases/ps3/23.0-lto",
 	"disk" : {
@@ -71,9 +83,7 @@
 			"+USE" : "ps3 dist-kernel"
 		},
 		"overlays" : {
-			"eselect" : [
-				ps3
-			],
+			"eselect" : ["ps3"],
 			"manual" : {}
 		},
 		"binhosts" : {

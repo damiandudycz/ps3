@@ -547,7 +547,6 @@ download_stages() {
     local stage_types=($(cfg .stage_types[]))
     local base_url_autobuilds=$(cfg .base_url_autobuilds)
     local supported_arch=($(cfg .supported_arch[]))
-    local init_system=$(cfg .init_system)
 
     for stage in "${stage_types[@]}"; do
         local stageinfo_url="${base_url_autobuilds}/latest-${stage}.txt"
@@ -555,17 +554,15 @@ download_stages() {
 
         while IFS= read -r line; do
             entry="${line%% *}"
-            if [[ "$entry" == *"-${init_system}"* ]]; then
-                arch_matches=false
-                for arch in "${supported_arch[@]}"; do
-                    if [[ "$entry" == *"$stage-$arch-"* ]]; then
-                        arch_matches=true
-                    fi
-                done
-                if [[ $arch_matches == true ]]; then
-                    stage_sources[$index]="$entry"
-                    ((index++))
+            arch_matches=false
+            for arch in "${supported_arch[@]}"; do
+                if [[ "$entry" == *"$stage-$arch-"* ]]; then
+                    arch_matches=true
                 fi
+            done
+            if [[ $arch_matches == true ]]; then
+                stage_sources[$index]="$entry"
+                ((index++))
             fi
         done <<< "$latest_gentoo_content"
     done
@@ -587,6 +584,7 @@ download_stages() {
         if [[ -n "$source_stage" ]]; then
             url_gentoo_tarball="$base_url_autobuilds/$source_stage"
             local selected_stage_type=$(basename "${source_stage%-*}")
+            init_system="${source_stage##*-}" # openrc, systemd
             echo "Proceeding with: ${source_stage}"
             # Determine if performing quick install (stage4)
             if [[ "$selected_stage_type" == stage3* ]]; then

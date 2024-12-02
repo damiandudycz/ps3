@@ -32,7 +32,7 @@ Welcome to the PlayStation 3 Gentoo Linux Toolset repository—a comprehensive c
     - Stage3 files built for the CELL CPU, offering better compatibility with the PS3 compared to the default PPC64 Stage3 files.
     - Stage4 files, with xorg and mate installed.
 - **releases/ppc directory**: A collection of binhost repositories that can be added to your portage configuration. These repositories are generated during the release process of Autobuilds and contain pre-compiled packages optimized for the CELL CPU. If you use the `ps3-gentoo-installer`, these repositories will be added automatically. Recommended repository URL:
-    - https://raw.githubusercontent.com/damiandudycz/ps3-gentoo-releases/main/ppc/binpackages/23.0/cell
+    - https://raw.githubusercontent.com/damiandudycz/gentoo-releases/main/binrepos/ps3/23.0-lto
 
 ### Overlays
 - **Overlays/ps3-gentoo-overlay**: A portage overlay containing ebuilds for packages useful on the PS3 system, including:

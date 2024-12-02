@@ -55,7 +55,5 @@ Welcome to the PlayStation 3 Gentoo Linux Toolset repository—a comprehensive c
         - Stage3 files
         - Binhost repositories
 
-## Feedback and Contributions
-If you have any suggestions or encounter any issues, please feel free to contact me at [damiandudycz@yahoo.com](mailto:damiandudycz@yahoo.com) or find me on the Gentoo Discord @damiandudycz.
-
+## Contributions
 If you use any of my tools in your project, please include a reference to this repository and a link back to it. Your acknowledgment helps support the development and maintenance of these tools.

@@ -11,7 +11,7 @@ for arg in "$@"; do case $arg in
 esac; done
 
 # Check if update is needed.
-if [[ -n $(ps3_installer_needs_update) ]]; then
+#if [[ -n $(ps3_installer_needs_update) ]]; then
     if [[ $ASK ]]; then
         while true; do
             read -p "Do you want to update ps3-gentoo-installer ebuild to version ${PI_VAL_OVERLAY_EBUILD_NEW_VERSION} [yes/no]: " yn
@@ -21,10 +21,10 @@ if [[ -n $(ps3_installer_needs_update) ]]; then
             esac
         done
     fi
-else
-    echo "No changes to installer since last release."
-    exit 0
-fi
+#else
+#    echo "No changes to installer since last release."
+#    exit 0
+#fi
 
 empty_directory "${PATH_WORK_PS3_INSTALLER}"
 

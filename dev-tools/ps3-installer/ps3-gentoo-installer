@@ -556,7 +556,7 @@ download_stages() {
             entry="${line%% *}"
             arch_matches=false
             for arch in "${supported_arch[@]}"; do
-                if [[ "$entry" == *"$stage-$arch-"* ]]; then
+                if [[ "$entry" == *"$arch"* ]]; then
                     arch_matches=true
                 fi
             done

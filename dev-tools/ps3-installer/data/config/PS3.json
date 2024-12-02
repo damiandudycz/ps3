@@ -87,7 +87,7 @@
 			"manual" : {}
 		},
 		"binhosts" : {
-			"gentoobinhost" : "https://raw.githubusercontent.com/damiandudycz/gentoo-releases/main/binhosts/ps3/23.0-lto"
+			"gentoobinhost" : "https://raw.githubusercontent.com/damiandudycz/gentoo-releases/main/binrepos/ps3/23.0-lto"
 		}
 	},
 	"conf_d" : {

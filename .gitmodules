@@ -6,11 +6,3 @@
 	path = overlays/ps3-gentoo-overlay.distfiles
 	url = git@github.com:damiandudycz/ps3-gentoo-overlay.distfiles
 	branch = main
-[submodule "releases"]
-	path = releases
-	url = git@github.com:damiandudycz/ps3-gentoo-releases.git
-	branch = main
-[submodule "dev-tools/catalyst-lab"]
-	path = dev-tools/catalyst-lab
-	url = git@github.com:damiandudycz/catalyst-lab.git
-	branch = main

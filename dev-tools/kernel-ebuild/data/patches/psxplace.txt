@@ -2,7 +2,7 @@
 # This can be used to unblock disabled patches or to add USE flags requirements (For example |0010-superPatch[X].patch).
 https://github.com/damiandudycz/ps3/raw/refs/heads/main/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.6/0011-ps3stor-multiple-regions.patch
 https://github.com/damiandudycz/ps3/raw/refs/heads/main/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.6/0020-ps3stor-send-cmd-timeout.patch
-https://github.com/damiandudycz/ps3/raw/refs/heads/main/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.6/0030-ps3fb.patch|0030-ps3fb[X].patch
+#https://github.com/damiandudycz/ps3/raw/refs/heads/main/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.6/0030-ps3fb.patch|0030-ps3fb[X].patch
 https://github.com/damiandudycz/ps3/raw/refs/heads/main/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.6/0035-ps3flash.patch
 https://github.com/damiandudycz/ps3/raw/refs/heads/main/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.6/0040-ps3-partition.patch
 https://github.com/damiandudycz/ps3/raw/refs/heads/main/files/kernel-patches/psx-place-Sombat-Tragoongoson/6.6/0050-ps3sysmgr-lpar-reboot.patch

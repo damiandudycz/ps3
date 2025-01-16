@@ -5,12 +5,16 @@
 -TMPFS y
 -UNIX y
  BINFMT_MISC y -> m
+ BLK_DEV_LOOP y -> m
+ BLK_DEV_RAM y -> m
  EXT4_FS y -> m
  GELIC_NET y -> m
  NFS_FS y -> m
  NFS_V4 y -> m
  NLS_CODEPAGE_437 y -> m
  NLS_ISO8859_1 y -> m
+ PS3_ROM y -> m
+ RTC_DRV_PS3 y -> m
 +BTRFS_FS m
 +BT_LE n
 +CRC16 y
@@ -62,6 +66,7 @@
 +PS3_ENCDEC m
 +PS3_FLASH_NG m
 +PS3_JUPITER m
++PS3_JUPITER_STA m
 +PS3_LV1CALL m
 +PS3_PHYSMEM m
 +PS3_STRGMNGR m

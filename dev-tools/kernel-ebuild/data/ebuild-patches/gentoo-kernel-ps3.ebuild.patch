@@ -33,14 +33,13 @@
  S=${WORKDIR}/${MY_P}
  
  KEYWORDS="amd64 ~arm arm64 ~hppa ~loong ~ppc ppc64 ~riscv ~sparc x86"
--IUSE="debug experimental hardened"
+ IUSE="debug experimental hardened"
 -REQUIRED_USE="
 -	arm? ( savedconfig )
 -	hppa? ( savedconfig )
 -	riscv? ( savedconfig )
 -	sparc? ( savedconfig )
 -"
-+IUSE="debug experimental hardened X"
 +PATCHES_USE="${IUSE}"
  
  RDEPEND="

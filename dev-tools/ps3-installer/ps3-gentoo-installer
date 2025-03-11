@@ -157,6 +157,8 @@ print_usage() {
     echo ""
     echo "  --update                          Perform system update."
     echo "  --distcc <host>                   Specify a distcc host."
+    echo ""
+    echo "  --help                            Display this help message."
     exit 1
 }
 
@@ -229,7 +231,7 @@ read_variables() {
                 config_file="$1"
             fi
             ;;
-	--edit-config)
+	    --edit-config)
             edit_config=true
             ;;
         --verbose)
@@ -271,6 +273,9 @@ read_variables() {
             if [ $# -gt 0 ]; then
                 hostname="$1"
             fi
+            ;;
+        --help)
+            print_usage
             ;;
         *)
             error "Unknown option: $1"

@@ -852,7 +852,7 @@ setup_portage_repository() {
     #try tar -xvpf "${path_chroot}/portage-latest.tar.xz" -C "${path_chroot}/var/db/repos/gentoo"
     # Create keys.
     chroot_call "getuto"
-    chroot_call "pidof dirmngr > /dev/null && killall dirmngr"
+    chroot_call "pgrep -x dirmngr > /dev/null && killall dirmngr"
 }
 
 install_updates() {
